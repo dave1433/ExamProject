@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
+
     @FXML
     private FlowPane buttonContainer;
     @FXML
@@ -43,6 +44,20 @@ public class LoginController implements Initializable {
 
     @FXML
     private TextField onSearchUsername;
+
+    @FXML
+    public void btnBackOnAction(ActionEvent event) {
+        try {
+            Parent mainRoot = FXMLLoader.load(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/MainLogin.fxml")); // adjust if your main window FXML has a different name
+            Scene mainScene = new Scene(mainRoot);
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.setScene(mainScene);
+            currentStage.setTitle("BelSign"); // Optional: set your main window title
+            currentStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
@@ -109,10 +124,24 @@ public class LoginController implements Initializable {
 
             btn.setOnAction(event -> {
                 if (user.getRole_id() == 1) {
-                    // Clear FlowPane
-                    buttonContainer.getChildren().clear();
-                    roleLabel.setText("Administrator");
+                    try {
+                        // Load LoginPassword.fxml
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
+                        Parent loginPasswordPane = loader.load();
 
+                        // Clear FlowPane and add the LoginPassword content
+                        buttonContainer.getChildren().clear();
+                        buttonContainer.getChildren().add(loginPasswordPane);
+
+                        roleLabel.setText("Administrator - " + user.getUser_name());
+
+                        // Optional: pass user to the controller if needed
+                        // LoginPassword controller = loader.getController();
+                        // controller.setUser(user);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 if (user.getRole_id() == 2) {
@@ -165,4 +194,5 @@ public class LoginController implements Initializable {
 
     public void onClickedBtn(ActionEvent event) {
     }
+
 }

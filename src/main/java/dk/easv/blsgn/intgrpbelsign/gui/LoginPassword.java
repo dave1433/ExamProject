@@ -3,6 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -19,6 +20,10 @@ public class LoginPassword {
             newStage.setTitle("BelSign");
             newStage.setScene(new Scene(root)); // ✅ This line is good
             newStage.show();
+
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
