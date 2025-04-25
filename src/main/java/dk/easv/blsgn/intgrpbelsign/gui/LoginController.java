@@ -4,13 +4,19 @@ import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -93,6 +99,16 @@ public class LoginController implements Initializable {
     }
     private void handleUserClick(String userName) {
         System.out.println("User clicked: " + userName);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml")); // ✅ FIXED path
+            Parent root = loader.load();
+            Stage newStage = new Stage();
+            newStage.setTitle("BelSign");
+            newStage.setScene(new Scene(root)); // ✅ This line is good
+            newStage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void onClickedBtn(ActionEvent event) {
