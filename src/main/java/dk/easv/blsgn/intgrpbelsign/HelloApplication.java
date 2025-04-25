@@ -1,5 +1,6 @@
 package dk.easv.blsgn.intgrpbelsign;
 
+import dk.easv.blsgn.intgrpbelsign.dal.web.UserDAO;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,5 +20,7 @@ public class HelloApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+        UserDAO test = new UserDAO();
+        test.getAllUsers();
     }
 }
