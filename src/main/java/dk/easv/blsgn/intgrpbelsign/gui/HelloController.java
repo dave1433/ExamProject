@@ -81,7 +81,7 @@ public class HelloController implements Initializable {
             if (imgStream != null) {
                 icon = new ImageView(new Image(imgStream));
             } else {
-                System.err.println("Image not found at /Pictures/3.png");
+                System.err.println("Icon not found");
                 icon = new ImageView(); // fallback: create empty image view to avoid null
             }
 
@@ -90,6 +90,7 @@ public class HelloController implements Initializable {
             icon.setPreserveRatio(true);
 
             btn.setGraphic(icon);
+            btn.setGraphicTextGap(10);
             btn.setAlignment(javafx.geometry.Pos.BASELINE_LEFT);
 
             FlowPane.setMargin(btn, new javafx.geometry.Insets(10, 10, 0, 10));
