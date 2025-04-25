@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign;
+package dk.easv.blsgn.intgrpbelsign.gui;
 
 import javafx.event.ActionEvent; // ✅ FIXED
 import javafx.fxml.FXML;

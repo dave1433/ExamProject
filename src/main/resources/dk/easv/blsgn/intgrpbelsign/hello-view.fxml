@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.HelloController">
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.HelloController">
    <center>
       <FlowPane fx:id="buttonContainer" prefHeight="274.0" prefWidth="899.0">
          <children>
