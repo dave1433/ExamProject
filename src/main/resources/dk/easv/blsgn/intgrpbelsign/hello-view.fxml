@@ -1,16 +1,253 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="dk.easv.blsgn.intgrpbelsign.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.HelloController">
+   <center>
+      <FlowPane fx:id="buttonContainer" prefHeight="274.0" prefWidth="899.0">
+         <children>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Administrator">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Quality Controller">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Admin">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 1">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Alex">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Luis">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="David">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#onClickedBtn" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="Phuoc">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 1">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 2">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 3">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 4">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 5">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 6">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 7">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="60.0" prefWidth="210.0" style="-fx-background-color: #BBDEFB;" text="User Operator 8">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/3.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <FlowPane.margin>
+                  <Insets right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
+         </children>
+      </FlowPane>
+   </center>
+   <bottom>
+      <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="61.0" prefWidth="549.0" promptText="Search Username" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets top="20.0" />
+         </BorderPane.margin>
+      </TextField>
+   </bottom>
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="76.0" prefWidth="899.0">
+               <children>
+                  <ImageView fitHeight="79.0" fitWidth="103.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/1.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets right="700.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fitHeight="72.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/2.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="54.0" prefWidth="899.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="496.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+</BorderPane>
