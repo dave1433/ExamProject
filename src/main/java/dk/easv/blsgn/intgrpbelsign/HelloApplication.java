@@ -11,16 +11,13 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("MainLogin.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 897, 550);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch();
-        UserDAO test = new UserDAO();
-        test.getAllUsers();
+    public static void main(String[] args) {launch();
     }
 }
