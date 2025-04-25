@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,12 +75,21 @@ public class HelloController implements Initializable {
             btn.setStyle("-fx-background-color: #BBDEFB;");
             btn.setOnAction(e -> handleUserClick(user.getUserName()));
 
-           // ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("dk/easv/blsgn/intgrpbelsign/Pictures/3.png")));
-            //icon.setFitWidth(48);
-            //icon.setFitHeight(31);
-           // icon.setPreserveRatio(true);
+            InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/3.png");
+            ImageView icon;
 
-           // btn.setGraphic(icon);
+            if (imgStream != null) {
+                icon = new ImageView(new Image(imgStream));
+            } else {
+                System.err.println("Image not found at /Pictures/3.png");
+                icon = new ImageView(); // fallback: create empty image view to avoid null
+            }
+
+            icon.setFitWidth(48);
+            icon.setFitHeight(31);
+            icon.setPreserveRatio(true);
+
+            btn.setGraphic(icon);
             btn.setAlignment(javafx.geometry.Pos.BASELINE_LEFT);
 
             FlowPane.setMargin(btn, new javafx.geometry.Insets(10, 10, 0, 10));
