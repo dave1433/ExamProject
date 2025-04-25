@@ -30,10 +30,40 @@ public class HelloController implements Initializable {
 
     private final UserManager userManager = new UserManager();
 
+    @FXML
+    private TextField onSearchUsername;
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         populateUserButtons();
+        for (var node : buttonContainer.getChildren()) {
+            if (node instanceof Button) {
+                allButtons.add((Button) node);
+            }
+        }
+
+        // Listen for changes in the text field
+        onSearchUsername.textProperty().addListener((obs, oldText, newText) -> {
+            filterButtons(newText);
+        });
     }
+
+
+    // Store all buttons in a list so we can re-add them
+    private final List<Button> allButtons = new ArrayList<>();
+
+
+    private void filterButtons(String searchText) {
+        buttonContainer.getChildren().clear();
+
+        for (Button btn : allButtons) {
+            if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
+                buttonContainer.getChildren().add(btn);
+            }
+        }
+    }
+
 
     private void populateUserButtons() {
         List<User> users = userManager.getAllUsers();
@@ -75,40 +105,9 @@ public class HelloController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    @FXML
-    private TextField onSearchUsername;
 
-    @FXML
-    private FlowPane buttonContainer;
 
-    // Store all buttons in a list so we can re-add them
-    private final List<Button> allButtons = new ArrayList<>();
 
-    @FXML
-    public void initialize() {
-        // Store a copy of all buttons at startup
-        for (var node : buttonContainer.getChildren()) {
-            if (node instanceof Button) {
-                allButtons.add((Button) node);
-            }
-        }
 
-        // Listen for changes in the text field
-        onSearchUsername.textProperty().addListener((obs, oldText, newText) -> {
-            filterButtons(newText);
-        });
-    }
-
-    private void filterButtons(String searchText) {
-        buttonContainer.getChildren().clear();
-
-        for (Button btn : allButtons) {
-            if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
-                buttonContainer.getChildren().add(btn);
-            }
-        }
-    }
-
-}*/
