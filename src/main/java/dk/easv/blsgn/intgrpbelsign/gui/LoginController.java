@@ -7,8 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 
+import javafx.scene.image.ImageView;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +67,23 @@ public class LoginController implements Initializable {
             btn.setPrefSize(210, 60);
             btn.setStyle("-fx-background-color: #BBDEFB;");
             btn.setOnAction(e -> handleUserClick(user.getUser_name()));
+
+            InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/3.png");
+            ImageView icon;
+
+            if (imgStream != null) {
+                icon = new ImageView(new Image(imgStream));
+            } else {
+                System.err.println("Icon not found");
+                icon = new ImageView(); // fallback: create empty image view to avoid null
+            }
+
+            icon.setFitWidth(48);
+            icon.setFitHeight(31);
+            icon.setPreserveRatio(true);
+
+            btn.setGraphic(icon);
+            btn.setGraphicTextGap(10);
             btn.setAlignment(javafx.geometry.Pos.BASELINE_LEFT);
 
             FlowPane.setMargin(btn, new javafx.geometry.Insets(10, 10, 0, 10));
@@ -71,7 +91,6 @@ public class LoginController implements Initializable {
             buttonContainer.getChildren().add(btn);
         }
     }
-
     private void handleUserClick(String userName) {
         System.out.println("User clicked: " + userName);
     }
