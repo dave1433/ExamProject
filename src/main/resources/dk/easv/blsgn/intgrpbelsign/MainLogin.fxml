@@ -13,15 +13,11 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.LoginController">
    <center>
-      <FlowPane fx:id="buttonContainer" prefHeight="274.0" prefWidth="899.0" />
+      <FlowPane fx:id="buttonContainer" prefHeight="383.0" prefWidth="899.0">
+         <children>
+            <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="35.0" prefWidth="899.0" promptText="Search Username" />
+         </children></FlowPane>
    </center>
-   <bottom>
-      <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="61.0" prefWidth="549.0" promptText="Search Username" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets top="20.0" />
-         </BorderPane.margin>
-      </TextField>
-   </bottom>
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -32,7 +28,7 @@
                         <Image url="@Pictures/1.png" />
                      </image>
                      <HBox.margin>
-                        <Insets right="700.0" />
+                        <Insets left="10.0" right="700.0" />
                      </HBox.margin>
                   </ImageView>
                   <ImageView fitHeight="72.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true">
@@ -44,7 +40,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="54.0" prefWidth="899.0">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="496.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome">
+                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="496.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome">
                      <font>
                         <Font size="18.0" />
                      </font>

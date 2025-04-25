@@ -1,32 +1,43 @@
 package dk.easv.blsgn.intgrpbelsign.gui;
 
+import dk.easv.blsgn.intgrpbelsign.HelloApplication;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+
 
 public class LoginController implements Initializable {
 
     @FXML
     private FlowPane buttonContainer;
+    @FXML
+    private Label roleLabel;
 
     private final UserManager userManager = new UserManager();
 
@@ -95,11 +106,52 @@ public class LoginController implements Initializable {
             FlowPane.setMargin(btn, new javafx.geometry.Insets(10, 10, 0, 10));
 
             buttonContainer.getChildren().add(btn);
+
+            btn.setOnAction(event -> {
+                if (user.getRole_id() == 1) {
+                    // Clear FlowPane
+                    buttonContainer.getChildren().clear();
+                    roleLabel.setText("Administrator");
+
+                }
+
+                if (user.getRole_id() == 2) {
+                    // Clear FlowPane
+                    buttonContainer.getChildren().clear();
+
+                    roleLabel.setText("QC " + "- " + user.getUser_name());
+                }
+
+                if (user.getRole_id() == 3) {
+                    // Clear FlowPane
+                    buttonContainer.getChildren().clear();
+
+                    // Create search bar
+                    TextField searchBar = new TextField();
+                    searchBar.setPromptText("Search...");
+                    roleLabel.setText("OPERATOR " + "- " + user.getUser_name());
+
+                    // Optional: Style the search bar
+                    searchBar.setMaxWidth(300);
+                    FlowPane.setMargin(searchBar, new Insets(20, 0, 20, 0));
+
+                    // Center it by wrapping in a HBox (optional)
+                    HBox searchWrapper = new HBox(searchBar);
+                    searchWrapper.setAlignment(Pos.CENTER); // Center horizontally
+                    searchWrapper.setPrefWidth(buttonContainer.getWidth()); // Expand to full width
+
+                    // Add it to the FlowPane
+                    buttonContainer.getChildren().add(searchWrapper);
+                }
+            });
+
         }
+
+
     }
     private void handleUserClick(String userName) {
         System.out.println("User clicked: " + userName);
-        try {
+       /* try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml")); // ✅ FIXED path
             Parent root = loader.load();
             Stage newStage = new Stage();
@@ -108,7 +160,7 @@ public class LoginController implements Initializable {
             newStage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     public void onClickedBtn(ActionEvent event) {
