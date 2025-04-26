@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDAO {
 
@@ -32,5 +33,29 @@ public class UserDAO {
             e.printStackTrace();
         }
         return users;
+    }
+
+    public User validateUser(String username, String passwordHash) {
+        String sql = "SELECT * FROM [User] WHERE user_name = ? AND password_hash = ?";
+
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, passwordHash);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                            rs.getInt("user_id"),
+                            rs.getString("user_name"),
+                            rs.getString("password_hash"),
+                            rs.getInt("role_id")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

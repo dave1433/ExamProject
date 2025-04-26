@@ -9,4 +9,7 @@ public class UserManager {
     public ObservableList<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
+    public User validateUser(String username, String passwordHash) {
+        return userDAO.validateUser(username, passwordHash);
+    }
 }

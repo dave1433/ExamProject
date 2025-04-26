@@ -48,7 +48,7 @@ public class LoginController implements Initializable {
     @FXML
     public void btnBackOnAction(ActionEvent event) {
         try {
-            Parent mainRoot = FXMLLoader.load(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/MainLogin.fxml")); // adjust if your main window FXML has a different name
+            Parent mainRoot = FXMLLoader.load(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/MainLogin.fxml"));
             Scene mainScene = new Scene(mainRoot);
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.setScene(mainScene);
@@ -129,15 +129,14 @@ public class LoginController implements Initializable {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
                         Parent loginPasswordPane = loader.load();
 
+                        LoginPassword loginPasswordController = loader.getController();
+                        loginPasswordController.setUsername(user.getUser_name());
+
                         // Clear FlowPane and add the LoginPassword content
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
                         roleLabel.setText("Administrator - " + user.getUser_name());
-
-                        // Optional: pass user to the controller if needed
-                        // LoginPassword controller = loader.getController();
-                        // controller.setUser(user);
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -180,19 +179,9 @@ public class LoginController implements Initializable {
     }
     private void handleUserClick(String userName) {
         System.out.println("User clicked: " + userName);
-       /* try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml")); // ✅ FIXED path
-            Parent root = loader.load();
-            Stage newStage = new Stage();
-            newStage.setTitle("BelSign");
-            newStage.setScene(new Scene(root)); // ✅ This line is good
-            newStage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
     public void onClickedBtn(ActionEvent event) {
     }
-
 }
+
