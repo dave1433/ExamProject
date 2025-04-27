@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,7 +18,8 @@ import java.io.IOException;
 public class LoginPassword {
 
     private final UserManager userManager = new UserManager();
-
+    @FXML
+    private FlowPane buttonContainer;
     @FXML
     private TextField passwordField;
     @FXML
@@ -29,15 +31,19 @@ public class LoginPassword {
             String password = passwordField.getText();
 
             User user = userManager.validateUser(username, password);
+
             if (user != null) {
                 System.out.println("Login successful for user: " + user.getUser_name());
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/users-window.fxml"));
                     Parent root = loader.load();
-                    Stage newStage = new Stage();
-                    newStage.setTitle("BelSign");
-                    newStage.setScene(new Scene(root));
-                    newStage.show();
+
+                    buttonContainer.getChildren().clear();
+                    buttonContainer.getChildren().add(root);
+
+                    Node sourceButton = (Node) event.getSource();
+                    sourceButton.setVisible(false);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -46,7 +52,6 @@ public class LoginPassword {
             }
 
     }
-
 
     public void setUsername(String userName) {
         this.userNameLabel.setText(userName);
