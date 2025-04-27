@@ -7,11 +7,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class Belsign extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        FXMLLoader fxmlLoader = new FXMLLoader(Belsign.class.getResource("Login.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1440, 1024);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

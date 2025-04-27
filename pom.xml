@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>dk.easv.blsgn.intgrpbelsign/dk.easv.blsgn.intgrpbelsign.HelloApplication
+                            <mainClass>dk.easv.blsgn.intgrpbelsign/dk.easv.blsgn.intgrpbelsign.Belsign
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

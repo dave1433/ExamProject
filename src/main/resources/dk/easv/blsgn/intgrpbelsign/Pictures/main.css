@@ -1,0 +1,65 @@
+.background-login{
+    -fx-background-color: #F2F2F2;
+}
+
+.button {
+    -fx-background-color: #004a99;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-font-size: 16px;
+    -fx-padding: 10 20;
+}
+
+.text-field {
+    -fx-background-radius: 8;
+}
+
+.password-field {
+    -fx-background-radius: 8;
+}
+
+.worker-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-border-color: transparent;
+}
+
+/* Viewport (where content lives) */
+.worker-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Scrollbar vertical track */
+.worker-scroll-pane .scroll-bar:vertical {
+    -fx-pref-width: 8px;
+}
+
+/* Scrollbar horizontal track (optional if disabled) */
+.worker-scroll-pane .scroll-bar:horizontal {
+    -fx-pref-height: 8px;
+}
+
+/* Scroll thumb */
+.worker-scroll-pane .scroll-bar .thumb {
+    -fx-background-color: #cccccc;
+    -fx-background-radius: 5;
+}
+
+/* On hover */
+.worker-scroll-pane .scroll-bar:hover .thumb {
+    -fx-background-color: #999999;
+}
+
+/* Container for buttons */
+.worker-button-list {
+    -fx-padding: 10;
+}
+
+/* Individual worker buttons (optional) */
+.worker-button-list .button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 1, 2);
+}
