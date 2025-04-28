@@ -38,7 +38,7 @@ public class LoginController implements Initializable {
     @FXML
     private FlowPane buttonContainer;
     @FXML
-    private Label roleLabel;
+    private Label roleLabel, mainName;
 
     private final UserManager userManager = new UserManager();
 
@@ -81,8 +81,16 @@ public class LoginController implements Initializable {
 
 
     private void filterButtons(String searchText) {
+        // Save the search bar node
+        Node searchBar = buttonContainer.getChildren().get(0);
+
+        // Clear everything
         buttonContainer.getChildren().clear();
 
+        // Re-add the search bar first
+        buttonContainer.getChildren().add(searchBar);
+
+        // Now add matching buttons
         for (Button btn : allButtons) {
             if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
                 buttonContainer.getChildren().add(btn);
@@ -136,7 +144,8 @@ public class LoginController implements Initializable {
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
-                        roleLabel.setText("Administrator - " + user.getUser_name());
+                        roleLabel.setText("Administrator - ");
+                        mainName.setText(user.getUser_name());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -147,7 +156,8 @@ public class LoginController implements Initializable {
                     // Clear FlowPane
                     buttonContainer.getChildren().clear();
 
-                    roleLabel.setText("QC " + "- " + user.getUser_name());
+                    roleLabel.setText("Quality Control Department ");
+                    mainName.setText(user.getUser_name());
                 }
 
                 if (user.getRole_id() == 3) {
@@ -157,7 +167,8 @@ public class LoginController implements Initializable {
                     // Create search bar
                     TextField searchBar = new TextField();
                     searchBar.setPromptText("Search...");
-                    roleLabel.setText("OPERATOR " + "- " + user.getUser_name());
+                    roleLabel.setText("OPERATOR " );
+                    mainName.setText(user.getUser_name());
 
                     // Optional: Style the search bar
                     searchBar.setMaxWidth(300);

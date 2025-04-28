@@ -9,53 +9,52 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.LoginController">
-   <center>
-      <FlowPane fx:id="buttonContainer" prefHeight="383.0" prefWidth="899.0" />
-   </center>
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane>
+            <AnchorPane prefHeight="68.0" prefWidth="900.0" style="-fx-background-color: #f2f2f2;">
                <children>
-                  <ImageView fitHeight="79.0" fitWidth="103.0" layoutX="10.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
-                     <image>
-                        <Image url="@Pictures/1.png" />
-                     </image>
-                  </ImageView>
                   <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="293.0" layoutY="33.0" prefHeight="27.0" prefWidth="276.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <ImageView fitHeight="72.0" fitWidth="99.0" layoutX="758.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                  <Button layoutX="134.0" layoutY="18.0" mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="45.0" prefWidth="51.0" stylesheets="@CSS.css" />
+                  <Label fx:id="mainName" layoutX="719.0" layoutY="33.0" prefHeight="18.0" prefWidth="142.0" textFill="#fff7f7" />
+                  <ImageView fitHeight="37.0" fitWidth="36.0" layoutX="142.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@Pictures/2.png" />
+                        <Image url="@Pictures/back.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="86.0" fitWidth="114.0" layoutY="-7.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Pictures/1.png" />
                      </image>
                   </ImageView>
                </children>
             </AnchorPane>
-            <HBox alignment="CENTER_LEFT" prefHeight="19.0" prefWidth="899.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="45.0" prefWidth="51.0" stylesheets="@CSS.css">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <graphic>
-                        <ImageView fitHeight="37.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@Pictures/back.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-                  <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="51.0" prefWidth="899.0" promptText="Search Username" />
-               </children></HBox>
          </children>
       </VBox>
    </top>
+   <center>
+      <FlowPane fx:id="buttonContainer" prefHeight="383.0" prefWidth="899.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox prefHeight="36.0" prefWidth="900.0">
+               <children>
+                  <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="33.0" prefWidth="399.0" promptText="Search Username">
+                     <VBox.margin>
+                        <Insets left="250.0" right="250.0" />
+                     </VBox.margin>
+                  </TextField>
+               </children>
+               <FlowPane.margin>
+                  <Insets right="250.0" top="35.0" />
+               </FlowPane.margin>
+            </VBox>
+         </children></FlowPane>
+   </center>
 </BorderPane>
