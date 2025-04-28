@@ -160,6 +160,8 @@ public class LoginController implements Initializable {
                         LoginPassword loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
+
+
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
                         roleLabel.setText("Quality Controller Department");
