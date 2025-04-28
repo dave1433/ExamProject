@@ -81,8 +81,16 @@ public class LoginController implements Initializable {
 
 
     private void filterButtons(String searchText) {
+        // Save the search bar node
+        Node searchBar = buttonContainer.getChildren().get(0);
+
+        // Clear everything
         buttonContainer.getChildren().clear();
 
+        // Re-add the search bar first
+        buttonContainer.getChildren().add(searchBar);
+
+        // Now add matching buttons
         for (Button btn : allButtons) {
             if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
                 buttonContainer.getChildren().add(btn);
