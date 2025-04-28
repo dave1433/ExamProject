@@ -1,6 +1,5 @@
-package dk.easv.blsgn.intgrpbelsign.gui;
+package dk.easv.blsgn.intgrpbelsign.gui.controllers;
 
-import dk.easv.blsgn.intgrpbelsign.HelloApplication;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import javafx.event.ActionEvent;
@@ -25,7 +24,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -100,7 +98,7 @@ public class LoginController implements Initializable {
             btn.setStyle("-fx-background-color: #BBDEFB;");
             btn.setOnAction(e -> handleUserClick(user.getUser_name()));
 
-            InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/3.png");
+            InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/3.png");
             ImageView icon;
 
             if (imgStream != null) {

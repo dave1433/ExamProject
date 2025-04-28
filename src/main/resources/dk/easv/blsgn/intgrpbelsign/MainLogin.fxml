@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.LoginController">
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.LoginController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -27,7 +27,7 @@
                      <graphic>
                         <ImageView fitHeight="37.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@Pictures/back.png" />
+                              <Image url="@Pictures/icons/back.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
