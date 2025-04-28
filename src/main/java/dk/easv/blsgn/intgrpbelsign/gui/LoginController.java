@@ -81,16 +81,8 @@ public class LoginController implements Initializable {
 
 
     private void filterButtons(String searchText) {
-        // Save the search bar node
-        Node searchBar = buttonContainer.getChildren().get(0);
-
-        // Clear everything
         buttonContainer.getChildren().clear();
 
-        // Re-add the search bar first
-        buttonContainer.getChildren().add(searchBar);
-
-        // Now add matching buttons
         for (Button btn : allButtons) {
             if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
                 buttonContainer.getChildren().add(btn);
@@ -144,8 +136,7 @@ public class LoginController implements Initializable {
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
-                        roleLabel.setText("Administrator ");
-                        mainName.setText(user.getUser_name());
+                        roleLabel.setText("Administrator - " + user.getUser_name());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -153,34 +144,27 @@ public class LoginController implements Initializable {
                 }
 
                 if (user.getRole_id() == 2) {
-                    // Clear FlowPane
-                    buttonContainer.getChildren().clear();
+                    try{
 
-                    roleLabel.setText("Quality Control Department ");
-                    mainName.setText(user.getUser_name());
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
+                        Parent loginPasswordPane = loader.load();
+
+                        LoginPassword loginPasswordController = loader.getController();
+                        loginPasswordController.setUsername(user.getUser_name());
+
+                        buttonContainer.getChildren().clear();
+                        buttonContainer.getChildren().add(loginPasswordPane);
+                        roleLabel.setText("Operator - " + user.getUser_name());
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 if (user.getRole_id() == 3) {
-                    // Clear FlowPane
                     buttonContainer.getChildren().clear();
-
-                    // Create search bar
-                    TextField searchBar = new TextField();
-                    searchBar.setPromptText("Search...");
-                    roleLabel.setText("OPERATOR " );
-                    mainName.setText(user.getUser_name());
-
-                    // Optional: Style the search bar
-                    searchBar.setMaxWidth(300);
-                    FlowPane.setMargin(searchBar, new Insets(20, 0, 20, 0));
-
-                    // Center it by wrapping in a HBox (optional)
-                    HBox searchWrapper = new HBox(searchBar);
-                    searchWrapper.setAlignment(Pos.CENTER); // Center horizontally
-                    searchWrapper.setPrefWidth(buttonContainer.getWidth()); // Expand to full width
-
-                    // Add it to the FlowPane
-                    buttonContainer.getChildren().add(searchWrapper);
+                    roleLabel.setText("OPERATOR " + "- " + user.getUser_name());
                 }
             });
 
