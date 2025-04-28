@@ -16,23 +16,25 @@
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane prefHeight="68.0" prefWidth="900.0" style="-fx-background-color: #f2f2f2;">
+            <AnchorPane prefHeight="68.0" prefWidth="900.0" style="-fx-background-color: #004b88;">
                <children>
-                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="293.0" layoutY="33.0" prefHeight="27.0" prefWidth="276.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome">
+                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="293.0" layoutY="33.0" prefHeight="27.0" prefWidth="276.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Button layoutX="134.0" layoutY="18.0" mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="45.0" prefWidth="51.0" stylesheets="@CSS.css" />
+                  <Button layoutX="134.0" layoutY="18.0" mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="45.0" prefWidth="51.0" stylesheets="@CSS.css">
+                     <graphic>
+                        <ImageView fitHeight="37.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@Pictures/back.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                   <Label fx:id="mainName" layoutX="719.0" layoutY="33.0" prefHeight="18.0" prefWidth="142.0" textFill="#fff7f7" />
-                  <ImageView fitHeight="37.0" fitWidth="36.0" layoutX="142.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="86.0" fitWidth="114.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@Pictures/back.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="86.0" fitWidth="114.0" layoutY="-7.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@Pictures/1.png" />
+                        <Image url="@Pictures/Imagem%20WhatsApp%202025-04-28%20às%2012.18.07_af1c508b.jpg" />
                      </image>
                   </ImageView>
                </children>
@@ -41,7 +43,7 @@
       </VBox>
    </top>
    <center>
-      <FlowPane fx:id="buttonContainer" prefHeight="383.0" prefWidth="899.0" BorderPane.alignment="CENTER">
+      <FlowPane fx:id="buttonContainer" alignment="TOP_CENTER" prefHeight="383.0" prefWidth="899.0" BorderPane.alignment="CENTER">
          <children>
             <VBox prefHeight="36.0" prefWidth="900.0">
                <children>
@@ -52,7 +54,7 @@
                   </TextField>
                </children>
                <FlowPane.margin>
-                  <Insets right="250.0" top="35.0" />
+                  <Insets top="35.0" />
                </FlowPane.margin>
             </VBox>
          </children></FlowPane>
