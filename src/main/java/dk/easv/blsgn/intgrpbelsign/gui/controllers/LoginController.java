@@ -79,8 +79,16 @@ public class LoginController implements Initializable {
 
 
     private void filterButtons(String searchText) {
+        // Save the search bar node
+        Node searchBar = buttonContainer.getChildren().get(0);
+
+        // Clear everything
         buttonContainer.getChildren().clear();
 
+        // Re-add the search bar first
+        buttonContainer.getChildren().add(searchBar);
+
+        // Now add matching buttons
         for (Button btn : allButtons) {
             if (btn.getText().toLowerCase().contains(searchText.toLowerCase())) {
                 buttonContainer.getChildren().add(btn);
@@ -134,7 +142,8 @@ public class LoginController implements Initializable {
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
-                        roleLabel.setText("Administrator - " + user.getUser_name());
+                        roleLabel.setText("Administrator");
+                        mainName.setText(user.getUser_name());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -150,9 +159,12 @@ public class LoginController implements Initializable {
                         LoginPassword loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
+
+
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
-                        roleLabel.setText("Operator - " + user.getUser_name());
+                        roleLabel.setText("Quality Controller Department");
+                        mainName.setText(user.getUser_name());
 
 
                     } catch (IOException e) {
@@ -161,8 +173,23 @@ public class LoginController implements Initializable {
                 }
 
                 if (user.getRole_id() == 3) {
-                    buttonContainer.getChildren().clear();
-                    roleLabel.setText("OPERATOR " + "- " + user.getUser_name());
+
+                    try{
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml"));
+                        Parent loginPasswordPane = loader.load();
+                        System.out.println("LoginPassword loaded");
+
+                        buttonContainer.getChildren().clear();
+                        buttonContainer.getChildren().add(loginPasswordPane);
+                        roleLabel.setText("Quality Controller Department");
+                        mainName.setText(user.getUser_name());
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    roleLabel.setText("OPERATOR");
+                    mainName.setText(user.getUser_name());
+
                 }
             });
 
