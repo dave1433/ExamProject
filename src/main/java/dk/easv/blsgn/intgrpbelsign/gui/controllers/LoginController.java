@@ -197,6 +197,7 @@ public class LoginController implements Initializable {
 
 
     }
+
     private void handleUserClick(String userName) {
         System.out.println("User clicked: " + userName);
     }

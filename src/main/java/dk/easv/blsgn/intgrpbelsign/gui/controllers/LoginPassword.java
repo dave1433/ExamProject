@@ -21,7 +21,7 @@ public class LoginPassword {
     @FXML
     private TextField passwordField;
     @FXML
-    private Label userNameLabel;
+    private Label userNameLabel, roleLabel;
 
     public void onClickedBtnLogin(ActionEvent event) {
 
@@ -50,7 +50,6 @@ public class LoginPassword {
             }
 
     }
-
     public void setUsername(String userName) {
         this.userNameLabel.setText(userName);
     }

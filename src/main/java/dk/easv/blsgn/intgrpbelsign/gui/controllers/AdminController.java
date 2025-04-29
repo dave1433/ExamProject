@@ -16,30 +16,26 @@ public class AdminController {
 
     LoginController loginController = new LoginController();
     @FXML
-    private FlowPane buttonContainer;
+    private FlowPane root; // Changed from buttonContainer to root
     @FXML
     private Label roleLabel, mainName;
 
     private dk.easv.blsgn.intgrpbelsign.be.User user;
 
-
-
     @FXML
     void onAddNewUser(ActionEvent event){
         try {
-            // Load LoginPassword.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/users-window.fxml"));
-            Parent loginPasswordPane = loader.load();
+            Parent newContent = loader.load();
 
-            // Clear FlowPane and add the LoginPassword content
-            buttonContainer.getChildren().clear();
-            buttonContainer.getChildren().add(loginPasswordPane);
+            root.getChildren().clear();
+            root.getChildren().add(newContent);
 
-            roleLabel.setText("Administrator");
+            Node sourceButton = (Node) event.getSource();
+            sourceButton.setVisible(false);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
