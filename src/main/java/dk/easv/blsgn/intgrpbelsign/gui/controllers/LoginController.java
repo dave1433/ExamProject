@@ -202,7 +202,5 @@ public class LoginController implements Initializable {
         System.out.println("User clicked: " + userName);
     }
 
-    public void onClickedBtn(ActionEvent event) {
-    }
 }
 
