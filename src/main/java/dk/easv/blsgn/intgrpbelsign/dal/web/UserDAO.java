@@ -25,7 +25,11 @@ public class UserDAO {
                         rs.getInt("user_id"),
                         rs.getString("user_name"),
                         rs.getString("password_hash"),
-                        rs.getInt("role_id")
+                        rs.getInt("role_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone_number")
                 );
                 users.add(user);
             }
@@ -49,7 +53,12 @@ public class UserDAO {
                             rs.getInt("user_id"),
                             rs.getString("user_name"),
                             rs.getString("password_hash"),
-                            rs.getInt("role_id")
+                            rs.getInt("role_id"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            rs.getString("email"),
+                            rs.getString("phone_number")
+
                     );
                 }
             }

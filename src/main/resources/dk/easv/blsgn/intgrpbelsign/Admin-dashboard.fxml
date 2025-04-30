@@ -21,11 +21,11 @@
    <children>
       <HBox alignment="CENTER" prefHeight="492.0" prefWidth="740.0">
          <children>
-            <VBox alignment="TOP_CENTER" prefHeight="492.0" prefWidth="597.0">
+            <VBox alignment="TOP_CENTER" prefHeight="492.0" prefWidth="620.0">
                <children>
                   <ScrollPane prefHeight="415.0" prefWidth="601.0">
                      <content>
-                        <VBox alignment="TOP_CENTER" prefHeight="408.0" prefWidth="593.0">
+                        <VBox alignment="TOP_CENTER" prefHeight="408.0" prefWidth="615.0">
                            <children>
                               <AnchorPane prefHeight="50.0" prefWidth="562.0">
                                  <children>
@@ -46,13 +46,13 @@
                                     </Label>
                                  </children>
                               </AnchorPane>
-                              <GridPane alignment="CENTER" gridLinesVisible="true" prefHeight="116.0" prefWidth="583.0">
+                              <GridPane fx:id="userGrid" alignment="CENTER" gridLinesVisible="true" prefHeight="116.0" prefWidth="583.0">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="203.0" minWidth="10.0" prefWidth="50.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="129.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="183.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="136.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="107.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="123.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.0" minWidth="10.0" prefWidth="124.0" />
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -60,24 +60,24 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <AnchorPane GridPane.rowIndex="1">
-                                       <children>
-                                          <ImageView fitHeight="37.0" fitWidth="26.0" layoutX="11.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true">
+                                    <Label fx:id="userIcon" alignment="CENTER" prefHeight="21.0" prefWidth="45.0" GridPane.rowIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="21.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@Pictures/icons/person.png" />
                                              </image>
                                           </ImageView>
-                                       </children>
-                                    </AnchorPane>
-                                    <AnchorPane GridPane.rowIndex="2">
-                                       <children>
-                                          <ImageView fitHeight="37.0" fitWidth="26.0" layoutX="11.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="userIcon" alignment="CENTER" prefHeight="21.0" prefWidth="45.0" GridPane.rowIndex="2">
+                                       <graphic>
+                                          <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@Pictures/icons/person.png" />
                                              </image>
                                           </ImageView>
-                                       </children>
-                                    </AnchorPane>
+                                       </graphic>
+                                    </Label>
                                     <Label prefHeight="30.0" prefWidth="76.0" text="Full Name" GridPane.columnIndex="1">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -89,7 +89,7 @@
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </GridPane.margin>
                                     </Label>
-                                    <Label layoutX="36.0" layoutY="15.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label fx:id="nameLabel" layoutX="36.0" layoutY="15.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -100,7 +100,7 @@
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </GridPane.margin>
                                     </Label>
-                                    <Label layoutX="36.0" layoutY="54.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label fx:id="nameLabel" layoutX="36.0" layoutY="54.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -111,12 +111,12 @@
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </GridPane.margin>
                                     </Label>
-                                    <ComboBox layoutX="231.0" layoutY="17.0" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                                    <ComboBox fx:id="roleComboBox" layoutX="231.0" layoutY="17.0" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1">
                                        <GridPane.margin>
                                           <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                                        </GridPane.margin>
                                     </ComboBox>
-                                    <ComboBox layoutX="231.0" layoutY="56.0" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                                    <ComboBox fx:id="roleComboBox" layoutX="231.0" layoutY="56.0" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
                                        <GridPane.margin>
                                           <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                                        </GridPane.margin>
@@ -154,7 +154,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Label fx:id="emailLabel" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -165,7 +165,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="193.0" layoutY="55.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                    <Label fx:id="phoneLabel" layoutX="193.0" layoutY="55.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -176,7 +176,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="67.0" layoutY="92.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                    <Label fx:id="emailLabel" layoutX="67.0" layoutY="92.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
@@ -187,7 +187,7 @@
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </GridPane.margin>
                                     </Label>
-                                    <Label layoutX="193.0" layoutY="92.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                    <Label fx:id="phoneLabel" layoutX="193.0" layoutY="92.0" prefHeight="30.0" prefWidth="44.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
