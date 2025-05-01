@@ -36,7 +36,26 @@ public class LoginPassword {
             throw new RuntimeException(e);
         }
 
-        if (user != null) {
+        if (user.getRole_id() == 2) {
+            System.out.println("Login successful for user: " + user.getUser_name());
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml"));
+                Parent root = loader.load();
+
+                buttonContainer.getChildren().clear();
+                buttonContainer.getChildren().add(root);
+
+                Node sourceButton = (Node) event.getSource();
+                sourceButton.setVisible(false);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Login failed. Invalid username or password.");
+        }
+
+        if (user.getRole_id() == 1) {
                 System.out.println("Login successful for user: " + user.getUser_name());
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Admin-dashboard.fxml"));
@@ -47,6 +66,7 @@ public class LoginPassword {
 
                     Node sourceButton = (Node) event.getSource();
                     sourceButton.setVisible(false);
+
 
                 } catch (IOException e) {
                     e.printStackTrace();

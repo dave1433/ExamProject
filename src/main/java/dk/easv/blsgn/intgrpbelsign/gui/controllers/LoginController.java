@@ -145,6 +145,7 @@ public class LoginController implements Initializable {
                         roleLabel.setText("Administrator");
                         mainName.setText(user.getUser_name());
 
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -181,8 +182,6 @@ public class LoginController implements Initializable {
 
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
-                        roleLabel.setText("Quality Controller Department");
-                        mainName.setText(user.getUser_name());
 
                     } catch (IOException e) {
                         e.printStackTrace();
