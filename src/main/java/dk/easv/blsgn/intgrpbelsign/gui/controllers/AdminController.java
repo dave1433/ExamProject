@@ -8,13 +8,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.Font;
 
 
 import java.io.IOException;
@@ -44,8 +44,14 @@ public class AdminController {
             root.getChildren().clear();
             root.getChildren().add(newContent);
 
+            // Get the controller of the dialog
+            AddEditUser dialogController = loader.getController();
+            dialogController.setDialogType("add");
+
+
             Node sourceButton = (Node) event.getSource();
             sourceButton.setVisible(false);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,7 +61,7 @@ public class AdminController {
     @FXML
     public void populateUsersGrid() {
         List<User> users = userManager.getAllUsers();
-        
+
         // Clear the grid and its constraints
         userGrid.getChildren().clear();
         userGrid.getRowConstraints().clear();
@@ -67,11 +73,11 @@ public class AdminController {
         Label emailHeader = new Label("E-mail");
         Label phoneHeader = new Label("Phone Number");
         Label roleHeader = new Label("Role");
-        
+
         // Add consistent padding and margin to headers
         Insets padding = new Insets(5, 5, 5, 5);
         Insets margin = new Insets(10, 10, 10, 10);
-        
+
         // Apply styling to header labels
         for (Label header : new Label[]{nameHeader, emailHeader, phoneHeader, roleHeader}) {
             header.setPadding(padding);
@@ -97,7 +103,8 @@ public class AdminController {
             Label nameLabel = new Label(user.getFirst_name() + " " + user.getLast_name());
             Label emailLabel = new Label(user.getEmail());
             Label phoneLabel = new Label(user.getPhone_number());
-            
+
+
             // Apply padding and margin to data labels
             for (Label label : new Label[]{nameLabel, emailLabel, phoneLabel}) {
                 label.setPadding(padding);
@@ -113,18 +120,19 @@ public class AdminController {
                 userIcon.setText("👤");
             }
 
-            // Create and configure the role combo box
-            ComboBox<String> roleComboBox = new ComboBox<>();
-            roleComboBox.getItems().addAll("Admin", "QC");
-            roleComboBox.setValue(user.getRole_id() == 1 ? "Admin" : "QC");
-            GridPane.setMargin(roleComboBox, margin);
+            // Create and configure role label
+            Label roleLabel = new Label(user.getRole_id() == 1 ? "Admin" : "QC");
+            roleLabel.setPadding(padding);
+            GridPane.setMargin(roleLabel, margin);
+            roleLabel.setFont(new Font(14));
+
 
             // Add elements to the grid
             userGrid.add(userIcon, 0, row);
             userGrid.add(nameLabel, 1, row);
             userGrid.add(emailLabel, 2, row);
             userGrid.add(phoneLabel, 3, row);
-            userGrid.add(roleComboBox, 4, row);
+            userGrid.add(roleLabel, 4, row);
 
             row++;
         }

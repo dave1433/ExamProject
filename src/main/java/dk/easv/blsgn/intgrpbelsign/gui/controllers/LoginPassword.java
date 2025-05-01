@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 
+import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 
 public class LoginPassword {
@@ -28,9 +29,14 @@ public class LoginPassword {
             String username = userNameLabel.getText();
             String password = passwordField.getText();
 
-            User user = userManager.validateUser(username, password);
+        User user = null;
+        try {
+            user = userManager.validateUser(username, password);
+        } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
+        }
 
-            if (user != null) {
+        if (user != null) {
                 System.out.println("Login successful for user: " + user.getUser_name());
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Admin-dashboard.fxml"));

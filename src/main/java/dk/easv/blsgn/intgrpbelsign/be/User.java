@@ -20,6 +20,10 @@ public class User {
         this.phone_number = phone_number;
     }
 
+    public User() {
+
+    }
+
 
     public int getRole_id() {
         return role_id;
