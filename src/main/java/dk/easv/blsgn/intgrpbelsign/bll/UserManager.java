@@ -2,6 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.bll;
 
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
+import dk.easv.blsgn.intgrpbelsign.dal.web.IUserDAO;
 import dk.easv.blsgn.intgrpbelsign.dal.web.UserDAO;
 import dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils;
 import javafx.collections.ObservableList;
@@ -13,9 +14,9 @@ import java.util.List;
 import static dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils.hashPassword;
 
 public class UserManager {
-    private final UserDAO userDAO = new UserDAO();
+    private final IUserDAO iUserDAO = new UserDAO();
     public ObservableList<User> getAllUsers() {
-        return userDAO.getAllUsers();
+        return iUserDAO.getAllUsers();
     }
     /**
      * Validates user credentials
@@ -26,7 +27,7 @@ public class UserManager {
      */
     public User validateUser(String username, String password) throws AuthenticationException {
         // First get the user by username to retrieve stored hash
-        User user = userDAO.getUserByUsername(username);
+        User user = iUserDAO.getUserByUsername(username);
         if (user == null) {
             return null;
         }
@@ -39,20 +40,20 @@ public class UserManager {
     }
 
     public boolean doesUserNameExist(String username) {
-        return userDAO.doesUserNameExist(username);
+        return iUserDAO.doesUserNameExist(username);
     }
 
     public boolean addUser(User user, String password) {
         user.setPassword_hash(hashPassword(password));
-        return userDAO.addUser(user);
+        return iUserDAO.addUser(user);
     }
 
     public boolean editUser(User user, String password) {
         user.setPassword_hash(hashPassword(password));
-        return userDAO.editUser(user);
+        return iUserDAO.editUser(user);
     }
 
     public List<Role> getAllRoles() {
-        return userDAO.getAllRoles();
+        return iUserDAO.getAllRoles();
     }
 }

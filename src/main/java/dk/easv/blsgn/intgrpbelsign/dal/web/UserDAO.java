@@ -14,10 +14,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO {
+public class UserDAO implements IUserDAO {
 
     DatabaseConnection conn = new DatabaseConnection();
-
+    @Override
     public ObservableList<User> getAllUsers() {
         ObservableList<User> users = FXCollections.observableArrayList();
         String sql = "SELECT * FROM [User]";
@@ -42,7 +42,7 @@ public class UserDAO {
         }
         return users;
     }
-
+@Override
     public boolean addUser(User user) {
         String sql = "INSERT INTO [User] (user_name, password_hash, role_id, first_name, last_name, email, phone_number)" + " VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = conn.getConnection()) {
@@ -56,16 +56,15 @@ public class UserDAO {
             stmt.setString(7, user.getPhone_number());
 
             int rowsAffected = stmt.executeUpdate();
-            if(rowsAffected > 0) {
+            if (rowsAffected > 0) {
                 return true;
             }
         } catch (SQLException e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
         return false;
     }
-
-    public boolean editUser(User user) {
+    @Override    public boolean editUser(User user) {
         String sql = "UPDATE [User] SET user_name = ?, password_hash = ?, role_id = ?, first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE user_id = ?";
         try (Connection c = conn.getConnection()) {
             PreparedStatement stmt = c.prepareStatement(sql);
@@ -79,7 +78,7 @@ public class UserDAO {
             stmt.setInt(8, user.getUser_id());
 
             int rowsAffected = stmt.executeUpdate();
-            if(rowsAffected > 0) {
+            if (rowsAffected > 0) {
                 return true;
             }
         } catch (SQLException e) {
@@ -87,8 +86,7 @@ public class UserDAO {
         }
         return false;
     }
-
-    public boolean doesUserNameExist(String username) {
+    @Override    public boolean doesUserNameExist(String username) {
         String sql = "SELECT COUNT(*) FROM [User] WHERE user_name = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -108,8 +106,7 @@ public class UserDAO {
             throw new RuntimeException(e);
         }
     }
-
-    public User getUserByUsername(String username) {
+    @Override    public User getUserByUsername(String username) {
         String sql = "SELECT * FROM [User] WHERE user_name = ?";
 
         try (Connection c = conn.getConnection();
@@ -136,7 +133,7 @@ public class UserDAO {
         }
         return null;
     }
-
+    @Override
     public List<Role> getAllRoles() {
         List<Role> roles = new ArrayList<>();
         String sql = "SELECT role_id, role_name FROM Role";
