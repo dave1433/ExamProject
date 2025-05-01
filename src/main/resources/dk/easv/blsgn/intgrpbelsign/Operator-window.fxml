@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
@@ -9,7 +10,11 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="1047.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
    <center>
-      <FlowPane fx:id="flowPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ScrollPane fitToWidth="true" prefHeight="492.0" prefWidth="846.0">
+         <content>
+            <FlowPane fx:id="flowPane" />
+         </content>
+      </ScrollPane>
    </center>
    <top>
       <TextField fx:id="searchField" alignment="CENTER" onAction="#onSearch" prefHeight="30.0" prefWidth="721.0" promptText="Search order number" BorderPane.alignment="CENTER">
@@ -23,6 +28,6 @@
       </TextField>
    </top>
    <left>
-      <ListView fx:id="listView" prefHeight="492.0" prefWidth="164.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="listView" prefHeight="492.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

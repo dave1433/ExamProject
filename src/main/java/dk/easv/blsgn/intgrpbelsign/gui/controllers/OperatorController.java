@@ -1,10 +1,12 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers;
 
+import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -40,7 +42,6 @@ public class OperatorController {
 
     @FXML
     public void initialize() {
-        // Optionally load all orders on start
         displayOrd(orderManager.getAllOrders());
     }
 
@@ -49,93 +50,79 @@ public class OperatorController {
         String input = searchField.getText().trim();
 
         if (!input.isEmpty()) {
-            try {
-                int searchedItemNumber = Integer.parseInt(input);
-                List<Order> matchingOrders = orderManager.getAllOrders()
-                        .stream()
-                        .filter(o -> o.getOrderNumber() == searchedItemNumber)
-                        .collect(Collectors.toList());
+            List<Order> matchingOrders = orderManager.getAllOrders()
+                    .stream()
+                    .filter(o -> o.getOrderNumber().equals(input))
+                    .collect(Collectors.toList());
 
+            if (!matchingOrders.isEmpty()) {
                 displayOrders(matchingOrders);
-            } catch (NumberFormatException e) {
-                // handle invalid input (non-integer)
+            } else {
                 flowPane.getChildren().clear();
-                flowPane.getChildren().add(new Label("Please enter a valid number."));
+                flowPane.getChildren().add(new Label("No orders found for number: " + input));
             }
         }
     }
 
-    // Modified to use FlowPane for each order
     private void displayOrders(List<Order> orders) {
-        flowPane.getChildren().clear(); // Clear the flowPane before adding the updated list
+        flowPane.getChildren().clear();
 
         for (Order order : orders) {
-            // Create a new FlowPane for each order
-            FlowPane orderFlowPane = new FlowPane();
-            orderFlowPane.setHgap(10);
-            orderFlowPane.setVgap(10);
-            orderFlowPane.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
-            orderFlowPane.setPrefWidth(700); // Adjust width as needed
+            VBox orderBox = new VBox(10);
+            orderBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
+            orderBox.setPrefWidth(700);
 
-            // Create the item number label
-            Label itemNumberLabel = new Label("Item: " + order.getItemNumber());
+            Label orderLabel = new Label("Order: " + order.getOrderNumber());
+            orderLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
-            // Load the icon image (adjust path based on your resources structure)
-            Image icon = new Image(getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/camera.png"));
-            javafx.scene.image.ImageView iconView = new ImageView(icon);
-            iconView.setFitWidth(100);
-            iconView.setFitHeight(100);
+            VBox itemsContainer = new VBox(15); // This will hold item boxes
 
-            // Create a button with only the icon
-            Button detailsButton = new Button();
-            detailsButton.setGraphic(iconView);
-            detailsButton.setPrefSize(150, 150);
-            detailsButton.setMinSize(150, 150);
-            detailsButton.setMaxSize(150, 150);
-            detailsButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+            for (Item item : order.getItems()) {
+                VBox itemBox = new VBox(5);
+                itemBox.setAlignment(Pos.TOP_LEFT);
+                itemBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;");
+                itemBox.setPrefWidth(650);
 
-            // Optional: add a tooltip
-            Tooltip.install(detailsButton, new Tooltip("View details"));
+                Label itemNameLabel = new Label(item.getItemName());
+                itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-            // Add functionality to the details button
-            detailsButton.setOnAction(event -> openCameraWindow(order, orderFlowPane));
+                // FlowPane to hold captured images
+                FlowPane photoPane = new FlowPane();
+                photoPane.setHgap(5);
+                photoPane.setVgap(5);
+                photoPane.setPrefWrapLength(600); // Wrap images if many
 
-            // Add the item number label and the button to the order's FlowPane
-            orderFlowPane.getChildren().addAll(itemNumberLabel, detailsButton);
+                Button addPhotoButton = new Button("Add Photo");
+                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane));
 
-            // Add the order's FlowPane to the main flowPane
-            flowPane.getChildren().add(orderFlowPane);
+                itemBox.getChildren().addAll(itemNameLabel, photoPane, addPhotoButton);
+                itemsContainer.getChildren().add(itemBox);
+            }
+
+            orderBox.getChildren().addAll(orderLabel, itemsContainer);
+            flowPane.getChildren().add(orderBox);
         }
     }
 
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
-
         for (Order order : orders) {
-            // Add each order number to the ListView
             orderNumbers.add("Order: " + order.getOrderNumber());
         }
-
-        // Set the list of order numbers to the ListView
         listView.setItems(orderNumbers);
     }
 
-    // Modified to accept the FlowPane for the specific order
-    private void openCameraWindow(Order order, FlowPane orderFlowPane) {
+    private void openCameraWindow(Item item, FlowPane photoPane) {
         try {
-            // Open the default webcam
             Webcam webcam = Webcam.getDefault();
             if (webcam != null) {
-                System.out.println("Webcam opened successfully.");
                 webcam.open();
 
-                // Create an ImageView to show the live webcam feed
                 ImageView liveView = new ImageView();
                 liveView.setFitWidth(400);
                 liveView.setFitHeight(300);
                 liveView.setPreserveRatio(true);
 
-                // Start a background thread to update the ImageView
                 Thread webcamStream = new Thread(() -> {
                     while (webcam.isOpen()) {
                         BufferedImage frame = webcam.getImage();
@@ -144,7 +131,7 @@ public class OperatorController {
                             Platform.runLater(() -> liveView.setImage(fxImage));
                         }
                         try {
-                            Thread.sleep(30); // ~30 FPS
+                            Thread.sleep(30);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -153,49 +140,38 @@ public class OperatorController {
                 webcamStream.setDaemon(true);
                 webcamStream.start();
 
-                // Create a "Take Photo" button
                 Button takePhotoBtn = new Button("Take Photo");
                 takePhotoBtn.setOnAction(e -> {
-                    System.out.println("Take Photo button clicked.");
-                    // Capture the current frame
                     BufferedImage capturedFrame = webcam.getImage();
                     if (capturedFrame != null) {
-                        System.out.println("Frame captured successfully.");
                         Image capturedFxImage = SwingFXUtils.toFXImage(capturedFrame, null);
-
-                        // Create an ImageView for the captured photo
                         ImageView capturedImageView = new ImageView(capturedFxImage);
-                        capturedImageView.setFitWidth(200); // Increase width
-                        capturedImageView.setFitHeight(200); // Increase height
+                        capturedImageView.setFitWidth(150);
+                        capturedImageView.setFitHeight(150);
                         capturedImageView.setPreserveRatio(true);
-                        /*
-                        // Add the captured image directly to the specific order's FlowPane
-                       Platform.runLater(() -> orderFlowPane.getChildren().add(capturedImageView));
-                        //orderFlowPane.getChildren().add(orderFlowPane.getChildren().size() - 1, capturedImageView);*/
-                        Platform.runLater(() -> orderFlowPane.getChildren().add(orderFlowPane.getChildren().size() - 1, capturedImageView));
 
-                    } else {
-                        System.out.println("Failed to capture frame.");
+                        Platform.runLater(() -> {
+                            if (photoPane.getChildren().size() < 5) {
+                                photoPane.getChildren().add(capturedImageView);
+                            } else {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.");
+                                alert.showAndWait();
+                            }
+                        });
                     }
-
-                    // Close the webcam and the camera window
                     webcam.close();
                     ((Stage) takePhotoBtn.getScene().getWindow()).close();
                 });
 
-                // Layout for the camera window (VBox containing the live view and the button)
                 VBox layout = new VBox(10, liveView, takePhotoBtn);
                 layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
 
-                // New stage (window) for the camera
                 Stage cameraStage = new Stage();
                 cameraStage.setTitle("Camera - Take Photo");
                 cameraStage.setScene(new Scene(layout));
                 cameraStage.show();
 
-                // Close the webcam if the user closes the camera window manually
                 cameraStage.setOnCloseRequest(e -> webcam.close());
-
             } else {
                 System.out.println("No webcam detected");
             }
