@@ -121,7 +121,7 @@ public class AdminController {
             }
 
             // Create and configure role label
-            Label roleLabel = new Label(user.getRole_id() == 1 ? "Admin" : "QC");
+            Label roleLabel = new Label(user.getRole_id() == 1 ? "Admin" : user.getRole_id() == 2 ? "QC" : "Operator");
             roleLabel.setPadding(padding);
             GridPane.setMargin(roleLabel, margin);
             roleLabel.setFont(new Font(14));
