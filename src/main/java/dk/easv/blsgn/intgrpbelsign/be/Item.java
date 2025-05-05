@@ -8,9 +8,8 @@ public class Item {
     // Optional: Link to order ID if needed
     private int orderId;
 
-    public Item(int id, String itemId, String itemName, int orderId) {
+    public Item(int id, String itemName, int orderId) {
         this.id = id;
-        this.itemId = itemId;
         this.itemName = itemName;
         this.orderId = orderId;
     }
@@ -20,9 +19,6 @@ public class Item {
         return id;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
 
     public String getItemName() {
         return itemName;
@@ -37,9 +33,6 @@ public class Item {
         this.id = id;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
 
     public void setItemName(String itemName) {
         this.itemName = itemName;

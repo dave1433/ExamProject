@@ -20,7 +20,7 @@ public class OrdersDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-            SELECT i.id, i.item_id, i.item_name, oii.order_id
+            SELECT i.id, i.item_name, oii.order_id
             FROM order_item_image oii
             JOIN items i ON oii.item_id = i.id
             WHERE oii.order_id = ?
@@ -42,7 +42,6 @@ public class OrdersDAO {
                         while (itemRs.next()) {
                             Item item = new Item(
                                     itemRs.getInt("id"),
-                                    itemRs.getString("item_id"),
                                     itemRs.getString("item_name"),
                                     itemRs.getInt("order_id")
                             );

@@ -107,7 +107,7 @@ public class OperatorController {
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
         for (Order order : orders) {
-            orderNumbers.add("Order: " + order.getOrderNumber());
+            orderNumbers.add("Order Number: " + order.getOrderNumber());
         }
         listView.setItems(orderNumbers);
     }
