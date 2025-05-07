@@ -5,9 +5,14 @@ import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.layout.FlowPane;
 
+
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -29,14 +34,14 @@ public class AddEditUser {
     private User user;
     private String dialogType;
 
-
     public void initialize() {
         List<Role> roles = userManager.getAllRoles();
         roleComboBox.getItems().setAll(roles);
     }
 
-
-    public void setDialogType(String dialogType) {this.dialogType = dialogType;}
+    public void setDialogType(String dialogType) {
+        this.dialogType = dialogType;
+    }
 
     @FXML
     public void handleSave() {
@@ -70,24 +75,50 @@ public class AddEditUser {
         saveTask.setOnSucceeded(e -> {
             if (saveTask.getValue()) {
                 showInfoDialog("Success", dialogType.equals("add") ? "User created" : "User updated");
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Admin-dashboard.fxml"));
+                    Parent adminView = loader.load();
+
+                    // Get the controller and initialize it
+                    AdminController adminController = loader.getController();
+
+                    // Find the root FlowPane in the scene graph
+                    Node currentNode = saveButton;
+                    while (currentNode.getParent() != null && !(currentNode instanceof FlowPane)) {
+                        currentNode = currentNode.getParent();
+                    }
+
+                    if (currentNode instanceof FlowPane) {
+                        FlowPane rootFlowPane = (FlowPane) currentNode;
+                        rootFlowPane.getChildren().clear();
+                        rootFlowPane.getChildren().add(adminView);
+
+                        // Initialize the controller after adding to the scene
+                        if (adminController != null) {
+                            adminController.initialize();
+                        }
+                    }
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    showErrorDialog("Error", "Failed to return to admin view");
+                }
             } else {
                 showErrorDialog("Error", "Failed to save user");
             }
-            closeDialog();
         });
 
         saveTask.setOnFailed(e -> {
             showErrorDialog("Error", "An error occurred while saving the user");
             saveTask.getException().printStackTrace();
-            closeDialog();
         });
 
-        new Thread(saveTask).start(); // Start in the background thread
+        new Thread(saveTask).start();
     }
 
     public void setUser(User user) {
         this.user = user;
-        if (user!= null) {
+        if (user != null) {
             usernameField.setText(user.getUser_name());
             firstNameField.setText(user.getFirst_name());
             lastNameField.setText(user.getLast_name());
@@ -139,7 +170,6 @@ public class AddEditUser {
         return true;
     }
 
-    // Show an error dialog
     private void showErrorDialog(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -148,7 +178,6 @@ public class AddEditUser {
         alert.showAndWait();
     }
 
-    // Show an info dialog
     private void showInfoDialog(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -156,11 +185,4 @@ public class AddEditUser {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-    private void closeDialog() {
-        Stage stage = (Stage) saveButton.getScene().getWindow();
-        stage.close();
-    }
-
-
 }

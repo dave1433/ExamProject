@@ -13,7 +13,7 @@
 
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="435.0" prefWidth="600.0">
          
-            <Label layoutX="225.0" layoutY="37.0" text="Create User">
+            <Label fx:id="titleLabel" layoutX="225.0" layoutY="37.0" text="Create User">
                <font>
                   <Font size="24.0" />
                </font></Label>
