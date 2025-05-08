@@ -6,8 +6,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,7 +16,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -116,7 +113,7 @@ public class LoginController implements Initializable {
                 icon = new ImageView(new Image(imgStream));
             } else {
                 System.err.println("Icon not found");
-                icon = new ImageView(); // fallback: create empty image view to avoid null
+                icon = new ImageView(); // fallback: create an empty image view to avoid null
             }
 
             icon.setFitWidth(48);
@@ -141,7 +138,7 @@ public class LoginController implements Initializable {
                         LoginPassword loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
-                        // Clear FlowPane and add the LoginPassword content
+                        // Clear the FlowPane and add the LoginPassword content
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
@@ -179,9 +176,10 @@ public class LoginController implements Initializable {
                 if (user.getRole_id() == 3) {
 
                     try{
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/OPLogin.fxml"));
                         Parent loginPasswordPane = loader.load();
-                        System.out.println("LoginPassword loaded");
+                        PINLogin loginPINController = loader.getController();
+                        loginPINController.setUserName(user.getUser_name());
 
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
