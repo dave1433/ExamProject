@@ -42,7 +42,7 @@ public class UserDAO implements IUserDAO {
         }
         return users;
     }
-@Override
+    @Override
     public boolean addUser(User user) {
         String sql = "INSERT INTO [User] (user_name, password_hash, role_id, first_name, last_name, email, phone_number)" + " VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = conn.getConnection()) {

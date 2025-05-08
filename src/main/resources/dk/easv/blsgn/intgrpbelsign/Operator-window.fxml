@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="1047.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
    <center>
-      <ScrollPane fitToWidth="true" prefHeight="492.0" prefWidth="846.0">
+      <ScrollPane fitToWidth="true">
          <content>
             <FlowPane fx:id="flowPane" />
          </content>
@@ -28,6 +28,6 @@
       </TextField>
    </top>
    <left>
-      <ListView fx:id="listView" prefHeight="492.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

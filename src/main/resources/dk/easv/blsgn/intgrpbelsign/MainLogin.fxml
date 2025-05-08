@@ -49,9 +49,9 @@
       </VBox>
    </top>
    <center>
-      <FlowPane fx:id="buttonContainer" alignment="TOP_CENTER" prefHeight="383.0" prefWidth="899.0" BorderPane.alignment="CENTER">
+      <FlowPane fx:id="buttonContainer" alignment="TOP_CENTER" prefHeight="547.0" prefWidth="1112.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox prefHeight="36.0" prefWidth="900.0">
+            <VBox prefHeight="36.0" prefWidth="1099.0">
                <children>
                   <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="33.0" prefWidth="399.0" promptText="Search Username">
                      <VBox.margin>

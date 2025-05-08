@@ -3,6 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.dal.web.ImageDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,7 +24,10 @@ import javafx.embed.swing.SwingFXUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +43,7 @@ public class OperatorController {
     private TextField searchField;
 
     private final OrderManager orderManager = new OrderManager();
+    private final ImageDAO imageDAO = new ImageDAO();
 
     @FXML
     public void initialize() {
@@ -92,8 +97,19 @@ public class OperatorController {
                 photoPane.setVgap(5);
                 photoPane.setPrefWrapLength(600); // Wrap images if many
 
+                // Load existing images from the database
+                List<byte[]> images = imageDAO.getImagesForItem(order.getID(), item.getId());
+                for (byte[] imgBytes : images) {
+                    Image img = new Image(new ByteArrayInputStream(imgBytes));
+                    ImageView imgView = new ImageView(img);
+                    imgView.setFitWidth(150);
+                    imgView.setFitHeight(150);
+                    imgView.setPreserveRatio(true);
+                    photoPane.getChildren().add(imgView);
+                }
+
                 Button addPhotoButton = new Button("Add Photo");
-                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane));
+                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane, order.getID()));
 
                 itemBox.getChildren().addAll(itemNameLabel, photoPane, addPhotoButton);
                 itemsContainer.getChildren().add(itemBox);
@@ -107,12 +123,12 @@ public class OperatorController {
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
         for (Order order : orders) {
-            orderNumbers.add("Order Number: " + order.getOrderNumber());
+            orderNumbers.add(order.getOrderNumber());
         }
         listView.setItems(orderNumbers);
     }
 
-    private void openCameraWindow(Item item, FlowPane photoPane) {
+    private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
         try {
             Webcam webcam = Webcam.getDefault();
             if (webcam != null) {
@@ -153,6 +169,7 @@ public class OperatorController {
                         Platform.runLater(() -> {
                             if (photoPane.getChildren().size() < 5) {
                                 photoPane.getChildren().add(capturedImageView);
+                                saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
                             } else {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.");
                                 alert.showAndWait();
@@ -176,6 +193,16 @@ public class OperatorController {
                 System.out.println("No webcam detected");
             }
         } catch (WebcamException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            imageDAO.saveImage(orderId, itemId, imageBytes, imageIndex);
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
