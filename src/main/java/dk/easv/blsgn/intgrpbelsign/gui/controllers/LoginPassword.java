@@ -22,7 +22,7 @@ public class LoginPassword {
     @FXML
     private TextField passwordField;
     @FXML
-    private Label userNameLabel, roleLabel;
+    private Label userNameLabel;
 
     public void onClickedBtnLogin(ActionEvent event) {
 

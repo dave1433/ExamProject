@@ -34,7 +34,7 @@
                   <Label fx:id="mainName" alignment="BASELINE_RIGHT" layoutX="707.0" layoutY="33.0" prefHeight="18.0" prefWidth="139.0" textFill="#fff7f7" />
                   <ImageView fitHeight="86.0" fitWidth="114.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@Pictures/Logo-inverted-colours.jpg" />
+                        <Image url="@Pictures/icons/Logo-inverted-colours.jpg" />
                      </image>
                   </ImageView>
                   <ImageView fitHeight="41.0" fitWidth="58.0" layoutX="850.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">

@@ -8,7 +8,6 @@ import dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils;
 import javafx.collections.ObservableList;
 
 import javax.security.sasl.AuthenticationException;
-import java.sql.SQLException;
 import java.util.List;
 
 import static dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils.hashPassword;
@@ -31,7 +30,7 @@ public class UserManager {
         if (user == null) {
             return null;
         }
-        
+
         // Then verify the password
         if (PasswordUtils.checkPassword(password, user.getPassword_hash())) {
             return user;
