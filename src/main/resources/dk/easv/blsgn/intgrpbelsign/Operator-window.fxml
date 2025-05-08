@@ -8,26 +8,33 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
-   <center>
-      <ScrollPane fitToWidth="true">
-         <content>
-            <FlowPane fx:id="flowPane" />
-         </content>
-      </ScrollPane>
-   </center>
-   <top>
-      <TextField fx:id="searchField" alignment="CENTER" onAction="#onSearch" prefHeight="30.0" prefWidth="721.0" promptText="Search order number" BorderPane.alignment="CENTER">
+<BorderPane fx:id="root" prefHeight="500.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
 
-      <BorderPane.margin>
-            <Insets left="200.0" right="200.0" top="20.0" />
+   <top>
+      <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number"
+                 BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="200.0" right="200.0" top="20.0"/>
          </BorderPane.margin>
          <font>
-            <Font size="14.0" />
+            <Font size="14.0"/>
          </font>
       </TextField>
    </top>
+
    <left>
-      <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="listView" prefWidth="200.0" BorderPane.alignment="CENTER"/>
    </left>
+
+   <center>
+      <ScrollPane fitToWidth="true">
+         <content>
+            <FlowPane fx:id="flowPane" hgap="10" vgap="10"/>
+         </content>
+      </ScrollPane>
+   </center>
+
 </BorderPane>

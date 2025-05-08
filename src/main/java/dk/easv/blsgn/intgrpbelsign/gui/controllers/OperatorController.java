@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
-import dk.easv.blsgn.intgrpbelsign.dal.web.ImageDAO;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,14 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.application.Platform;
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamException;
 import javafx.embed.swing.SwingFXUtils;
 
 import javax.imageio.ImageIO;
@@ -43,30 +39,44 @@ public class OperatorController {
     private TextField searchField;
 
     private final OrderManager orderManager = new OrderManager();
-    private final ImageDAO imageDAO = new ImageDAO();
+
+    private List<Order> allOrders;
 
     @FXML
     public void initialize() {
-        displayOrd(orderManager.getAllOrders());
+        onSearchFilter();
     }
 
     @FXML
-    private void onSearch() {
-        String input = searchField.getText().trim();
-
-        if (!input.isEmpty()) {
-            List<Order> matchingOrders = orderManager.getAllOrders()
-                    .stream()
-                    .filter(o -> o.getOrderNumber().equals(input))
+    private void onSearchFilter(){
+        allOrders = orderManager.getAllOrders();
+        displayOrd(allOrders);
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            List<Order> filtered = allOrders.stream()
+                    .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
                     .collect(Collectors.toList());
+            displayOrd(filtered);
+        });
 
-            if (!matchingOrders.isEmpty()) {
-                displayOrders(matchingOrders);
-            } else {
-                flowPane.getChildren().clear();
-                flowPane.getChildren().add(new Label("No orders found for number: " + input));
+        // Show order details when selected
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
+            if (selectedOrderNumber != null) {
+                List<Order> selected = allOrders.stream()
+                        .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
+                        .collect(Collectors.toList());
+                displayOrders(selected);
             }
+        });
+    }
+
+
+
+    private void displayOrd(List<Order> orders) {
+        ObservableList<String> orderNumbers = FXCollections.observableArrayList();
+        for (Order order : orders) {
+            orderNumbers.add(order.getOrderNumber());
         }
+        listView.setItems(orderNumbers);
     }
 
     private void displayOrders(List<Order> orders) {
@@ -80,8 +90,7 @@ public class OperatorController {
             Label orderLabel = new Label("Order: " + order.getOrderNumber());
             orderLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
-            VBox itemsContainer = new VBox(15); // This will hold item boxes
-
+            VBox itemsContainer = new VBox(15);
             for (Item item : order.getItems()) {
                 VBox itemBox = new VBox(5);
                 itemBox.setAlignment(Pos.TOP_LEFT);
@@ -91,14 +100,10 @@ public class OperatorController {
                 Label itemNameLabel = new Label(item.getItemName());
                 itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-                // FlowPane to hold captured images
-                FlowPane photoPane = new FlowPane();
-                photoPane.setHgap(5);
-                photoPane.setVgap(5);
-                photoPane.setPrefWrapLength(600); // Wrap images if many
+                FlowPane photoPane = new FlowPane(5, 5);
+                photoPane.setPrefWrapLength(600);
 
-                // Load existing images from the database
-                List<byte[]> images = imageDAO.getImagesForItem(order.getID(), item.getId());
+                List<byte[]> images = orderManager.getImagesForItem(order.getID(), item.getId());
                 for (byte[] imgBytes : images) {
                     Image img = new Image(new ByteArrayInputStream(imgBytes));
                     ImageView imgView = new ImageView(img);
@@ -118,14 +123,6 @@ public class OperatorController {
             orderBox.getChildren().addAll(orderLabel, itemsContainer);
             flowPane.getChildren().add(orderBox);
         }
-    }
-
-    private void displayOrd(List<Order> orders) {
-        ObservableList<String> orderNumbers = FXCollections.observableArrayList();
-        for (Order order : orders) {
-            orderNumbers.add(order.getOrderNumber());
-        }
-        listView.setItems(orderNumbers);
     }
 
     private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
@@ -171,8 +168,7 @@ public class OperatorController {
                                 photoPane.getChildren().add(capturedImageView);
                                 saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
                             } else {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.");
-                                alert.showAndWait();
+                                new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.").showAndWait();
                             }
                         });
                     }
@@ -190,9 +186,9 @@ public class OperatorController {
 
                 cameraStage.setOnCloseRequest(e -> webcam.close());
             } else {
-                System.out.println("No webcam detected");
+                System.out.println("No webcam detected.");
             }
-        } catch (WebcamException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -201,7 +197,7 @@ public class OperatorController {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            imageDAO.saveImage(orderId, itemId, imageBytes, imageIndex);
+            orderManager.saveImage(orderId, itemId, imageBytes, imageIndex);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
