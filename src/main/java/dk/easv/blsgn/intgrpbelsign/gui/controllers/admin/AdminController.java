@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.gui.controllers;
+package dk.easv.blsgn.intgrpbelsign.gui.controllers.admin;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;

@@ -15,7 +15,7 @@ public class OrdersDAO implements IOrderDAO {
 
     DatabaseConnection conn = new DatabaseConnection();
 
-
+    @Override
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class OrdersDAO implements IOrderDAO {
 
         return orders;
     }
-
+    @Override
     public void saveImage(int orderId, int itemId, byte[] imageBytes, int imageIndex) throws SQLException {
         String columnName = "image" + imageIndex;
         String sqlCheck = "SELECT * FROM order_item_image WHERE order_id = ? AND item_id = ?";
@@ -89,7 +89,7 @@ public class OrdersDAO implements IOrderDAO {
             }
         }
     }
-
+    @Override
     public List<byte[]> getImagesForItem(int orderId, int itemId) {
         List<byte[]> images = new ArrayList<>();
         String sql = "SELECT image1, image2, image3, image4, image5 FROM order_item_image WHERE order_id = ? AND item_id = ?";

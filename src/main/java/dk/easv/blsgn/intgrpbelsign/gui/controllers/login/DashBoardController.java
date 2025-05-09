@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.gui.controllers;
+package dk.easv.blsgn.intgrpbelsign.gui.controllers.login;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 
 
 
-public class LoginController implements Initializable {
+public class DashBoardController implements Initializable {
 
 
     @FXML
@@ -131,14 +131,14 @@ public class LoginController implements Initializable {
             btn.setOnAction(event -> {
                 if (user.getRole_id() == 1) {
                     try {
-                        // Load LoginPassword.fxml
+                        // Load LoginPasswordController.fxml
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
                         Parent loginPasswordPane = loader.load();
 
-                        LoginPassword loginPasswordController = loader.getController();
+                        LoginController loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
-                        // Clear the FlowPane and add the LoginPassword content
+                        // Clear the FlowPane and add the LoginPasswordController content
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
 
@@ -157,7 +157,7 @@ public class LoginController implements Initializable {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
                         Parent loginPasswordPane = loader.load();
 
-                        LoginPassword loginPasswordController = loader.getController();
+                        LoginController loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
 
@@ -178,8 +178,9 @@ public class LoginController implements Initializable {
                     try{
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/OPLogin.fxml"));
                         Parent loginPasswordPane = loader.load();
-                        PINLogin loginPINController = loader.getController();
-                        loginPINController.setUserName(user.getUser_name());
+
+                        LoginController loginPasswordController = loader.getController();
+                        loginPasswordController.setUsername(user.getUser_name());
 
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);

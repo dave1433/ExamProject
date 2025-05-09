@@ -11,7 +11,7 @@
 <BorderPane fx:id="root" prefHeight="500.0" prefWidth="900.0"
             xmlns="http://javafx.com/javafx/22"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.OperatorController">
+            fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.operator.OperatorController">
 
    <top>
       <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number"

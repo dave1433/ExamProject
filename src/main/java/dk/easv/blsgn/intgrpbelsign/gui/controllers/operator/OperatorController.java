@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.gui.controllers;
+package dk.easv.blsgn.intgrpbelsign.gui.controllers.operator;
 
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
