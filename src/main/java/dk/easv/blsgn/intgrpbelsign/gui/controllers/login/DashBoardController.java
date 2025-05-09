@@ -54,10 +54,6 @@ public class DashBoardController implements Initializable {
         }
     }
 
-
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         populateUserButtons();
@@ -179,7 +175,7 @@ public class DashBoardController implements Initializable {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/OPLogin.fxml"));
                         Parent loginPasswordPane = loader.load();
 
-                        LoginController loginPasswordController = loader.getController();
+                        PINLogin loginPasswordController = loader.getController();
                         loginPasswordController.setUsername(user.getUser_name());
 
                         buttonContainer.getChildren().clear();
