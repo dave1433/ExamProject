@@ -164,11 +164,11 @@ public class OperatorController {
                         capturedImageView.setPreserveRatio(true);
 
                         Platform.runLater(() -> {
-                            if (photoPane.getChildren().size() < 5) {
+                            if (photoPane.getChildren().size() < 15) {
                                 photoPane.getChildren().add(capturedImageView);
                                 saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
                             } else {
-                                new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.").showAndWait();
+                                new Alert(Alert.AlertType.INFORMATION, "Maximum 15 photos allowed.").showAndWait();
                             }
                         });
                     }
