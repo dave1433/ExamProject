@@ -3,6 +3,8 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.qc;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
+import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,6 +17,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,64 +138,57 @@ public class QC {
         }
     }
 
-    /*private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
+
+    @FXML
+    private void onPreviewReport() {
         try {
-            Webcam webcam = Webcam.getDefault();
-            if (webcam != null) {
-                webcam.open();
-
-                ImageView liveView = new ImageView();
-                liveView.setFitWidth(400);
-                liveView.setFitHeight(300);
-                liveView.setPreserveRatio(true);
-
-                Thread webcamStream = new Thread(() -> {
-                    while (webcam.isOpen()) {
-                        BufferedImage frame = webcam.getImage();
-                        if (frame != null) {
-                            Image fxImage = SwingFXUtils.toFXImage(frame, null);
-                            Platform.runLater(() -> liveView.setImage(fxImage));
-                        }
-                        try {
-                            Thread.sleep(30);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                webcamStream.setDaemon(true);
-                webcamStream.start();
-
-                Button takePhotoBtn = new Button("Take Photo");
-                takePhotoBtn.setOnAction(e -> {
-                    BufferedImage capturedFrame = webcam.getImage();
-                    if (capturedFrame != null) {
-                        Image capturedFxImage = SwingFXUtils.toFXImage(capturedFrame, null);
-                        ImageView capturedImageView = new ImageView(capturedFxImage);
-                        capturedImageView.setFitWidth(150);
-                        capturedImageView.setFitHeight(150);
-                        capturedImageView.setPreserveRatio(true);
-                        photoPane.getChildren().add(capturedImageView);
-                        // Save logic can go here
-                    }
-                    webcam.close();
-                    ((Stage) takePhotoBtn.getScene().getWindow()).close();
-                });
-
-                VBox layout = new VBox(10, liveView, takePhotoBtn);
-                layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
-
-                Stage cameraStage = new Stage();
-                cameraStage.setTitle("Camera - Take Photo");
-                cameraStage.setScene(new Scene(layout));
-                cameraStage.show();
-
-                cameraStage.setOnCloseRequest(e -> webcam.close());
-            } else {
-                System.out.println("No webcam detected.");
+            // Get selected order number
+            String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
+            if (selectedOrderNumber == null) {
+                showAlert("Please select an order first.");
+                return;
             }
+
+            // Find the selected order object
+            Order selectedOrder = allOrders.stream()
+                    .filter(o -> o.getOrderNumber().equals(selectedOrderNumber))
+                    .findFirst()
+                    .orElse(null);
+
+            if (selectedOrder == null || selectedOrder.getItems().isEmpty()) {
+                showAlert("No items found for selected order.");
+                return;
+            }
+
+            // For simplicity, pick the first item in the order (can be improved later)
+            Item selectedItem = selectedOrder.getItems().get(0);
+
+            // Get the images for that order-item combination
+            List<byte[]> images = orderManager.getImagesForItem(selectedOrder.getID(), selectedItem.getId());
+
+            // Generate the PDF with images
+            byte[] pdf = PdfReportGenerator.generatePdfWithImages(
+                    selectedOrder.getOrderNumber(),
+                    selectedItem.getItemName(),
+                    images
+            );
+
+            // Preview the PDF
+            PdfPreviewDialog preview = new PdfPreviewDialog(pdf);
+            preview.showAndWait();
+
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Failed to generate or preview PDF.");
         }
-    }*/
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
+
+
