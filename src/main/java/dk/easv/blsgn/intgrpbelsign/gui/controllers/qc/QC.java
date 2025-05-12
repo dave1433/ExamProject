@@ -174,7 +174,8 @@ public class QC {
             );
 
             // Preview the PDF
-            PdfPreviewDialog preview = new PdfPreviewDialog(pdf);
+            PdfPreviewDialog preview = new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber());
+
             preview.showAndWait();
 
         } catch (Exception e) {

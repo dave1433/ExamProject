@@ -20,9 +20,11 @@ import java.io.*;
 public class PdfPreviewDialog extends Stage {
 
     private final byte[] pdfBytes;
+    private final String orderNumber;
 
-    public PdfPreviewDialog(byte[] pdfBytes) throws IOException {
+    public PdfPreviewDialog(byte[] pdfBytes, String orderNumber) throws IOException {
         this.pdfBytes = pdfBytes;
+        this.orderNumber = orderNumber;
 
         setTitle("PDF Preview");
         initModality(Modality.APPLICATION_MODAL);
@@ -41,7 +43,7 @@ public class PdfPreviewDialog extends Stage {
         Scene scene = new Scene(root, 600, 700);
         setScene(scene);
 
-        // ✅ Render ALL pages of the PDF
+        // Render all pages
         try (PDDocument doc = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             PDFRenderer renderer = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); i++) {
@@ -58,6 +60,8 @@ public class PdfPreviewDialog extends Stage {
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save PDF As...");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+            chooser.setInitialFileName("Order_" + orderNumber + ".pdf");
+
             File file = chooser.showSaveDialog(this);
             if (file != null) {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
