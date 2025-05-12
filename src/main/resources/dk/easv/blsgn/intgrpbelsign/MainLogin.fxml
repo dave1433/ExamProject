@@ -18,7 +18,7 @@
          <children>
             <AnchorPane prefHeight="68.0" prefWidth="900.0" style="-fx-background-color: #004b88;">
                <children>
-                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="293.0" layoutY="33.0" prefHeight="27.0" prefWidth="276.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome" textFill="WHITE">
+                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="33.0" prefHeight="27.0" prefWidth="1112.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -37,7 +37,7 @@
                         <Image url="@Pictures/icons/Logo-inverted-colours.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="41.0" fitWidth="58.0" layoutX="850.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="41.0" fitWidth="58.0" layoutX="850.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="0.0">
                      <image>
                         <Image url="@Pictures/icons/3.png" />
                      </image>
@@ -53,7 +53,7 @@
          <children>
             <VBox prefHeight="36.0" prefWidth="1099.0">
                <children>
-                  <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="33.0" prefWidth="399.0" promptText="Search Username">
+                  <TextField fx:id="onSearchUsername" alignment="CENTER" prefHeight="33.0" prefWidth="399.0" promptText="Search Username" style="-fx-background-radius: 25;">
                      <VBox.margin>
                         <Insets left="250.0" right="250.0" />
                      </VBox.margin>
