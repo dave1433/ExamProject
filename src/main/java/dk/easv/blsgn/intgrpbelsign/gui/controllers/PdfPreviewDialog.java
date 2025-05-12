@@ -43,7 +43,6 @@ public class PdfPreviewDialog extends Stage {
         Scene scene = new Scene(root, 600, 700);
         setScene(scene);
 
-        // Render all pages
         try (PDDocument doc = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             PDFRenderer renderer = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); i++) {

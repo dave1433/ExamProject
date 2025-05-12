@@ -142,14 +142,12 @@ public class QC {
     @FXML
     private void onPreviewReport() {
         try {
-            // Get selected order number
             String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
             if (selectedOrderNumber == null) {
                 showAlert("Please select an order first.");
                 return;
             }
 
-            // Find the selected order object
             Order selectedOrder = allOrders.stream()
                     .filter(o -> o.getOrderNumber().equals(selectedOrderNumber))
                     .findFirst()
@@ -160,22 +158,16 @@ public class QC {
                 return;
             }
 
-            // For simplicity, pick the first item in the order (can be improved later)
-            Item selectedItem = selectedOrder.getItems().get(0);
-
-            // Get the images for that order-item combination
+            Item selectedItem = selectedOrder.getItems().get(0); // or whichever you choose
             List<byte[]> images = orderManager.getImagesForItem(selectedOrder.getID(), selectedItem.getId());
 
-            // Generate the PDF with images
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
                     selectedOrder.getOrderNumber(),
-                    selectedItem.getItemName(),
+                    selectedItem,
                     images
             );
 
-            // Preview the PDF
             PdfPreviewDialog preview = new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber());
-
             preview.showAndWait();
 
         } catch (Exception e) {

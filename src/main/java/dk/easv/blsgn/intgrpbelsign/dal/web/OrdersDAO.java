@@ -21,11 +21,12 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-            SELECT i.id, i.item_name, oii.order_id
-            FROM order_item_image oii
-            JOIN items i ON oii.item_id = i.id
-            WHERE oii.order_id = ?
-        """;
+        SELECT i.id, i.item_name, oii.order_id,
+               i.materials_used, i.approx_quantity, i.total_weight
+        FROM order_item_image oii
+        JOIN items i ON oii.item_id = i.id
+        WHERE oii.order_id = ?
+    """;
 
         try (Connection c = conn.getConnection();
              PreparedStatement orderStmt = c.prepareStatement(orderSql);
@@ -46,6 +47,11 @@ public class OrdersDAO implements IOrderDAO {
                                     itemRs.getString("item_name"),
                                     itemRs.getInt("order_id")
                             );
+                            // Add material-related info
+                            item.setMaterialsUsed(itemRs.getString("materials_used"));
+                            item.setApproxQuantity(itemRs.getString("approx_quantity"));
+                            item.setTotalWeight(itemRs.getInt("total_weight"));
+
                             itemList.add(item);
                         }
                     }
@@ -61,6 +67,7 @@ public class OrdersDAO implements IOrderDAO {
 
         return orders;
     }
+
     @Override
     public void saveImage(int orderId, int itemId, byte[] imageBytes, int imageIndex) throws SQLException {
         String columnName = "image" + imageIndex;
