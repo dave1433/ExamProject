@@ -114,7 +114,7 @@ public class OperatorController {
                 }
 
                 Button addPhotoButton = new Button("Add Photo");
-                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane, order.getID()));
+                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane, order.getID(), order.getOrderNumber()));
 
                 itemBox.getChildren().addAll(itemNameLabel, photoPane, addPhotoButton);
                 itemsContainer.getChildren().add(itemBox);
@@ -125,7 +125,7 @@ public class OperatorController {
         }
     }
 
-    private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
+    private void openCameraWindow(Item item, FlowPane photoPane, int orderId, String orderNumber) {
         try {
             Webcam webcam = Webcam.getDefault();
             if (webcam != null) {
@@ -164,11 +164,11 @@ public class OperatorController {
                         capturedImageView.setPreserveRatio(true);
 
                         Platform.runLater(() -> {
-                            if (photoPane.getChildren().size() < 15) {
+                            if (photoPane.getChildren().size() < 5) {
                                 photoPane.getChildren().add(capturedImageView);
                                 saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
                             } else {
-                                new Alert(Alert.AlertType.INFORMATION, "Maximum 15 photos allowed.").showAndWait();
+                                new Alert(Alert.AlertType.INFORMATION, "Maximum 5 photos allowed.").showAndWait();
                             }
                         });
                     }
@@ -180,7 +180,7 @@ public class OperatorController {
                 layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
 
                 Stage cameraStage = new Stage();
-                cameraStage.setTitle("Camera - Take Photo");
+                cameraStage.setTitle(orderNumber + "-" + item.getItemName());
                 cameraStage.setScene(new Scene(layout));
                 cameraStage.show();
 
@@ -192,7 +192,6 @@ public class OperatorController {
             e.printStackTrace();
         }
     }
-
     private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
