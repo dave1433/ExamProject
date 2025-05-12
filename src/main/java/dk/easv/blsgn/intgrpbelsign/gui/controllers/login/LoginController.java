@@ -49,8 +49,12 @@ public class LoginController {
                 role = "Admin";
             }
             case 2 -> {
-                fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml";
+                fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Qc.fxml";
                 role = "Operator";
+            }
+            case 3 -> {
+                fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml";
+                role = "Qc";
             }
             default -> {
                 System.out.println("Login failed. Invalid role.");

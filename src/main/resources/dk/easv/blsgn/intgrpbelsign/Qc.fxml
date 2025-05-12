@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" prefHeight="500.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.operator.QC">
+
+    <top>
+        <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number"
+                   BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets left="200.0" right="200.0" top="20.0"/>
+            </BorderPane.margin>
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </TextField>
+    </top>
+
+    <left>
+        <ListView fx:id="listView" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <FlowPane fx:id="flowPane" hgap="10" vgap="10"/>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

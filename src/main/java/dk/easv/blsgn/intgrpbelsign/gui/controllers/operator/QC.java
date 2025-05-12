@@ -1,22 +1,23 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers.operator;
 
+import com.github.sarxos.webcam.Webcam;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import com.github.sarxos.webcam.Webcam;
-import javafx.embed.swing.SwingFXUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -27,7 +28,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OperatorController {
+public class QC {
 
     @FXML
     private FlowPane flowPane;
@@ -48,7 +49,7 @@ public class OperatorController {
     }
 
     @FXML
-    private void onSearchFilter(){
+    private void onSearchFilter() {
         allOrders = orderManager.getAllOrders();
         displayOrd(allOrders);
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -58,7 +59,6 @@ public class OperatorController {
             displayOrd(filtered);
         });
 
-        // Show order details when selected
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
                 List<Order> selected = allOrders.stream()
@@ -68,8 +68,6 @@ public class OperatorController {
             }
         });
     }
-
-
 
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
@@ -113,10 +111,27 @@ public class OperatorController {
                     photoPane.getChildren().add(imgView);
                 }
 
-                Button addPhotoButton = new Button("Add Photo");
-                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane, order.getID()));
+                // Create buttons
+                Button approvedBtn = new Button("Approved");
+                Button rejectedBtn = new Button("Rejected");
 
-                itemBox.getChildren().addAll(itemNameLabel, photoPane, addPhotoButton);
+                approvedBtn.setStyle("-fx-background-color: lightgreen; -fx-font-weight: bold;");
+                rejectedBtn.setStyle("-fx-background-color: lightcoral; -fx-font-weight: bold;");
+
+                approvedBtn.setOnAction(e -> {
+                    System.out.println("Approved item: " + item.getItemName() + " in Order: " + order.getOrderNumber());
+                    // Add approval logic here
+                });
+
+                rejectedBtn.setOnAction(e -> {
+                    System.out.println("Rejected item: " + item.getItemName() + " in Order: " + order.getOrderNumber());
+                    // Add rejection logic here
+                });
+
+                HBox buttonBox = new HBox(10, approvedBtn, rejectedBtn);
+                buttonBox.setAlignment(Pos.CENTER_LEFT);
+
+                itemBox.getChildren().addAll(itemNameLabel, photoPane, buttonBox);
                 itemsContainer.getChildren().add(itemBox);
             }
 
@@ -125,7 +140,7 @@ public class OperatorController {
         }
     }
 
-    private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
+    /*private void openCameraWindow(Item item, FlowPane photoPane, int orderId) {
         try {
             Webcam webcam = Webcam.getDefault();
             if (webcam != null) {
@@ -162,15 +177,8 @@ public class OperatorController {
                         capturedImageView.setFitWidth(150);
                         capturedImageView.setFitHeight(150);
                         capturedImageView.setPreserveRatio(true);
-
-                        Platform.runLater(() -> {
-                            if (photoPane.getChildren().size() < 15) {
-                                photoPane.getChildren().add(capturedImageView);
-                                saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
-                            } else {
-                                new Alert(Alert.AlertType.INFORMATION, "Maximum 15 photos allowed.").showAndWait();
-                            }
-                        });
+                        photoPane.getChildren().add(capturedImageView);
+                        // Save logic can go here
                     }
                     webcam.close();
                     ((Stage) takePhotoBtn.getScene().getWindow()).close();
@@ -191,15 +199,5 @@ public class OperatorController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes, imageIndex);
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    }*/
 }
