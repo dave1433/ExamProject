@@ -4,6 +4,7 @@ package dk.easv.blsgn.intgrpbelsign.bll;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.dal.web.IOrderDAO;
 import dk.easv.blsgn.intgrpbelsign.dal.web.OrdersDAO;
+import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,7 +19,16 @@ public class OrderManager {
     public void saveImage(int orderId, int itemId, byte[] imageBytes, int imageIndex) throws SQLException {
         iOrderDAO.saveImage(orderId, itemId, imageBytes, imageIndex);
     }
-     public List<byte[]> getImagesForItem(int orderId, int itemId){
+
+    public List<byte[]> getImagesForItem(int orderId, int itemId) {
         return iOrderDAO.getImagesForItem(orderId, itemId);
-     }
+    }
+
+    public void updateImageStatus(int imageId, String status) {
+        iOrderDAO.updateImageStatus(imageId, status);
+    }
+
+    public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
+        return iOrderDAO.getAllImagesWithStatus(orderId, itemId);
+    }
 }

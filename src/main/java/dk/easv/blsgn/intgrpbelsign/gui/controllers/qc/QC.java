@@ -5,6 +5,7 @@ import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
+import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,12 +18,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,24 +44,17 @@ public class QC {
     @FXML
     private void setupSearchAndSelection() {
         allOrders = orderManager.getAllOrders();
-
-        // Show all orders in ListView initially
         displayOrd(allOrders);
-
-        // Keep FlowPane empty at startup
         flowPane.getChildren().clear();
 
-        // Live search filtering for ListView and FlowPane
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             List<Order> filtered = allOrders.stream()
                     .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
                     .collect(Collectors.toList());
-
-            displayOrd(filtered);       // Update ListView
-            displayOrders(filtered);    // Update FlowPane
+            displayOrd(filtered);
+            displayOrders(filtered);
         });
 
-        // Show only selected order in FlowPane
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
                 List<Order> selected = allOrders.stream()
@@ -76,7 +64,6 @@ public class QC {
             }
         });
     }
-
 
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
@@ -110,37 +97,35 @@ public class QC {
                 FlowPane photoPane = new FlowPane(5, 5);
                 photoPane.setPrefWrapLength(600);
 
-                List<byte[]> images = orderManager.getImagesForItem(order.getID(), item.getId());
-                for (byte[] imgBytes : images) {
-                    Image img = new Image(new ByteArrayInputStream(imgBytes));
+                List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+
+                for (ImageWithMeta meta : images) {
+                    Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
                     ImageView imgView = new ImageView(img);
                     imgView.setFitWidth(150);
                     imgView.setFitHeight(150);
                     imgView.setPreserveRatio(true);
-                    photoPane.getChildren().add(imgView);
+
+                    Label statusLabel = new Label("Status: " + meta.getStatus());
+
+                    Button approveBtn = new Button("✅");
+                    Button rejectBtn = new Button("❌");
+
+                    approveBtn.setOnAction(ev -> {
+                        orderManager.updateImageStatus(meta.getIndex(), "approved");
+                        statusLabel.setText("Status: approved");
+                    });
+
+                    rejectBtn.setOnAction(ev -> {
+                        orderManager.updateImageStatus(meta.getIndex(), "rejected");
+                        statusLabel.setText("Status: rejected");
+                    });
+
+                    VBox imageBox = new VBox(5, imgView, statusLabel, new HBox(5, approveBtn, rejectBtn));
+                    photoPane.getChildren().add(imageBox);
                 }
 
-                // Create buttons
-                Button approvedBtn = new Button("Approved");
-                Button rejectedBtn = new Button("Rejected");
-
-                approvedBtn.setStyle("-fx-background-color: lightgreen; -fx-font-weight: bold;");
-                rejectedBtn.setStyle("-fx-background-color: lightcoral; -fx-font-weight: bold;");
-
-                approvedBtn.setOnAction(e -> {
-                    System.out.println("Approved item: " + item.getItemName() + " in Order: " + order.getOrderNumber());
-                    // Add approval logic here
-                });
-
-                rejectedBtn.setOnAction(e -> {
-                    System.out.println("Rejected item: " + item.getItemName() + " in Order: " + order.getOrderNumber());
-                    // Add rejection logic here
-                });
-
-                HBox buttonBox = new HBox(10, approvedBtn, rejectedBtn);
-                buttonBox.setAlignment(Pos.CENTER_LEFT);
-
-                itemBox.getChildren().addAll(itemNameLabel, photoPane, buttonBox);
+                itemBox.getChildren().addAll(itemNameLabel, photoPane);
                 itemsContainer.getChildren().add(itemBox);
             }
 
@@ -148,7 +133,6 @@ public class QC {
             flowPane.getChildren().add(orderBox);
         }
     }
-
 
     @FXML
     private void onPreviewReport() {
@@ -169,7 +153,7 @@ public class QC {
                 return;
             }
 
-            Item selectedItem = selectedOrder.getItems().get(0); // or whichever you choose
+            Item selectedItem = selectedOrder.getItems().get(0);
             List<byte[]> images = orderManager.getImagesForItem(selectedOrder.getID(), selectedItem.getId());
 
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
@@ -194,5 +178,3 @@ public class QC {
         alert.showAndWait();
     }
 }
-
-

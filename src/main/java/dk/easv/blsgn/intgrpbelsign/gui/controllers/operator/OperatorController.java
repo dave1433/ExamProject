@@ -3,17 +3,17 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.operator;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.Scene;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import com.github.sarxos.webcam.Webcam;
 import javafx.embed.swing.SwingFXUtils;
@@ -58,7 +58,6 @@ public class OperatorController {
             displayOrd(filtered);
         });
 
-        // Show order details when selected
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
                 List<Order> selected = allOrders.stream()
@@ -68,8 +67,6 @@ public class OperatorController {
             }
         });
     }
-
-
 
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
@@ -100,23 +97,51 @@ public class OperatorController {
                 Label itemNameLabel = new Label(item.getItemName());
                 itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-                FlowPane photoPane = new FlowPane(5, 5);
-                photoPane.setPrefWrapLength(600);
+                // Containers for grouped images
+                VBox photoSections = new VBox(10);
 
-                List<byte[]> images = orderManager.getImagesForItem(order.getID(), item.getId());
-                for (byte[] imgBytes : images) {
-                    Image img = new Image(new ByteArrayInputStream(imgBytes));
+                FlowPane rejectedPane = new FlowPane(5, 5);
+                FlowPane approvedPane = new FlowPane(5, 5);
+                FlowPane pendingPane = new FlowPane(5, 5);
+
+                List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+
+                for (ImageWithMeta meta : images) {
+                    Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
                     ImageView imgView = new ImageView(img);
                     imgView.setFitWidth(150);
                     imgView.setFitHeight(150);
                     imgView.setPreserveRatio(true);
-                    photoPane.getChildren().add(imgView);
+
+                    switch (meta.getStatus().toLowerCase()) {
+                        case "rejected" -> rejectedPane.getChildren().add(imgView);
+                        case "approved" -> approvedPane.getChildren().add(imgView);
+                        default -> pendingPane.getChildren().add(imgView);
+                    }
+                }
+
+                if (!rejectedPane.getChildren().isEmpty()) {
+                    Label rejectedLabel = new Label("❌ Rejected - Re-take photo");
+                    rejectedLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: red;");
+                    photoSections.getChildren().addAll(rejectedLabel, rejectedPane);
+                }
+
+                if (!pendingPane.getChildren().isEmpty()) {
+                    Label pendingLabel = new Label("⌛ Pending");
+                    pendingLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: orange;");
+                    photoSections.getChildren().addAll(pendingLabel, pendingPane);
+                }
+
+                if (!approvedPane.getChildren().isEmpty()) {
+                    Label approvedLabel = new Label("✅ Approved");
+                    approvedLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: green;");
+                    photoSections.getChildren().addAll(approvedLabel, approvedPane);
                 }
 
                 Button addPhotoButton = new Button("Add Photo");
-                addPhotoButton.setOnAction(event -> openCameraWindow(item, photoPane, order.getID(), order.getOrderNumber()));
+                addPhotoButton.setOnAction(event -> openCameraWindow(item, approvedPane, order.getID(), order.getOrderNumber()));
 
-                itemBox.getChildren().addAll(itemNameLabel, photoPane, addPhotoButton);
+                itemBox.getChildren().addAll(itemNameLabel, photoSections, addPhotoButton);
                 itemsContainer.getChildren().add(itemBox);
             }
 
@@ -124,6 +149,7 @@ public class OperatorController {
             flowPane.getChildren().add(orderBox);
         }
     }
+
 
     private void openCameraWindow(Item item, FlowPane photoPane, int orderId, String orderNumber) {
         try {
@@ -164,12 +190,8 @@ public class OperatorController {
                         capturedImageView.setPreserveRatio(true);
 
                         Platform.runLater(() -> {
-                            if (photoPane.getChildren().size() < 15) {
-                                photoPane.getChildren().add(capturedImageView);
-                                saveImageToDatabase(orderId, item.getId(), capturedFrame, photoPane.getChildren().size());
-                            } else {
-                                new Alert(Alert.AlertType.INFORMATION, "Maximum 15 photos allowed.").showAndWait();
-                            }
+                            photoPane.getChildren().add(capturedImageView);
+                            saveImageToDatabase(orderId, item.getId(), capturedFrame);
                         });
                     }
                     webcam.close();
@@ -192,11 +214,12 @@ public class OperatorController {
             e.printStackTrace();
         }
     }
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
+
+    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes, imageIndex);
+            orderManager.saveImage(orderId, itemId, imageBytes, 0); // Index auto-generated on backend
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
