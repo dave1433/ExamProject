@@ -43,20 +43,30 @@ public class QC {
 
     @FXML
     public void initialize() {
-        onSearchFilter();
+        setupSearchAndSelection();
     }
 
     @FXML
-    private void onSearchFilter() {
+    private void setupSearchAndSelection() {
         allOrders = orderManager.getAllOrders();
+
+        // Show all orders in ListView initially
         displayOrd(allOrders);
+
+        // Keep FlowPane empty at startup
+        flowPane.getChildren().clear();
+
+        // Live search filtering for ListView and FlowPane
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             List<Order> filtered = allOrders.stream()
                     .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
                     .collect(Collectors.toList());
-            displayOrd(filtered);
+
+            displayOrd(filtered);       // Update ListView
+            displayOrders(filtered);    // Update FlowPane
         });
 
+        // Show only selected order in FlowPane
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
                 List<Order> selected = allOrders.stream()
@@ -66,6 +76,7 @@ public class QC {
             }
         });
     }
+
 
     private void displayOrd(List<Order> orders) {
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
