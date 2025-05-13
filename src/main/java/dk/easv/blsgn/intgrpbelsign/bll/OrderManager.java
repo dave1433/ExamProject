@@ -31,4 +31,8 @@ public class OrderManager {
     public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
         return iOrderDAO.getAllImagesWithStatus(orderId, itemId);
     }
+
+    public void deleteImage(int imageId) {
+        iOrderDAO.deleteImage(imageId);
+    }
 }

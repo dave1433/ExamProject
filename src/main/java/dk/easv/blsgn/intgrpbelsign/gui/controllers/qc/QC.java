@@ -112,12 +112,12 @@ public class QC {
                     Button rejectBtn = new Button("❌");
 
                     approveBtn.setOnAction(ev -> {
-                        orderManager.updateImageStatus(meta.getIndex(), "approved");
+                        orderManager.updateImageStatus(meta.getId(), "approved");
                         statusLabel.setText("Status: approved");
                     });
 
                     rejectBtn.setOnAction(ev -> {
-                        orderManager.updateImageStatus(meta.getIndex(), "rejected");
+                        orderManager.updateImageStatus(meta.getId(), "rejected");
                         statusLabel.setText("Status: rejected");
                     });
 

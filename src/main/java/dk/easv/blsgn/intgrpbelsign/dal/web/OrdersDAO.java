@@ -118,7 +118,7 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
         List<ImageWithMeta> imageList = new ArrayList<>();
-        String sql = "SELECT id, image_data, status FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY image_index";
+        String sql = "SELECT id, image_data, status, image_index FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY image_index";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -127,16 +127,32 @@ public class OrdersDAO implements IOrderDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                imageList.add(new ImageWithMeta(
-                        rs.getBytes("image_data"),
-                        rs.getString("status"),
-                        rs.getInt("id")
-                ));
+                int id = rs.getInt("id");
+                byte[] img = rs.getBytes("image_data");
+                String status = rs.getString("status");
+                int index = rs.getInt("image_index");
+
+                if (img != null) {
+                    imageList.add(new ImageWithMeta(id, img, status != null ? status : "pending", index));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return imageList;
+    }
+
+    @Override
+    public void deleteImage(int imageId) {
+        String sql = "DELETE FROM item_images WHERE id = ?";
+
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setInt(1, imageId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

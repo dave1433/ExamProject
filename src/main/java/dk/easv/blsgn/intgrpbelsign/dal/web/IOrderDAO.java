@@ -17,6 +17,8 @@ public interface IOrderDAO {
         List<Order> getAllOrders();
 
         void updateImageStatus(int imageId, String status);
+
+        void deleteImage(int imageId);
     }
 
 

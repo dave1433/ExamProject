@@ -97,7 +97,6 @@ public class OperatorController {
                 Label itemNameLabel = new Label(item.getItemName());
                 itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-                // Containers for grouped images
                 VBox photoSections = new VBox(10);
 
                 FlowPane rejectedPane = new FlowPane(5, 5);
@@ -113,10 +112,34 @@ public class OperatorController {
                     imgView.setFitHeight(150);
                     imgView.setPreserveRatio(true);
 
-                    switch (meta.getStatus().toLowerCase()) {
-                        case "rejected" -> rejectedPane.getChildren().add(imgView);
-                        case "approved" -> approvedPane.getChildren().add(imgView);
-                        default -> pendingPane.getChildren().add(imgView);
+                    if ("rejected".equalsIgnoreCase(meta.getStatus())) {
+                        StackPane stack = new StackPane();
+                        stack.setPrefSize(150, 150);
+                        stack.getChildren().add(imgView);
+
+                        Button retakeBtn = new Button();
+                        retakeBtn.setPrefSize(50, 50);
+                        retakeBtn.setStyle("-fx-background-image: url('/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-retake-50.png'); " +
+                                "-fx-background-color: transparent;");
+
+                        StackPane overlay = new StackPane(retakeBtn);
+                        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+                        overlay.setOpacity(0);
+                        stack.getChildren().add(overlay);
+
+                        stack.setOnMouseEntered(e -> overlay.setOpacity(1));
+                        stack.setOnMouseExited(e -> overlay.setOpacity(0));
+
+                        retakeBtn.setOnAction(e -> {
+                            orderManager.deleteImage(meta.getId());
+                            openRetakeCamera(item, order.getID(), order.getOrderNumber(), meta.getIndex());
+                        });
+
+                        rejectedPane.getChildren().add(stack);
+                    } else if ("approved".equalsIgnoreCase(meta.getStatus())) {
+                        approvedPane.getChildren().add(imgView);
+                    } else {
+                        pendingPane.getChildren().add(imgView);
                     }
                 }
 
@@ -150,76 +173,109 @@ public class OperatorController {
         }
     }
 
-
     private void openCameraWindow(Item item, FlowPane photoPane, int orderId, String orderNumber) {
-        try {
-            Webcam webcam = Webcam.getDefault();
-            if (webcam != null) {
-                webcam.open();
+        Webcam webcam = Webcam.getDefault();
+        if (webcam != null) {
+            webcam.open();
+            ImageView liveView = new ImageView();
+            liveView.setFitWidth(400);
+            liveView.setFitHeight(300);
+            liveView.setPreserveRatio(true);
 
-                ImageView liveView = new ImageView();
-                liveView.setFitWidth(400);
-                liveView.setFitHeight(300);
-                liveView.setPreserveRatio(true);
-
-                Thread webcamStream = new Thread(() -> {
-                    while (webcam.isOpen()) {
-                        BufferedImage frame = webcam.getImage();
-                        if (frame != null) {
-                            Image fxImage = SwingFXUtils.toFXImage(frame, null);
-                            Platform.runLater(() -> liveView.setImage(fxImage));
-                        }
-                        try {
-                            Thread.sleep(30);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+            Thread stream = new Thread(() -> {
+                while (webcam.isOpen()) {
+                    BufferedImage frame = webcam.getImage();
+                    if (frame != null) {
+                        Image fxImage = SwingFXUtils.toFXImage(frame, null);
+                        Platform.runLater(() -> liveView.setImage(fxImage));
                     }
-                });
-                webcamStream.setDaemon(true);
-                webcamStream.start();
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ignored) {}
+                }
+            });
+            stream.setDaemon(true);
+            stream.start();
 
-                Button takePhotoBtn = new Button("Take Photo");
-                takePhotoBtn.setOnAction(e -> {
-                    BufferedImage capturedFrame = webcam.getImage();
-                    if (capturedFrame != null) {
-                        Image capturedFxImage = SwingFXUtils.toFXImage(capturedFrame, null);
-                        ImageView capturedImageView = new ImageView(capturedFxImage);
-                        capturedImageView.setFitWidth(150);
-                        capturedImageView.setFitHeight(150);
-                        capturedImageView.setPreserveRatio(true);
+            Button captureBtn = new Button("Capture");
+            captureBtn.setOnAction(_ -> {
+                BufferedImage frame = webcam.getImage();
+                if (frame != null) {
+                    saveImageToDatabase(orderId, item.getId(), frame, 0); // auto index
+                    onSearchFilter();
+                }
+                webcam.close();
+                ((Stage) captureBtn.getScene().getWindow()).close();
+            });
 
-                        Platform.runLater(() -> {
-                            photoPane.getChildren().add(capturedImageView);
-                            saveImageToDatabase(orderId, item.getId(), capturedFrame);
-                        });
-                    }
-                    webcam.close();
-                    ((Stage) takePhotoBtn.getScene().getWindow()).close();
-                });
+            VBox layout = new VBox(10, liveView, captureBtn);
+            layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
 
-                VBox layout = new VBox(10, liveView, takePhotoBtn);
-                layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
-
-                Stage cameraStage = new Stage();
-                cameraStage.setTitle(orderNumber + "-" + item.getItemName());
-                cameraStage.setScene(new Scene(layout));
-                cameraStage.show();
-
-                cameraStage.setOnCloseRequest(e -> webcam.close());
-            } else {
-                System.out.println("No webcam detected.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            Stage stage = new Stage();
+            stage.setTitle("Capture - " + item.getItemName());
+            stage.setScene(new Scene(layout));
+            stage.setOnCloseRequest(_ -> webcam.close());
+            stage.show();
         }
     }
 
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image) {
+    private void openRetakeCamera(Item item, int orderId, String orderNumber, int replaceIndex) {
+        Webcam webcam = Webcam.getDefault();
+        if (webcam != null) {
+            webcam.open();
+            ImageView liveView = new ImageView();
+            liveView.setFitWidth(400);
+            liveView.setFitHeight(300);
+            liveView.setPreserveRatio(true);
+
+            Thread stream = new Thread(() -> {
+                while (webcam.isOpen()) {
+                    BufferedImage frame = webcam.getImage();
+                    if (frame != null) {
+                        Image fxImage = SwingFXUtils.toFXImage(frame, null);
+                        Platform.runLater(() -> liveView.setImage(fxImage));
+                    }
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ignored) {}
+                }
+            });
+            stream.setDaemon(true);
+            stream.start();
+
+            Button captureBtn = new Button("Retake Photo");
+            captureBtn.setOnAction(_ -> {
+                BufferedImage frame = webcam.getImage();
+                if (frame != null) {
+                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                        ImageIO.write(frame, "png", baos);
+                        byte[] imageBytes = baos.toByteArray();
+                        orderManager.saveImage(orderId, item.getId(), imageBytes, replaceIndex);
+                    } catch (IOException | SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                webcam.close();
+                ((Stage) captureBtn.getScene().getWindow()).close();
+                onSearchFilter();
+            });
+
+            VBox layout = new VBox(10, liveView, captureBtn);
+            layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
+
+            Stage stage = new Stage();
+            stage.setTitle("Retake - " + item.getItemName());
+            stage.setScene(new Scene(layout));
+            stage.setOnCloseRequest(_ -> webcam.close());
+            stage.show();
+        }
+    }
+
+    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes, 0); // Index auto-generated on backend
+            orderManager.saveImage(orderId, itemId, imageBytes, imageIndex);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
