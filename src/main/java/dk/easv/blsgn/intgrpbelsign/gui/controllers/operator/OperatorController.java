@@ -139,7 +139,29 @@ public class OperatorController {
                     } else if ("approved".equalsIgnoreCase(meta.getStatus())) {
                         approvedPane.getChildren().add(imgView);
                     } else {
-                        pendingPane.getChildren().add(imgView);
+                        StackPane stack = new StackPane();
+                        stack.setPrefSize(150, 150);
+                        stack.getChildren().add(imgView);
+
+                        Button retakeBtn = new Button();
+                        retakeBtn.setPrefSize(50, 50);
+                        retakeBtn.setStyle("-fx-background-image: url('/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-retake-50.png'); " +
+                                "-fx-background-color: transparent;");
+
+                        StackPane overlay = new StackPane(retakeBtn);
+                        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+                        overlay.setOpacity(0);
+                        stack.getChildren().add(overlay);
+
+                        stack.setOnMouseEntered(e -> overlay.setOpacity(1));
+                        stack.setOnMouseExited(e -> overlay.setOpacity(0));
+
+                        retakeBtn.setOnAction(e -> {
+                            orderManager.deleteImage(meta.getId());
+                            openRetakeCamera(item, order.getID(), order.getOrderNumber(), meta.getIndex());
+                        });
+
+                        pendingPane.getChildren().add(stack);
                     }
                 }
 
