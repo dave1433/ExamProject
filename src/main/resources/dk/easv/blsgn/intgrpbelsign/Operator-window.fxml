@@ -22,7 +22,7 @@
    </top>
 
    <left>
-      <ListView fx:id="listView" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="listView" prefWidth="200.0" stylesheets="@CSS.css" BorderPane.alignment="CENTER" />
    </left>
 
    <center>

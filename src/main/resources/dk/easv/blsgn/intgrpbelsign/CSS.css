@@ -2,3 +2,29 @@
 . button {
     -fx-background-color: rgba(255, 255, 255, 0.15);
 }
+
+.list-view {
+    -fx-background-color: #F4F7FA;
+    -fx-control-inner-background: #F4F7FA;
+    -fx-border-color: #D0DCE5;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+    -fx-font-size: 13px;
+}
+
+.list-cell {
+    -fx-padding: 8px;
+    -fx-background-color: transparent;
+    -fx-text-fill: #2C3E50;
+}
+
+.list-cell:hover {
+    -fx-background-color: #E8F0FE;
+}
+
+.list-cell:selected {
+    -fx-background-color:  #004b88;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
