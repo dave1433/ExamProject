@@ -184,6 +184,8 @@ public class OperatorController {
                 }
 
                 Button addPhotoButton = new Button("Add Photo");
+                addPhotoButton.setStyle("-fx-background-color: #004b88;" + "-fx-background-radius: 8");
+                addPhotoButton.setTextFill(javafx.scene.paint.Color.WHITE);
                 addPhotoButton.setOnAction(event -> openCameraWindow(item, approvedPane, order.getID(), order.getOrderNumber()));
 
                 itemBox.getChildren().addAll(itemNameLabel, photoSections, addPhotoButton);

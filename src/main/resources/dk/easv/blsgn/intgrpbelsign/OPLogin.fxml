@@ -17,7 +17,7 @@
    <children>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="900.0">
          <children>
-            <Button fx:id="buttonUserLogin" alignment="BASELINE_LEFT" layoutX="381.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="137.0" style="-fx-background-color: #64B5F6;" stylesheets="@CSS.css">
+            <Button fx:id="buttonUserLogin" alignment="BASELINE_LEFT" layoutX="381.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="137.0" style="-fx-background-color: #64B5F6; -fx-background-radius: 8;" stylesheets="@CSS.css">
                <graphic>
                   <ImageView fitHeight="40.0" fitWidth="179.0" pickOnBounds="true" preserveRatio="true">
                      <image>

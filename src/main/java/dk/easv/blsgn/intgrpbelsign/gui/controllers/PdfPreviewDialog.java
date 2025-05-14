@@ -1,11 +1,14 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -36,9 +39,17 @@ public class PdfPreviewDialog extends Stage {
         scrollPane.setPannable(true);
 
         Button downloadBtn = new Button("Download PDF");
+        downloadBtn.setStyle("-fx-background-color:  #004b88; -fx-text-fill: white; -fx-padding: 8;");
+
 
         BorderPane root = new BorderPane(scrollPane);
-        root.setBottom(downloadBtn);
+
+        HBox downloadBtnHbox = new HBox(downloadBtn);
+        downloadBtnHbox.setAlignment(Pos.CENTER);
+        downloadBtnHbox.setPadding(new Insets(10));
+
+        root.setBottom(downloadBtnHbox);
+
 
         Scene scene = new Scene(root, 600, 700);
         setScene(scene);

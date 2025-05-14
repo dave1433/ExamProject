@@ -34,7 +34,7 @@
         </ScrollPane>
     </center>
    <bottom>
-      <Button mnemonicParsing="false" onAction="#onPreviewReport" prefHeight="26.0" prefWidth="117.0" text="Report Preview" BorderPane.alignment="CENTER">
+      <Button mnemonicParsing="false" onAction="#onPreviewReport" prefHeight="26.0" prefWidth="117.0" style="-fx-background-color: #004b88;" text="Report Preview" textFill="WHITE" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="20.0" />
          </BorderPane.margin></Button>

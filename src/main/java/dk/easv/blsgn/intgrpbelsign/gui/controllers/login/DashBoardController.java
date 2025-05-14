@@ -99,7 +99,7 @@ public class DashBoardController implements Initializable {
         for (User user : users) {
             Button btn = new Button(user.getUser_name());
             btn.setPrefSize(210, 60);
-            btn.setStyle("-fx-background-color: #BBDEFB;");
+            btn.setStyle("-fx-background-color: #BBDEFB;" + "-fx-background-radius: 8");
             btn.setOnAction(e -> handleUserClick(user.getUser_name()));
 
             InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/3.png");
@@ -184,7 +184,7 @@ public class DashBoardController implements Initializable {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    roleLabel.setText("OPERATOR");
+                    roleLabel.setText("Operator");
                     mainName.setText(user.getUser_name());
 
                 }
