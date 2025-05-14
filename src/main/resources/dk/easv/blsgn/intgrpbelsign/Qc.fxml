@@ -5,21 +5,39 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="root" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.qc.QC">
 
     <top>
-        <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number" style="-fx-background-radius: 25;" BorderPane.alignment="CENTER">
+        <HBox prefHeight="38.0" prefWidth="841.0" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets bottom="20.0" left="200.0" right="200.0" top="20.0" />
+                <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
             </BorderPane.margin>
-            <font>
-                <Font size="14.0" />
-            </font>
-        </TextField>
+            <children>
+                <TextField fx:id="searchField" alignment="CENTER" prefHeight="30.0" prefWidth="366.0" promptText="Search order number" style="-fx-background-radius: 25;">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="200.0" right="300.0" />
+                    </HBox.margin>
+                </TextField>
+                <Button fx:id="detailsButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="27.0" style="-fx-background-color: transparent;;" styleClass="bellButton" stylesheets="@CSS.css">
+                    <graphic>
+                        <ImageView fitHeight="36.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@Pictures/icons/bell.png" />
+                            </image>
+                        </ImageView>
+                    </graphic></Button>
+            </children>
+        </HBox>
     </top>
 
     <left>
@@ -33,11 +51,11 @@
             </content>
         </ScrollPane>
     </center>
-   <bottom>
-      <Button mnemonicParsing="false" onAction="#onPreviewReport" prefHeight="26.0" prefWidth="117.0" style="-fx-background-color: #004b88; -fx-background-radius: 8;" text="Report Preview" textFill="WHITE" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets top="20.0" />
-         </BorderPane.margin></Button>
-   </bottom>
+    <bottom>
+        <Button mnemonicParsing="false" onAction="#onPreviewReport" prefHeight="26.0" prefWidth="117.0" style="-fx-background-color: #004b88;" text="Report Preview" textFill="WHITE" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets top="20.0" />
+            </BorderPane.margin></Button>
+    </bottom>
 
 </BorderPane>

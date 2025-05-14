@@ -32,6 +32,9 @@ public class QC {
     @FXML
     private TextField searchField;
 
+    @FXML
+    private Button detailsButton; // Add fx:id to your "Details" button in the FXML
+
     private final OrderManager orderManager = new OrderManager();
 
     private List<Order> allOrders;
@@ -39,6 +42,7 @@ public class QC {
     @FXML
     public void initialize() {
         setupSearchAndSelection();
+        updateDetailsButtonStyle(allOrders);
     }
 
     @FXML
@@ -68,6 +72,7 @@ public class QC {
                         .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
                         .collect(Collectors.toList());
                 displayOrders(selected);
+                updateDetailsButtonStyle(selected); // Update button style
             }
         });
     }
@@ -132,7 +137,9 @@ public class QC {
                         statusLabel.setStyle(getStatusStyle("approved"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
+                        updateDetailsButtonStyle(allOrders); // Re-check and update button style
                     });
+
 
                     rejectBtn.setOnAction(ev -> {
                         orderManager.updateImageStatus(meta.getId(), "rejected");
@@ -140,7 +147,9 @@ public class QC {
                         statusLabel.setStyle(getStatusStyle("rejected"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
+                        updateDetailsButtonStyle(allOrders); // Re-check and update button style
                     });
+
 
                     if ("approved".equalsIgnoreCase(meta.getStatus()) || "rejected".equalsIgnoreCase(meta.getStatus())) {
                         approveBtn.setVisible(false);
@@ -170,6 +179,27 @@ public class QC {
         };
     }
 
+    // New method to update the "Details" button style when there are pending images
+    private void updateDetailsButtonStyle(List<Order> orders) {
+        boolean hasPending = false;
+
+        for (Order order : orders) {
+            for (Item item : order.getItems()) {
+                List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+                if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
+                    hasPending = true;
+                    break;
+                }
+            }
+            if (hasPending) break;
+        }
+
+        if (hasPending) {
+            detailsButton.setStyle("-fx-background-color: #FF5252; -fx-text-fill: white;");
+        } else {
+            detailsButton.setStyle(""); // Reset style
+        }
+    }
 
     @FXML
     private void onPreviewReport() {
