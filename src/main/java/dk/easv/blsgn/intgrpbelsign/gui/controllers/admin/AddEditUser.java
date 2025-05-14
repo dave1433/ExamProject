@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 
-
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -47,12 +46,54 @@ public class AddEditUser {
     public void handleSave() {
         System.out.println("handleSave called");
 
-        if (!isFormValid()) return;
-
+        // Perform validation first
         String username = usernameField.getText();
         String password = passwordField.getText();
         String email = emailField.getText();
+        Role selectedRole = roleComboBox.getValue();
 
+        // Basic validation
+        if (username.isEmpty() || selectedRole == null || email.isEmpty() || password.isEmpty()) {
+            showErrorDialog("Validation Error", "Username, Role, Email and Password are mandatory fields");
+            return;
+        }
+
+        // For edit mode, only validate the password if it has been changed
+        boolean isPasswordChanged = "add".equals(dialogType) || !password.equals(user.getPassword_hash());
+        
+        if (isPasswordChanged) {
+            if (password.isEmpty()) {
+                showErrorDialog("Validation Error", "Password is required");
+                return;
+            }
+
+            // Check the password format for the Operator role
+            if (selectedRole.getRole_id() == 3) {
+                if (!Pattern.matches("^\\d{4}$", password)) {
+                    showErrorDialog("Password Error", "Operator password must be exactly 4 numeric digits");
+                    return;
+                }
+            }
+        }
+
+        // Email validation
+        if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+            showErrorDialog("Validation Error", "Please enter a valid email address");
+            return;
+        }
+
+        // Username existence check for new users
+        if ("add".equals(dialogType) && userManager.doesUserNameExist(username)) {
+            showErrorDialog("Validation Error", "Username already exists");
+            return;
+        }
+
+        var saveTask = getBooleanTask(password, isPasswordChanged);
+
+        new Thread(saveTask).start();
+    }
+
+    private Task<Boolean> getBooleanTask(String password, boolean isPasswordChanged) {
         Task<Boolean> saveTask = new Task<>() {
             @Override
             protected Boolean call() {
@@ -64,7 +105,8 @@ public class AddEditUser {
                     success = userManager.addUser(user, password);
                 } else if ("edit".equals(dialogType)) {
                     System.out.println("Editing user");
-                    success = userManager.editUser(user, password);
+                    // Only pass the password if it was changed
+                    success = userManager.editUser(user, isPasswordChanged ? password : null);
                 }
 
                 System.out.println((dialogType.equals("add") ? "addUser" : "editUser") + " result: " + success);
@@ -72,28 +114,24 @@ public class AddEditUser {
             }
         };
 
-        saveTask.setOnSucceeded(e -> {
+        saveTask.setOnSucceeded(_ -> {
             if (saveTask.getValue()) {
                 showInfoDialog("Success", dialogType.equals("add") ? "User created" : "User updated");
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/Admin-dashboard.fxml"));
                     Parent adminView = loader.load();
 
-                    // Get the controller and initialize it
                     AdminController adminController = loader.getController();
 
-                    // Find the root FlowPane in the scene graph
                     Node currentNode = saveButton;
                     while (currentNode.getParent() != null && !(currentNode instanceof FlowPane)) {
                         currentNode = currentNode.getParent();
                     }
 
-                    if (currentNode instanceof FlowPane) {
-                        FlowPane rootFlowPane = (FlowPane) currentNode;
+                    if (currentNode instanceof FlowPane rootFlowPane) {
                         rootFlowPane.getChildren().clear();
                         rootFlowPane.getChildren().add(adminView);
 
-                        // Initialize the controller after adding to the scene
                         if (adminController != null) {
                             adminController.initialize();
                         }
@@ -108,12 +146,11 @@ public class AddEditUser {
             }
         });
 
-        saveTask.setOnFailed(e -> {
+        saveTask.setOnFailed(_ -> {
             showErrorDialog("Error", "An error occurred while saving the user");
             saveTask.getException().printStackTrace();
         });
-
-        new Thread(saveTask).start();
+        return saveTask;
     }
 
     public void setUser(User user) {
@@ -145,29 +182,6 @@ public class AddEditUser {
         user.setPhone_number(phoneField.getText());
         user.setRole_id(roleComboBox.getValue().getRole_id());
         return user;
-    }
-
-    private boolean isFormValid() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        String email = emailField.getText();
-
-        if (username.isEmpty() || password.isEmpty() || roleComboBox.getValue() == null || email.isEmpty()) {
-            showErrorDialog("Validation Error", "Username, Password, Rank and Email are mandatory fields");
-            return false;
-        }
-
-        if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
-            showErrorDialog("Validation Error", "Please enter a valid email address");
-            return false;
-        }
-
-        if ("add".equals(dialogType) && userManager.doesUserNameExist(username)) {
-            showErrorDialog("Validation Error", "Username already exists");
-            return false;
-        }
-
-        return true;
     }
 
     private void showErrorDialog(String title, String message) {

@@ -48,7 +48,9 @@ public class UserManager {
     }
 
     public boolean editUser(User user, String password) {
-        user.setPassword_hash(hashPassword(password));
+        if (password != null) {
+            user.setPassword_hash(hashPassword(password));
+        }
         return iUserDAO.editUser(user);
     }
 

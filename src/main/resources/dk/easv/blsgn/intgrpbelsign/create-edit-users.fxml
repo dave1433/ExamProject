@@ -17,7 +17,7 @@
                <font>
                   <Font size="24.0" />
                </font></Label>
-            <Label layoutX="118.0" layoutY="334.0" text="Role :">
+            <Label layoutX="118.0" layoutY="334.0" text="Role  : *">
                <font>
                   <Font size="14.0" />
                </font></Label>
@@ -25,7 +25,7 @@
                <font>
                   <Font size="14.0" />
                </font></Label>
-            <Label layoutX="118.0" layoutY="254.0" text="Email :">
+            <Label layoutX="118.0" layoutY="254.0" text="Email :  *">
                <font>
                   <Font size="14.0" />
                </font></Label>
@@ -33,7 +33,7 @@
                <font>
                   <Font size="14.0" />
                </font></Label>
-            <Label layoutX="118.0" layoutY="175.0" text="First Name :">
+            <Label layoutX="116.0" layoutY="175.0" text="First Name :">
                <font>
                   <Font size="14.0" />
                </font></Label>
@@ -60,13 +60,13 @@
                   <Font size="14.0" />
                </font>
             </TextField>
-            <Label layoutX="118.0" layoutY="96.0" text="Username :">
+            <Label layoutX="118.0" layoutY="96.0" text="Username :  *">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
             <PasswordField fx:id="passwordField" layoutX="226.0" layoutY="129.0" prefHeight="30.0" prefWidth="173.0" />
-            <Label layoutX="115.0" layoutY="134.0" text="Password :">
+            <Label layoutX="115.0" layoutY="134.0" text="Password :  *">
                <font>
                   <Font size="14.0" />
                </font>

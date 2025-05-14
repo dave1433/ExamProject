@@ -64,7 +64,7 @@ public class ImageOverlayUtil {
         }
 
         StackPane overlay = new StackPane(buttonsBox);
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+        overlay.setStyle("-fx-background-color: rgba(255, 255, 255,0.5);");
         overlay.setOpacity(0);
         stack.getChildren().add(overlay);
 
