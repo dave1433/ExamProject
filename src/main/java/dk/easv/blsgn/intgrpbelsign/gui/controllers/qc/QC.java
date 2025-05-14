@@ -101,7 +101,7 @@ public class QC {
                 Label itemNameLabel = new Label(item.getItemName());
                 itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-                FlowPane photoPane = new FlowPane(5, 5);
+                FlowPane photoPane = new FlowPane(10, 10);
                 photoPane.setPrefWrapLength(600);
 
                 List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
@@ -114,21 +114,41 @@ public class QC {
                     imgView.setPreserveRatio(true);
 
                     Label statusLabel = new Label("Status: " + meta.getStatus());
+                    statusLabel.setStyle(getStatusStyle(meta.getStatus()));
 
                     Button approveBtn = new Button("✅");
                     Button rejectBtn = new Button("❌");
 
+                    approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;  ");
+                    rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white; ");
+
+                    Tooltip.install(approveBtn, new Tooltip("Approve this image"));
+                    Tooltip.install(rejectBtn, new Tooltip("Reject this image"));
+
+                    // Button logic
                     approveBtn.setOnAction(ev -> {
                         orderManager.updateImageStatus(meta.getId(), "approved");
                         statusLabel.setText("Status: approved");
+                        statusLabel.setStyle(getStatusStyle("approved"));
+                        approveBtn.setVisible(false);
+                        rejectBtn.setVisible(false);
                     });
 
                     rejectBtn.setOnAction(ev -> {
                         orderManager.updateImageStatus(meta.getId(), "rejected");
                         statusLabel.setText("Status: rejected");
+                        statusLabel.setStyle(getStatusStyle("rejected"));
+                        approveBtn.setVisible(false);
+                        rejectBtn.setVisible(false);
                     });
 
-                    VBox imageBox = new VBox(5, imgView, statusLabel, new HBox(5, approveBtn, rejectBtn));
+                    if ("approved".equalsIgnoreCase(meta.getStatus()) || "rejected".equalsIgnoreCase(meta.getStatus())) {
+                        approveBtn.setVisible(false);
+                        rejectBtn.setVisible(false);
+                    }
+
+                    VBox imageBox = new VBox(5, imgView, statusLabel, new HBox(10, approveBtn, rejectBtn));
+                    imageBox.setAlignment(Pos.CENTER);
                     photoPane.getChildren().add(imageBox);
                 }
 
@@ -140,6 +160,16 @@ public class QC {
             flowPane.getChildren().add(orderBox);
         }
     }
+
+    // Helper to get style per status
+    private String getStatusStyle(String status) {
+        return switch (status.toLowerCase()) {
+            case "approved" -> "-fx-text-fill: green; -fx-font-size: 15px";
+            case "rejected" -> "-fx-text-fill: red; -fx-font-size: 15px";
+            default -> "-fx-text-fill: orange; -fx-font-size: 15px";
+        };
+    }
+
 
     @FXML
     private void onPreviewReport() {
