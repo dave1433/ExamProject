@@ -13,12 +13,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <FlowPane fx:id="buttonContainer" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.login.PINLogin">
    <children>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0">
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="900.0">
          <children>
-            <Button fx:id="buttonUserLogin" alignment="BASELINE_LEFT" layoutX="382.0" layoutY="37.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="137.0" style="-fx-background-color: #64B5F6;" stylesheets="@CSS.css">
+            <Button fx:id="buttonUserLogin" alignment="BASELINE_LEFT" layoutX="381.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="137.0" style="-fx-background-color: #64B5F6;" stylesheets="@CSS.css">
                <graphic>
                   <ImageView fitHeight="40.0" fitWidth="179.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -27,8 +26,8 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Label fx:id="userNameLabel" alignment="CENTER" layoutX="433.0" layoutY="44.0" prefHeight="34.0" prefWidth="79.0" />
-            <VBox alignment="CENTER" layoutX="320.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0">
+            <Label fx:id="userNameLabel" alignment="CENTER" layoutX="427.0" layoutY="21.0" prefHeight="34.0" prefWidth="91.0" />
+            <VBox alignment="CENTER" layoutX="319.0" layoutY="69.0" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label fx:id="mssgLabel" text="Write your PIN">
                      <font>

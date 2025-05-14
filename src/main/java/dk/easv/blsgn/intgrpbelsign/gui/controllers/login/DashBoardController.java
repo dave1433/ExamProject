@@ -160,7 +160,7 @@ public class DashBoardController implements Initializable {
 
                         buttonContainer.getChildren().clear();
                         buttonContainer.getChildren().add(loginPasswordPane);
-                        roleLabel.setText("Quality Controller Department");
+                        roleLabel.setText("Quality Controller");
                         mainName.setText(user.getUser_name());
 
 

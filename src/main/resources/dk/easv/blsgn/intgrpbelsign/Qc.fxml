@@ -12,9 +12,9 @@
 <BorderPane fx:id="root" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.blsgn.intgrpbelsign.gui.controllers.qc.QC">
 
     <top>
-        <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number" BorderPane.alignment="CENTER">
+        <TextField fx:id="searchField" alignment="CENTER" promptText="Search order number" style="-fx-background-radius: 25;" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets left="200.0" right="200.0" top="20.0" />
+                <Insets bottom="20.0" left="200.0" right="200.0" top="20.0" />
             </BorderPane.margin>
             <font>
                 <Font size="14.0" />
@@ -34,7 +34,10 @@
         </ScrollPane>
     </center>
    <bottom>
-      <Button mnemonicParsing="false" onAction="#onPreviewReport" text="Button" BorderPane.alignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#onPreviewReport" prefHeight="26.0" prefWidth="117.0" text="Report Preview" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets top="20.0" />
+         </BorderPane.margin></Button>
    </bottom>
 
 </BorderPane>
