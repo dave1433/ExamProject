@@ -4,18 +4,21 @@ import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
-import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -33,7 +36,7 @@ public class QC {
     private TextField searchField;
 
     @FXML
-    private Button detailsButton; // Add fx:id to your "Details" button in the FXML
+    private Button detailsButton;
 
     private final OrderManager orderManager = new OrderManager();
 
@@ -49,30 +52,25 @@ public class QC {
     private void setupSearchAndSelection() {
         allOrders = orderManager.getAllOrders();
 
-        // Show all orders in ListView initially
         displayOrd(allOrders);
-
-        // Keep FlowPane empty at startup
         flowPane.getChildren().clear();
 
-        // Live search filtering for ListView
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             List<Order> filtered = allOrders.stream()
                     .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
                     .collect(Collectors.toList());
 
-            displayOrd(filtered);          // Update ListView
-            flowPane.getChildren().clear(); // Clear FlowPane until selection
+            displayOrd(filtered);
+            flowPane.getChildren().clear();
         });
 
-        // Show order details in FlowPane when selected
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
                 List<Order> selected = allOrders.stream()
                         .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
                         .collect(Collectors.toList());
                 displayOrders(selected);
-                updateDetailsButtonStyle(selected); // Update button style
+                updateDetailsButtonStyle(selected);
             }
         });
     }
@@ -124,22 +122,20 @@ public class QC {
                     Button approveBtn = new Button("✅");
                     Button rejectBtn = new Button("❌");
 
-                    approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;  ");
-                    rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white; ");
+                    approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+                    rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
 
                     Tooltip.install(approveBtn, new Tooltip("Approve this image"));
                     Tooltip.install(rejectBtn, new Tooltip("Reject this image"));
 
-                    // Button logic
                     approveBtn.setOnAction(ev -> {
                         orderManager.updateImageStatus(meta.getId(), "approved");
                         statusLabel.setText("Status: approved");
                         statusLabel.setStyle(getStatusStyle("approved"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
-                        updateDetailsButtonStyle(allOrders); // Re-check and update button style
+                        updateDetailsButtonStyle(allOrders);
                     });
-
 
                     rejectBtn.setOnAction(ev -> {
                         orderManager.updateImageStatus(meta.getId(), "rejected");
@@ -147,9 +143,8 @@ public class QC {
                         statusLabel.setStyle(getStatusStyle("rejected"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
-                        updateDetailsButtonStyle(allOrders); // Re-check and update button style
+                        updateDetailsButtonStyle(allOrders);
                     });
-
 
                     if ("approved".equalsIgnoreCase(meta.getStatus()) || "rejected".equalsIgnoreCase(meta.getStatus())) {
                         approveBtn.setVisible(false);
@@ -170,7 +165,6 @@ public class QC {
         }
     }
 
-    // Helper to get style per status
     private String getStatusStyle(String status) {
         return switch (status.toLowerCase()) {
             case "approved" -> "-fx-text-fill: green; -fx-font-size: 15px";
@@ -179,7 +173,6 @@ public class QC {
         };
     }
 
-    // New method to update the "Details" button style when there are pending images
     private void updateDetailsButtonStyle(List<Order> orders) {
         boolean hasPending = false;
 
@@ -237,6 +230,34 @@ public class QC {
             showAlert("Failed to generate or preview PDF.");
         }
     }
+
+    @FXML
+    private void onDetailsButtonClick() {
+        List<Order> pendingOrders = allOrders.stream()
+                .filter(order -> order.getItems().stream()
+                        .anyMatch(item -> orderManager.getAllImagesWithStatus(order.getID(), item.getId()).stream()
+                                .anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))))
+                .collect(Collectors.toList());
+
+        if (pendingOrders.isEmpty()) {
+            showAlert("No pending images found.");
+            return;
+        }
+
+        ContextMenu contextMenu = new ContextMenu();
+
+        for (Order order : pendingOrders) {
+            MenuItem item = new MenuItem("Order: " + order.getOrderNumber());
+            item.setOnAction(ev -> {
+                listView.getSelectionModel().select(order.getOrderNumber());
+            });
+            contextMenu.getItems().add(item);
+        }
+
+        // Show the menu anchored to the button
+        contextMenu.show(detailsButton, Side.BOTTOM, 0, 0);
+    }
+
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

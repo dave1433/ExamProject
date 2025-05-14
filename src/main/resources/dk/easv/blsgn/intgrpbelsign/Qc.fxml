@@ -28,7 +28,7 @@
                         <Insets left="200.0" right="300.0" />
                     </HBox.margin>
                 </TextField>
-                <Button fx:id="detailsButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="27.0" style="-fx-background-color: transparent;;" styleClass="bellButton" stylesheets="@CSS.css">
+                <Button fx:id="detailsButton" mnemonicParsing="false" onAction="#onDetailsButtonClick" prefHeight="40.0" prefWidth="27.0" style="-fx-background-color: transparent;;" styleClass="bellButton" stylesheets="@CSS.css">
                     <graphic>
                         <ImageView fitHeight="36.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                             <image>
