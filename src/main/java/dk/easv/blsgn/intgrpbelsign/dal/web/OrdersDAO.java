@@ -65,15 +65,14 @@ public class OrdersDAO implements IOrderDAO {
     }
 
     @Override
-    public void saveImage(int orderId, int itemId, byte[] imageBytes, int imageIndex) throws SQLException {
-        String sqlInsert = "INSERT INTO item_images (order_id, item_id, image_index, image_data, status) VALUES (?, ?, ?, ?, 'pending')";
+    public void saveImage(int orderId, int itemId, byte[] imageBytes) throws SQLException {
+        String sqlInsert = "INSERT INTO item_images (order_id, item_id, image_data, status) VALUES (?, ?, ?, 'pending')";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sqlInsert)) {
             stmt.setInt(1, orderId);
             stmt.setInt(2, itemId);
-            stmt.setInt(3, imageIndex);
-            stmt.setBytes(4, imageBytes);
+            stmt.setBytes(3, imageBytes);
             stmt.executeUpdate();
         }
     }
@@ -81,7 +80,7 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<byte[]> getImagesForItem(int orderId, int itemId) {
         List<byte[]> images = new ArrayList<>();
-        String sql = "SELECT image_data FROM item_images WHERE order_id = ? AND item_id = ? AND status = 'approved' ORDER BY image_index";
+        String sql = "SELECT image_data FROM item_images WHERE order_id = ? AND item_id = ? AND status = 'approved' ORDER BY id";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -118,7 +117,7 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
         List<ImageWithMeta> imageList = new ArrayList<>();
-        String sql = "SELECT id, image_data, status, image_index FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY image_index";
+        String sql = "SELECT id, image_data, status FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY id";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -130,10 +129,9 @@ public class OrdersDAO implements IOrderDAO {
                 int id = rs.getInt("id");
                 byte[] img = rs.getBytes("image_data");
                 String status = rs.getString("status");
-                int index = rs.getInt("image_index");
 
                 if (img != null) {
-                    imageList.add(new ImageWithMeta(id, img, status != null ? status : "pending", index));
+                    imageList.add(new ImageWithMeta(id, img, status != null ? status : "pending"));
                 }
             }
         } catch (SQLException e) {

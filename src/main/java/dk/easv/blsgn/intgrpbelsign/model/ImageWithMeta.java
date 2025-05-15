@@ -4,13 +4,13 @@ public class ImageWithMeta {
     private int id;
     private byte[] imageData;
     private String status;
-    private int index;
 
-    public ImageWithMeta(int id, byte[] imageData, String status, int index) {
+
+    public ImageWithMeta(int id, byte[] imageData, String status) {
         this.id = id;
         this.imageData = imageData;
         this.status = status;
-        this.index = index;
+
     }
 
     public int getId() {
@@ -25,7 +25,4 @@ public class ImageWithMeta {
         return status;
     }
 
-    public int getIndex() {
-        return index;
-    }
 }

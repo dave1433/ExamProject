@@ -58,7 +58,7 @@ public class ImageOverlayUtil {
                     "-fx-background-color: transparent;");
             retakeBtn.setOnAction(_ -> {
                 orderManager.deleteImage(meta.getId());
-                openRetakeCamera(item, orderId, orderNumber, meta.getIndex());
+                openRetakeCamera(item, orderId, orderNumber);
             });
             buttonsBox.getChildren().add(retakeBtn);
         }
@@ -113,7 +113,7 @@ public class ImageOverlayUtil {
         }
     }
 
-    public void openRetakeCamera(Item item, int orderId, String orderNumber, int replaceIndex) {
+    public void openRetakeCamera(Item item, int orderId, String orderNumber) {
         Webcam webcam = Webcam.getDefault();
         if (webcam != null) {
             webcam.open();
@@ -132,7 +132,7 @@ public class ImageOverlayUtil {
                     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                         ImageIO.write(frame, "png", baos);
                         byte[] imageBytes = baos.toByteArray();
-                        orderManager.saveImage(orderId, item.getId(), imageBytes, replaceIndex);
+                        orderManager.saveImage(orderId, item.getId(), imageBytes);
                         if (refreshCallback != null) {
                             Platform.runLater(refreshCallback);
                         }
@@ -159,11 +159,11 @@ public class ImageOverlayUtil {
         }
     }
 
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int imageIndex) {
+    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int i) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes, imageIndex);
+            orderManager.saveImage(orderId, itemId, imageBytes);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
             showError("Error", "Failed to save image: " + e.getMessage());

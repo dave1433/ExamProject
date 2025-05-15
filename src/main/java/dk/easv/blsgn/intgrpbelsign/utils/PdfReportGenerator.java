@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 
 public class PdfReportGenerator {

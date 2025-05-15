@@ -5,8 +5,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
@@ -28,20 +26,12 @@
                         <Insets left="200.0" right="300.0" />
                     </HBox.margin>
                 </TextField>
-                <Button fx:id="detailsButton" mnemonicParsing="false" onAction="#onDetailsButtonClick" prefHeight="40.0" prefWidth="27.0" style="-fx-background-color: transparent;;" styleClass="bellButton" stylesheets="@CSS.css">
-                    <graphic>
-                        <ImageView fitHeight="36.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@Pictures/icons/bell.png" />
-                            </image>
-                        </ImageView>
-                    </graphic></Button>
             </children>
         </HBox>
     </top>
 
     <left>
-        <ListView fx:id="listView" prefWidth="200.0" stylesheets="@CSS.css" BorderPane.alignment="CENTER" />
+        <ListView fx:id="listView" prefHeight="376.0" prefWidth="135.0" stylesheets="@CSS.css" BorderPane.alignment="CENTER" />
     </left>
 
     <center>

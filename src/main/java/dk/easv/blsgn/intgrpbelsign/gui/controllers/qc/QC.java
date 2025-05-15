@@ -9,16 +9,11 @@ import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -35,20 +30,14 @@ public class QC {
     @FXML
     private TextField searchField;
 
-    @FXML
-    private Button detailsButton;
-
     private final OrderManager orderManager = new OrderManager();
-
     private List<Order> allOrders;
 
     @FXML
     public void initialize() {
         setupSearchAndSelection();
-        updateDetailsButtonStyle(allOrders);
     }
 
-    @FXML
     private void setupSearchAndSelection() {
         allOrders = orderManager.getAllOrders();
 
@@ -70,12 +59,37 @@ public class QC {
                         .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
                         .collect(Collectors.toList());
                 displayOrders(selected);
-                updateDetailsButtonStyle(selected);
             }
         });
     }
 
     private void displayOrd(List<Order> orders) {
+        listView.setItems(FXCollections.observableArrayList());
+        listView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(null);
+                setStyle("");
+
+                if (empty || item == null) return;
+
+                setText(item);
+
+                Order order = allOrders.stream()
+                        .filter(o -> o.getOrderNumber().equals(item))
+                        .findFirst()
+                        .orElse(null);
+
+                if (order != null && hasPendingImages(order)) {
+                    setStyle("-fx-border-color: #FF5252; -fx-border-width: 2px; -fx-border-radius: 3px;");
+                } else {
+                    setStyle("-fx-background-insets: 0 0 3px 0;");
+                }
+
+            }
+        });
+
         ObservableList<String> orderNumbers = FXCollections.observableArrayList();
         for (Order order : orders) {
             orderNumbers.add(order.getOrderNumber());
@@ -83,29 +97,36 @@ public class QC {
         listView.setItems(orderNumbers);
     }
 
+    private boolean hasPendingImages(Order order) {
+        for (Item item : order.getItems()) {
+            List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+            if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void displayOrders(List<Order> orders) {
         flowPane.getChildren().clear();
 
         for (Order order : orders) {
-            VBox orderBox = new VBox(10);
-            orderBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
-            orderBox.setPrefWidth(700);
-
-            Label orderLabel = new Label("Order: " + order.getOrderNumber());
-            orderLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
-            VBox itemsContainer = new VBox(15);
             for (Item item : order.getItems()) {
                 VBox itemBox = new VBox(5);
                 itemBox.setAlignment(Pos.TOP_LEFT);
                 itemBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;");
+
                 itemBox.setPrefWidth(650);
 
                 Label itemNameLabel = new Label(item.getItemName());
-                itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+                itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-cursor: hand;");
+                //itemNameLabel.setStyle("-fx-background-color: #D9D9D9");
+
 
                 FlowPane photoPane = new FlowPane(10, 10);
                 photoPane.setPrefWrapLength(600);
+                photoPane.setVisible(false);
+                photoPane.setManaged(false);
 
                 List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
 
@@ -134,7 +155,7 @@ public class QC {
                         statusLabel.setStyle(getStatusStyle("approved"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
-                        updateDetailsButtonStyle(allOrders);
+                        displayOrd(allOrders); // refresh ListView styles
                     });
 
                     rejectBtn.setOnAction(ev -> {
@@ -143,7 +164,7 @@ public class QC {
                         statusLabel.setStyle(getStatusStyle("rejected"));
                         approveBtn.setVisible(false);
                         rejectBtn.setVisible(false);
-                        updateDetailsButtonStyle(allOrders);
+                        displayOrd(allOrders); // refresh ListView styles
                     });
 
                     if ("approved".equalsIgnoreCase(meta.getStatus()) || "rejected".equalsIgnoreCase(meta.getStatus())) {
@@ -156,14 +177,19 @@ public class QC {
                     photoPane.getChildren().add(imageBox);
                 }
 
-                itemBox.getChildren().addAll(itemNameLabel, photoPane);
-                itemsContainer.getChildren().add(itemBox);
-            }
+                // Toggle visibility on click
+                itemNameLabel.setOnMouseClicked(ev -> {
+                    boolean visible = photoPane.isVisible();
+                    photoPane.setVisible(!visible);
+                    photoPane.setManaged(!visible);
+                });
 
-            orderBox.getChildren().addAll(orderLabel, itemsContainer);
-            flowPane.getChildren().add(orderBox);
+                itemBox.getChildren().addAll(itemNameLabel, photoPane);
+                flowPane.getChildren().add(itemBox);
+            }
         }
     }
+
 
     private String getStatusStyle(String status) {
         return switch (status.toLowerCase()) {
@@ -171,27 +197,6 @@ public class QC {
             case "rejected" -> "-fx-text-fill: red; -fx-font-size: 15px";
             default -> "-fx-text-fill: orange; -fx-font-size: 15px";
         };
-    }
-
-    private void updateDetailsButtonStyle(List<Order> orders) {
-        boolean hasPending = false;
-
-        for (Order order : orders) {
-            for (Item item : order.getItems()) {
-                List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
-                if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
-                    hasPending = true;
-                    break;
-                }
-            }
-            if (hasPending) break;
-        }
-
-        if (hasPending) {
-            detailsButton.setStyle("-fx-background-color: #FF5252; -fx-text-fill: white;");
-        } else {
-            detailsButton.setStyle(""); // Reset style
-        }
     }
 
     @FXML
@@ -230,34 +235,6 @@ public class QC {
             showAlert("Failed to generate or preview PDF.");
         }
     }
-
-    @FXML
-    private void onDetailsButtonClick() {
-        List<Order> pendingOrders = allOrders.stream()
-                .filter(order -> order.getItems().stream()
-                        .anyMatch(item -> orderManager.getAllImagesWithStatus(order.getID(), item.getId()).stream()
-                                .anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))))
-                .collect(Collectors.toList());
-
-        if (pendingOrders.isEmpty()) {
-            showAlert("No pending images found.");
-            return;
-        }
-
-        ContextMenu contextMenu = new ContextMenu();
-
-        for (Order order : pendingOrders) {
-            MenuItem item = new MenuItem("Order: " + order.getOrderNumber());
-            item.setOnAction(ev -> {
-                listView.getSelectionModel().select(order.getOrderNumber());
-            });
-            contextMenu.getItems().add(item);
-        }
-
-        // Show the menu anchored to the button
-        contextMenu.show(detailsButton, Side.BOTTOM, 0, 0);
-    }
-
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
