@@ -2,6 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.login;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,19 +13,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 
 
 public class DashBoardController implements Initializable {
@@ -35,7 +32,7 @@ public class DashBoardController implements Initializable {
     @FXML
     private Label roleLabel, mainName;
 
-    private final UserManager userManager = new UserManager();
+    private final UserModel userModel = new UserModel(new UserManager());
 
     @FXML
     private TextField onSearchUsername;
@@ -94,110 +91,66 @@ public class DashBoardController implements Initializable {
 
 
     private void populateUserButtons() {
-        List<User> users = userManager.getAllUsers();
+        // Retrieve the list of buttons from the UserModel
+        List<Button> buttons = userModel.generateUserButtons();
 
-        for (User user : users) {
-            Button btn = new Button(user.getUser_name());
-            btn.setPrefSize(210, 60);
-            btn.setStyle("-fx-background-color: #BBDEFB;" + "-fx-background-radius: 8");
-            btn.setOnAction(e -> handleUserClick(user.getUser_name()));
-
-            InputStream imgStream = getClass().getResourceAsStream("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/3.png");
-            ImageView icon;
-
-            if (imgStream != null) {
-                icon = new ImageView(new Image(imgStream));
-            } else {
-                System.err.println("Icon not found");
-                icon = new ImageView(); // fallback: create an empty image view to avoid null
-            }
-
-            icon.setFitWidth(48);
-            icon.setFitHeight(31);
-            icon.setPreserveRatio(true);
-
-            btn.setGraphic(icon);
-            btn.setGraphicTextGap(10);
-            btn.setAlignment(javafx.geometry.Pos.BASELINE_LEFT);
-
-            FlowPane.setMargin(btn, new javafx.geometry.Insets(10, 10, 0, 10));
-
+        // Add each button to the buttonContainer
+        for (Button btn : buttons) {
             buttonContainer.getChildren().add(btn);
-
-            btn.setOnAction(event -> {
-                if (user.getRole_id() == 1) {
-                    try {
-                        // Load LoginPasswordController.fxml
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
-                        Parent loginPasswordPane = loader.load();
-
-                        LoginController loginPasswordController = loader.getController();
-                        loginPasswordController.setUsername(user.getUser_name());
-
-                        // Clear the FlowPane and add the LoginPasswordController content
-                        buttonContainer.getChildren().clear();
-                        buttonContainer.getChildren().add(loginPasswordPane);
-
-                        roleLabel.setText("Administrator");
-                        mainName.setText(user.getUser_name());
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (user.getRole_id() == 2) {
-                    try{
-
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
-                        Parent loginPasswordPane = loader.load();
-
-                        LoginController loginPasswordController = loader.getController();
-                        loginPasswordController.setUsername(user.getUser_name());
-
-
-
-                        buttonContainer.getChildren().clear();
-                        buttonContainer.getChildren().add(loginPasswordPane);
-                        roleLabel.setText("Quality Controller");
-                        mainName.setText(user.getUser_name());
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (user.getRole_id() == 3) {
-
-                    try{
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/OPLogin.fxml"));
-                        Parent loginPasswordPane = loader.load();
-
-                        PINLogin loginPasswordController = loader.getController();
-                        loginPasswordController.setUsername(user.getUser_name());
-
-                        buttonContainer.getChildren().clear();
-                        buttonContainer.getChildren().add(loginPasswordPane);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    roleLabel.setText("Operator");
-                    mainName.setText(user.getUser_name());
-
-                }
-            });
-
+            allButtons.add(btn); // Store the button for filtering
         }
 
+        // Add action handlers for each button
+        for (Button btn : allButtons) {
+            btn.setOnAction(event -> {
+                String userName = btn.getText();
+                User user = userModel.getUsers().stream()
+                        .filter(u -> u.getUser_name().equals(userName))
+                        .findFirst()
+                        .orElse(null);
 
+                if (user != null) {
+                    handleUserAction(user);
+                }
+            });
+        }
     }
 
-    private void handleUserClick(String userName) {
-        System.out.println("User clicked: " + userName);
-    }
+    private void handleUserAction(User user) {
+        try {
+            FXMLLoader loader;
+            Parent loginPane;
 
+            switch (user.getRole_id()) {
+                case 1 -> {
+                    loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
+                    loginPane = loader.load();
+                    LoginController loginController = loader.getController();
+                    loginController.setUsername(user.getUser_name());
+                    roleLabel.setText("Administrator");
+                }
+                case 2 -> {
+                    loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/LoginPassword.fxml"));
+                    loginPane = loader.load();
+                    LoginController loginController = loader.getController();
+                    loginController.setUsername(user.getUser_name());
+                    roleLabel.setText("Quality Controller");
+                }
+                case 3 -> {
+                    loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/OPLogin.fxml"));
+                    loginPane = loader.load();
+                    PINLogin pinLoginController = loader.getController();
+                    pinLoginController.setUsername(user.getUser_name());
+                    roleLabel.setText("Operator");
+                }
+                default -> throw new IllegalStateException("Unexpected role ID: " + user.getRole_id());
+            }
+
+            buttonContainer.getChildren().clear();
+            buttonContainer.getChildren().add(loginPane);
+            mainName.setText(user.getUser_name());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
-

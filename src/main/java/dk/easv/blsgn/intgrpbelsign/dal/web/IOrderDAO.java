@@ -1,7 +1,7 @@
 package dk.easv.blsgn.intgrpbelsign.dal.web;
 
 import dk.easv.blsgn.intgrpbelsign.be.Order;
-import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 
 import java.sql.SQLException;
 import java.util.List;

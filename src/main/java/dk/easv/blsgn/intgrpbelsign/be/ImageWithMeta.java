@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.model;
+package dk.easv.blsgn.intgrpbelsign.be;
 
 public class ImageWithMeta {
     private int id;

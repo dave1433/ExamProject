@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.utils;
 import com.github.sarxos.webcam.Webcam;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
-import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;

@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.operator;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
-import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 
 public class OperatorController {
+
     @FXML
     private FlowPane flowPane;
 

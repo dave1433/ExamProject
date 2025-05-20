@@ -4,7 +4,7 @@ import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
-import dk.easv.blsgn.intgrpbelsign.model.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

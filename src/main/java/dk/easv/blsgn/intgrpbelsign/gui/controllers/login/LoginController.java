@@ -2,6 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.login;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +16,7 @@ import java.io.IOException;
 
 public class LoginController {
 
-    private final UserManager userManager = new UserManager();
+    private final UserModel userModel = new UserModel(new UserManager());
 
     @FXML
     private FlowPane buttonContainer;
@@ -28,14 +29,16 @@ public class LoginController {
         String username = userNameLabel.getText();
         String password = passwordField.getText();
         try {
-            User user = userManager.validateUser(username, password);
+            User user = userModel.validateUser(username, password);
             if (user != null) {
                 handleLogin(user);
             } else {
                 System.out.println("Login failed. Invalid credentials.");
             }
+        } catch (javax.naming.AuthenticationException e) {
+            throw new RuntimeException(e);
         } catch (AuthenticationException e) {
-            System.out.println("Failed to validate user: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

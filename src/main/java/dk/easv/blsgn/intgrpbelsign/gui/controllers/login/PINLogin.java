@@ -2,6 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.login;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -30,7 +31,7 @@ public class PINLogin {
     @FXML
     private RadioButton rb1, rb2, rb3, rb4;
 
-    private final UserManager userManager = new UserManager();
+    private final UserModel userModel = new UserModel(new UserManager());
     @FXML
     public void initialize() {
         if (passwordField != null) {
@@ -67,7 +68,7 @@ public class PINLogin {
         String password = passwordField.getText();
 
         try {
-            User user = userManager.validateUser(username, password);
+            User user = userModel.validateUser(username, password);
 
             if (user == null) {
                 indicateInvalidPassword();
@@ -79,7 +80,7 @@ public class PINLogin {
             } else {
                 indicateInvalidPassword();
             }
-        } catch (AuthenticationException e) {
+        } catch (AuthenticationException | javax.naming.AuthenticationException e) {
             indicateInvalidPassword();
         }
     }
