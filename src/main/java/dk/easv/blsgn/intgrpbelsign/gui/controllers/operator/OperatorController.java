@@ -134,6 +134,8 @@ public class OperatorController {
         FlowPane pendingPane = new FlowPane(5, 5);
 
         List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+        String[] viewLabels = {"Front", "Back", "Left", "Right", "Top", "Bottom"};
+        int imageCount = 0;
 
         for (ImageWithMeta meta : images) {
             Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
@@ -152,11 +154,24 @@ public class OperatorController {
                     order.getOrderNumber()
             );
 
+            // Add view label if it's one of the first 6 images
+            if (imageCount < viewLabels.length) {
+                VBox labeledImageStack = new VBox(5); // 5px spacing between label and image
+                Label viewLabel = new Label(viewLabels[imageCount]);
+                viewLabel.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 2 5; " +
+                                 "-fx-border-color: black; -fx-border-radius: 3;");
+                labeledImageStack.setAlignment(Pos.CENTER);
+                labeledImageStack.getChildren().addAll(viewLabel, imageStack);
+                imageStack = new StackPane(labeledImageStack);
+            }
+
             switch (meta.getStatus().toLowerCase()) {
                 case "rejected" -> rejectedPane.getChildren().add(imageStack);
                 case "approved" -> approvedPane.getChildren().add(imageStack);
                 default -> pendingPane.getChildren().add(imageStack);
             }
+            
+            imageCount++;
         }
 
         addLabeledSection(photoSections, rejectedPane, "❌ Rejected - Re-take photo", "red");
