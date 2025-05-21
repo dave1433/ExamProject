@@ -25,12 +25,7 @@ public class PdfReportGenerator {
      * @return A byte array representing the generated PDF.
      * @throws IOException If any I/O error occurs.
      */
-    public static byte[] generatePdfWithImages(
-            String orderNumber,
-            Item item,
-            List<byte[]> approvedImageList,
-            byte[] belmanLogoBytes,
-            byte[] qcSignatureBytes
+    public static byte[] generatePdfWithImages(String orderNumber, List<byte[]> approvedImageList, byte[] belmanLogoBytes, byte[] qcSignatureBytes
     ) throws IOException {
 
         if (approvedImageList == null || approvedImageList.isEmpty()) {

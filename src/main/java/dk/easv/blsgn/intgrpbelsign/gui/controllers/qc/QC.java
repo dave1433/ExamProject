@@ -5,7 +5,6 @@ import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
-import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
@@ -20,6 +19,7 @@ import javafx.scene.layout.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -228,15 +228,33 @@ public class QC {
                 return;
             }
 
-            Item selectedItem = selectedOrder.getItems().get(0);
-            List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), selectedItem.getId());
-            List<byte[]> approvedImages = imageMetas.stream()
-                    .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
-                    .map(ImageWithMeta::getImageData)
-                    .collect(Collectors.toList());
+            // ❗ Check: Are all images approved?
+            for (Item item : selectedOrder.getItems()) {
+                List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
+
+                boolean hasNonApproved = imageMetas.stream()
+                        .anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
+
+                if (hasNonApproved) {
+                    showAlert("You can only preview the report when all images are approved.");
+                    return;
+                }
+            }
+
+            // ✅ All approved → collect them
+            List<byte[]> approvedImages = new ArrayList<>();
+            for (Item item : selectedOrder.getItems()) {
+                List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
+
+                approvedImages.addAll(
+                        imageMetas.stream()
+                                .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
+                                .map(ImageWithMeta::getImageData)
+                                .collect(Collectors.toList()));
+            }
 
             if (approvedImages.isEmpty()) {
-                showAlert("No approved images for this item.");
+                showAlert("No approved images for this order.");
                 return;
             }
 
@@ -248,16 +266,16 @@ public class QC {
             }
             byte[] logoBytes = logoStream.readAllBytes();
 
-            // Load signature
+            // Load QC signature
             byte[] qcSignature = userModel.getSignatureForUser(currentUser.getUser_id());
             if (qcSignature == null) {
                 showAlert("QC signature not found.");
                 return;
             }
 
+            // Generate & preview the PDF
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
                     selectedOrder.getOrderNumber(),
-                    selectedItem,
                     approvedImages,
                     logoBytes,
                     qcSignature

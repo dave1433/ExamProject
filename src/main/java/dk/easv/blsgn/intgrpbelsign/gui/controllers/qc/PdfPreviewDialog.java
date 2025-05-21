@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.gui.controllers;
+package dk.easv.blsgn.intgrpbelsign.gui.controllers.qc;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -60,13 +60,17 @@ public class PdfPreviewDialog extends Stage {
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save PDF As...");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-            chooser.setInitialFileName("Belman OrderNumber:" + orderNumber + ".pdf");
+            chooser.setInitialFileName("Belman Order_" + orderNumber + ".pdf");
 
             File file = chooser.showSaveDialog(this);
             if (file != null) {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
                     fos.write(pdfBytes);
-                } catch (IOException ex) {
+
+                    // ✅ Ask user for email after download
+                    new EmailSendDialog(pdfBytes, orderNumber).show();
+
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     new Alert(Alert.AlertType.ERROR, "Failed to save PDF").showAndWait();
                 }
