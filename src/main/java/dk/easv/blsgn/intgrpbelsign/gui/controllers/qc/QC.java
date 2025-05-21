@@ -6,10 +6,9 @@ import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -34,8 +33,9 @@ public class QC {
     @FXML
     private TextField searchField;
 
-    private final UserModel userModel = new UserModel(new UserManager());
-    private final OrderManager orderManager = new OrderManager();
+    private final UserModel userModel = new UserModel(new UserManager());  // UserModel instance to get the QC's signature
+    private final OrderModel orderModel = new OrderModel(new OrderManager());
+
     private List<Order> allOrders;
     private User currentUser;
 
@@ -49,7 +49,8 @@ public class QC {
     }
 
     private void setupSearchAndSelection() {
-        allOrders = orderManager.getAllOrders();
+
+        allOrders = orderModel.getAllOrders();
 
         displayOrd(allOrders);
         flowPane.getChildren().clear();
@@ -74,7 +75,7 @@ public class QC {
     }
 
     private void displayOrd(List<Order> orders) {
-        listView.setItems(FXCollections.observableArrayList());
+        listView.setItems(orderModel.getOrderNumbers(orders));
         listView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -99,17 +100,11 @@ public class QC {
 
             }
         });
-
-        ObservableList<String> orderNumbers = FXCollections.observableArrayList();
-        for (Order order : orders) {
-            orderNumbers.add(order.getOrderNumber());
-        }
-        listView.setItems(orderNumbers);
     }
 
     private boolean hasPendingImages(Order order) {
         for (Item item : order.getItems()) {
-            List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+            List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
             if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
                 return true;
             }
@@ -119,7 +114,6 @@ public class QC {
 
     private void displayOrders(List<Order> orders) {
         flowPane.getChildren().clear();
-
         for (Order order : orders) {
             for (Item item : order.getItems()) {
                 VBox itemBox = new VBox(5);
@@ -138,7 +132,7 @@ public class QC {
                 photoPane.setVisible(false);
                 photoPane.setManaged(false);
 
-                List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+                List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
 
                 for (ImageWithMeta meta : images) {
                     Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
@@ -160,7 +154,7 @@ public class QC {
                     Tooltip.install(rejectBtn, new Tooltip("Reject this image"));
 
                     approveBtn.setOnAction(ev -> {
-                        orderManager.updateImageStatus(meta.getId(), "approved");
+                        orderModel.updateImageStatus(meta.getId(), "approved");
                         statusLabel.setText("Status: approved");
                         statusLabel.setStyle(getStatusStyle("approved"));
                         approveBtn.setVisible(false);
@@ -169,7 +163,7 @@ public class QC {
                     });
 
                     rejectBtn.setOnAction(ev -> {
-                        orderManager.updateImageStatus(meta.getId(), "rejected");
+                        orderModel.updateImageStatus(meta.getId(), "rejected");
                         statusLabel.setText("Status: rejected");
                         statusLabel.setStyle(getStatusStyle("rejected"));
                         approveBtn.setVisible(false);

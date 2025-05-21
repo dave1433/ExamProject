@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class OrderModel {
 
     private final OrderManager orderManager;
-    private List<Order> allOrders;
+    private ObservableList<Order> allOrders = FXCollections.observableArrayList();
 
 
     public OrderModel(OrderManager orderManager) {
@@ -23,11 +23,11 @@ public class OrderModel {
     }
 
     public void loadAllOrders() {
-        allOrders = orderManager.getAllOrders();
+        allOrders.setAll(orderManager.getAllOrders());
     }
 
-    public List<Order> getAllOrders() {
-        return allOrders;
+    public ObservableList<Order> getAllOrders() {
+        return  allOrders;
     }
 
     public List<Order> filterOrders(String search) {
@@ -56,12 +56,7 @@ public class OrderModel {
         return orderManager.getAllImagesWithStatus(orderId, itemId);
     }
 
-
-    public void deleteImage(int id) {
-        orderManager.deleteImage(id);
-    }
-
-    public void saveImage(int orderId, int id, byte[] imageBytes) throws SQLException {
-        orderManager.saveImage(orderId, id, imageBytes);
+    public void updateImageStatus(int imageId, String status) {
+        orderManager.updateImageStatus(imageId, status);
     }
 }
