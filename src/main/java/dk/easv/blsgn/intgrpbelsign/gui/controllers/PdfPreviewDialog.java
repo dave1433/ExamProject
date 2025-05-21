@@ -60,7 +60,7 @@ public class PdfPreviewDialog extends Stage {
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save PDF As...");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-            chooser.setInitialFileName("Order_" + orderNumber + ".pdf");
+            chooser.setInitialFileName("Belman OrderNumber:" + orderNumber + ".pdf");
 
             File file = chooser.showSaveDialog(this);
             if (file != null) {
