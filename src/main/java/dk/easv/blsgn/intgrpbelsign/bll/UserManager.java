@@ -57,4 +57,8 @@ public class UserManager {
     public List<Role> getAllRoles() {
         return iUserDAO.getAllRoles();
     }
+
+    public byte[] loadSignatureForUser(int userId) {
+        return iUserDAO.getSignatureByUserId(userId);
+    }
 }

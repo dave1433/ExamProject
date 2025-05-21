@@ -19,5 +19,6 @@ public interface IUserDAO {
     boolean doesUserNameExist(String username);
     User getUserByUsername(String username);
     List<Role> getAllRoles();
+    byte[] getSignatureByUserId(int userId);
 
 }

@@ -153,4 +153,21 @@ public class UserDAO implements IUserDAO {
 
         return roles;
     }
+
+    @Override
+    public byte[] getSignatureByUserId(int userId) {
+        String sql = "SELECT signature FROM [User] WHERE user_id = ?";
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBytes("signature");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

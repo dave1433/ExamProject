@@ -22,13 +22,7 @@ import java.io.*;
 
 public class PdfPreviewDialog extends Stage {
 
-    private final byte[] pdfBytes;
-    private final String orderNumber;
-
     public PdfPreviewDialog(byte[] pdfBytes, String orderNumber) throws IOException {
-        this.pdfBytes = pdfBytes;
-        this.orderNumber = orderNumber;
-
         setTitle("PDF Preview");
         initModality(Modality.APPLICATION_MODAL);
 
@@ -41,15 +35,11 @@ public class PdfPreviewDialog extends Stage {
         Button downloadBtn = new Button("Download PDF");
         downloadBtn.setStyle("-fx-background-color:  #004b88; -fx-text-fill: white; -fx-padding: 8;");
 
-
         BorderPane root = new BorderPane(scrollPane);
-
         HBox downloadBtnHbox = new HBox(downloadBtn);
         downloadBtnHbox.setAlignment(Pos.CENTER);
         downloadBtnHbox.setPadding(new Insets(10));
-
         root.setBottom(downloadBtnHbox);
-
 
         Scene scene = new Scene(root, 600, 700);
         setScene(scene);

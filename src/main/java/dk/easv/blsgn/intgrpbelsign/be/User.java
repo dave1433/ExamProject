@@ -90,4 +90,14 @@ public class User {
     public void setPhone_number(String phone_number) {
         this.phone_number = phone_number;
     }
+
+    private byte[] signature;
+
+    public byte[] getSignature() {
+        return signature;
+    }
+
+    public void setSignature(byte[] signature) {
+        this.signature = signature;
+    }
 }

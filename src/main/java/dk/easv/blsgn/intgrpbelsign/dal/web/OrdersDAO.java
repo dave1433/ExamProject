@@ -19,8 +19,7 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-            SELECT i.id, i.item_name, oii.order_id,
-                   i.materials_used, i.approx_quantity, i.total_weight
+            SELECT i.id, i.item_name, oii.order_id
             FROM order_item_image oii
             JOIN items i ON oii.item_id = i.id
             WHERE oii.order_id = ?
@@ -43,10 +42,7 @@ public class OrdersDAO implements IOrderDAO {
                             Item item = new Item(
                                     itemRs.getInt("id"),
                                     itemRs.getString("item_name"),
-                                    itemRs.getInt("order_id"),
-                                    itemRs.getString("materials_used"),
-                                    itemRs.getString("approx_quantity"),
-                                    itemRs.getInt("total_weight")
+                                    itemRs.getInt("order_id")
                             );
                             itemList.add(item);
                         }

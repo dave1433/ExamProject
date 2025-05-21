@@ -5,29 +5,59 @@ import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
+
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 
 public class PdfReportGenerator {
 
-    public static byte[] generatePdfWithImages(String orderNumber, Item item, List<byte[]> imageList) throws IOException {
+    /**
+     * Generates a PDF report with a logo, approved images, and a QC signature.
+     *
+     * @param orderNumber       The order number.
+     * @param item              The item being documented.
+     * @param approvedImageList List of approved image byte arrays.
+     * @param belmanLogoBytes   Byte array for the Belman logo.
+     * @param qcSignatureBytes  Byte array for the QC (role 2) signature.
+     * @return A byte array representing the generated PDF.
+     * @throws IOException If any I/O error occurs.
+     */
+    public static byte[] generatePdfWithImages(
+            String orderNumber,
+            Item item,
+            List<byte[]> approvedImageList,
+            byte[] belmanLogoBytes,
+            byte[] qcSignatureBytes
+    ) throws IOException {
+
+        if (approvedImageList == null || approvedImageList.isEmpty()) {
+            throw new IllegalArgumentException("PDF cannot be generated: No approved images.");
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(baos);
         PdfDocument pdf = new PdfDocument(writer);
         Document doc = new Document(pdf);
 
+        // Add Belman logo if available
+        if (belmanLogoBytes != null) {
+            ImageData logoData = ImageDataFactory.create(belmanLogoBytes);
+            Image logo = new Image(logoData).scaleToFit(120, 60);
+            doc.add(logo);
+        }
+
+        // Basic report info
         doc.add(new Paragraph("Order Report").setBold().setFontSize(18));
         doc.add(new Paragraph("Order Number: " + orderNumber));
         doc.add(new Paragraph("Date: " + java.time.LocalDate.now()));
         doc.add(new Paragraph("\n"));
 
-        addItemDetailsTable(doc, item);
-
-        for (int i = 0; i < imageList.size(); i++) {
-            byte[] imgBytes = imageList.get(i);
+        // Add approved images
+        for (int i = 0; i < approvedImageList.size(); i++) {
+            byte[] imgBytes = approvedImageList.get(i);
             if (imgBytes != null) {
                 ImageData imageData = ImageDataFactory.create(imgBytes);
                 Image image = new Image(imageData).scaleToFit(400, 300);
@@ -36,26 +66,18 @@ public class PdfReportGenerator {
             }
         }
 
+        // Add QC signature if available
+        if (qcSignatureBytes != null) {
+            doc.add(new Paragraph("\nApproved by QC"));
+            ImageData signatureData = ImageDataFactory.create(qcSignatureBytes);
+            Image signature = new Image(signatureData).scaleToFit(200, 100);
+            doc.add(signature);
+        }
+
         doc.close();
         return baos.toByteArray();
-    }
 
-    private static void addItemDetailsTable(Document doc, Item item) {
-        float[] columnWidths = {200f, 200f, 200f, 100f};
-        Table table = new Table(columnWidths);
-
-        table.addHeaderCell("Item Name");
-        table.addHeaderCell("Materials Used");
-        table.addHeaderCell("Approx. Quantity");
-        table.addHeaderCell("Total Weight (g)");
-
-        table.addCell(item.getItemName());
-        table.addCell(item.getMaterialsUsed() != null ? item.getMaterialsUsed() : "N/A");
-        table.addCell(item.getApproxQuantity() != null ? item.getApproxQuantity() : "N/A");
-        table.addCell(String.valueOf(item.getTotalWeight()));
-
-        doc.add(new Paragraph("Item Description:").setBold().setFontSize(14));
-        doc.add(table);
-        doc.add(new Paragraph("\n"));
     }
 }
+
+

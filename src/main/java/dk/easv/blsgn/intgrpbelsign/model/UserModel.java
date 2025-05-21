@@ -89,4 +89,9 @@ public class UserModel {
         return user;
     }
 
+
+    public byte[] getSignatureForUser(int userId) {
+        return userManager.loadSignatureForUser(userId);
+    }
+
 }

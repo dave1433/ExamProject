@@ -2,9 +2,12 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.qc;
 
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
+import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.PdfPreviewDialog;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +34,14 @@ public class QC {
     @FXML
     private TextField searchField;
 
+    private final UserModel userModel = new UserModel(new UserManager());
     private final OrderManager orderManager = new OrderManager();
     private List<Order> allOrders;
+    private User currentUser;
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
 
     @FXML
     public void initialize() {
@@ -219,16 +229,41 @@ public class QC {
             }
 
             Item selectedItem = selectedOrder.getItems().get(0);
-            List<byte[]> images = orderManager.getImagesForItem(selectedOrder.getID(), selectedItem.getId());
+            List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), selectedItem.getId());
+            List<byte[]> approvedImages = imageMetas.stream()
+                    .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
+                    .map(ImageWithMeta::getImageData)
+                    .collect(Collectors.toList());
+
+            if (approvedImages.isEmpty()) {
+                showAlert("No approved images for this item.");
+                return;
+            }
+
+            // Load logo
+            InputStream logoStream = getClass().getClassLoader().getResourceAsStream("dk/easv/blsgn/intgrpbelsign/Pictures/icons/1.png");
+            if (logoStream == null) {
+                showAlert("Belman logo not found.");
+                return;
+            }
+            byte[] logoBytes = logoStream.readAllBytes();
+
+            // Load signature
+            byte[] qcSignature = userModel.getSignatureForUser(currentUser.getUser_id());
+            if (qcSignature == null) {
+                showAlert("QC signature not found.");
+                return;
+            }
 
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
                     selectedOrder.getOrderNumber(),
                     selectedItem,
-                    images
+                    approvedImages,
+                    logoBytes,
+                    qcSignature
             );
 
-            PdfPreviewDialog preview = new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber());
-            preview.showAndWait();
+            new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber()).showAndWait();
 
         } catch (Exception e) {
             e.printStackTrace();

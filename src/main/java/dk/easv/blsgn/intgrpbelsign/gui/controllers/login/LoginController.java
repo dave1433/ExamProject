@@ -50,14 +50,18 @@ public class LoginController {
             case 1 -> {
                 fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Admin-dashboard.fxml";
                 role = "Admin";
+                loadDashboard(fxmlPath, role);
             }
             case 2 -> {
                 fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Qc.fxml";
-                role = "Operator";
+                role = "QC";
+                loadDashboardWithUser(fxmlPath, role, user);
             }
             case 3 -> {
                 fxmlPath = "/dk/easv/blsgn/intgrpbelsign/Operator-window.fxml";
-                role = "Qc";
+                role = "Operator";
+                loadDashboard(fxmlPath, role);
+
             }
             default -> {
                 System.out.println("Login failed. Invalid role.");
@@ -65,13 +69,33 @@ public class LoginController {
             }
         }
 
-        loadDashboard(fxmlPath, role);
     }
 
     private void loadDashboard(String fxmlPath, String role) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
+
+            buttonContainer.getChildren().clear();
+            buttonContainer.getChildren().add(root);
+
+            System.out.println("Login successful for " + role + " user.");
+        } catch (IOException e) {
+            System.out.println("Failed to load dashboard: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDashboardWithUser(String fxmlPath, String role, User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            // Pass the user to QC controller
+            Object controller = loader.getController();
+            if (controller instanceof dk.easv.blsgn.intgrpbelsign.gui.controllers.qc.QC qcController) {
+                qcController.setCurrentUser(user);
+            }
 
             buttonContainer.getChildren().clear();
             buttonContainer.getChildren().add(root);
