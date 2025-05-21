@@ -31,7 +31,7 @@ public class EmailSender {
             String subject,
             String plainBody,
             byte[] pdfBytes,
-            String fileNamev1
+            String fileName
     ) throws IOException {
         Email from = new Email(FROM_EMAIL);
         Email to = new Email(toEmail);
