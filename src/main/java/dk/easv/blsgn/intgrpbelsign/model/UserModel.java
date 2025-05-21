@@ -23,6 +23,7 @@ public class UserModel {
         this.userManager = userManager;
         refreshUsers();
     }
+
     public List<Button> generateUserButtons() {
         List<Button> buttons = new ArrayList<>();
 

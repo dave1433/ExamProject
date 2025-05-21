@@ -15,7 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -23,11 +22,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ImageOverlayUtil {
-    private final OrderManager orderManager;
     private Runnable refreshCallback;
-
-    public ImageOverlayUtil(OrderManager orderManager) {
-        this.orderManager = orderManager;
+    private final OrderManager orderModel;
+    public ImageOverlayUtil(OrderManager orderModel) {
+        this.orderModel = orderModel;
     }
 
     public void setRefreshCallback(Runnable callback) {
@@ -57,7 +55,7 @@ public class ImageOverlayUtil {
             retakeBtn.setStyle("-fx-background-image: url('/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-retake-50.png');" +
                     "-fx-background-color: transparent;");
             retakeBtn.setOnAction(_ -> {
-                orderManager.deleteImage(meta.getId());
+                orderModel.deleteImage(meta.getId());
                 openRetakeCamera(item, orderId, orderNumber);
             });
             buttonsBox.getChildren().add(retakeBtn);
@@ -132,7 +130,7 @@ public class ImageOverlayUtil {
                     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                         ImageIO.write(frame, "png", baos);
                         byte[] imageBytes = baos.toByteArray();
-                        orderManager.saveImage(orderId, item.getId(), imageBytes);
+                        orderModel.saveImage(orderId, item.getId(), imageBytes);
                         if (refreshCallback != null) {
                             Platform.runLater(refreshCallback);
                         }
@@ -163,7 +161,7 @@ public class ImageOverlayUtil {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes);
+            orderModel.saveImage(orderId, itemId, imageBytes);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
             showError("Error", "Failed to save image: " + e.getMessage());

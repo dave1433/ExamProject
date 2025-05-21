@@ -2,9 +2,10 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.operator;
 
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
-import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
-import javafx.collections.FXCollections;
+import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
+import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -13,11 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 public class OperatorController {
 
@@ -30,21 +28,17 @@ public class OperatorController {
     @FXML
     private TextField searchField;
 
-    private final OrderManager orderManager = new OrderManager();
-    private final ImageOverlayUtil imageOverlayUtil;
-    private List<Order> allOrders;
+    private final OrderModel orderModel = new OrderModel(new OrderManager());
+    private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
 
     public OperatorController() {
-        imageOverlayUtil = new ImageOverlayUtil(orderManager);
         imageOverlayUtil.setRefreshCallback(this::refreshView);
     }
 
     private void refreshView() {
         String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
         if (selectedOrderNumber != null) {
-            List<Order> selected = allOrders.stream()
-                    .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
-                    .collect(Collectors.toList());
+            List<Order> selected = orderModel.findOrdersByNumber(selectedOrderNumber);
             displayOrders(selected);
         }
     }
@@ -56,30 +50,23 @@ public class OperatorController {
 
     @FXML
     private void onSearchFilter() {
-        allOrders = orderManager.getAllOrders();
-        displayOrd(allOrders);
+        orderModel.loadAllOrders();
+        displayOrd(orderModel.getAllOrders());
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            List<Order> filtered = allOrders.stream()
-                    .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
-                    .collect(Collectors.toList());
+            List<Order> filtered = orderModel.filterOrders(newVal);
             displayOrd(filtered);
         });
 
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
             if (selectedOrderNumber != null) {
-                List<Order> selected = allOrders.stream()
-                        .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
-                        .collect(Collectors.toList());
+                List<Order> selected = orderModel.findOrdersByNumber(selectedOrderNumber);
                 displayOrders(selected);
             }
         });
     }
 
     private void displayOrd(List<Order> orders) {
-        ObservableList<String> orderNumbers = FXCollections.observableArrayList();
-        for (Order order : orders) {
-            orderNumbers.add(order.getOrderNumber());
-        }
+        ObservableList<String> orderNumbers = orderModel.getOrderNumbers(orders);
         listView.setItems(orderNumbers);
     }
 
@@ -133,7 +120,7 @@ public class OperatorController {
         FlowPane approvedPane = new FlowPane(5, 5);
         FlowPane pendingPane = new FlowPane(5, 5);
 
-        List<ImageWithMeta> images = orderManager.getAllImagesWithStatus(order.getID(), item.getId());
+        List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
         String[] viewLabels = {"Front", "Back", "Left", "Right", "Top", "Bottom"};
         int imageCount = 0;
 
@@ -159,7 +146,7 @@ public class OperatorController {
                 VBox labeledImageStack = new VBox(5); // 5px spacing between label and image
                 Label viewLabel = new Label(viewLabels[imageCount]);
                 viewLabel.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 2 5; " +
-                                 "-fx-border-color: black; -fx-border-radius: 3;");
+                        "-fx-border-color: black; -fx-border-radius: 3;");
                 labeledImageStack.setAlignment(Pos.CENTER);
                 labeledImageStack.getChildren().addAll(viewLabel, imageStack);
                 imageStack = new StackPane(labeledImageStack);
@@ -170,7 +157,7 @@ public class OperatorController {
                 case "approved" -> approvedPane.getChildren().add(imageStack);
                 default -> pendingPane.getChildren().add(imageStack);
             }
-            
+
             imageCount++;
         }
 
@@ -198,5 +185,4 @@ public class OperatorController {
         );
         return addPhotoButton;
     }
-
 }
