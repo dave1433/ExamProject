@@ -6,7 +6,6 @@ import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -66,8 +65,7 @@ public class OperatorController {
     }
 
     private void displayOrd(List<Order> orders) {
-        ObservableList<String> orderNumbers = orderModel.getOrderNumbers(orders);
-        listView.setItems(orderNumbers);
+        listView.setItems(orderModel.getOrderNumbers(orders));
     }
 
     private void displayOrders(List<Order> orders) {
