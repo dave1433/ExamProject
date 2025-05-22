@@ -67,8 +67,8 @@ public class PdfPreviewDialog extends Stage {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
                     fos.write(pdfBytes);
 
-                    // ✅ Ask user for email after download
-                    new EmailSendDialog(pdfBytes, orderNumber).show();
+                    // ✅ Ask for email and pass reference to this window
+                    new EmailSendDialog(pdfBytes, orderNumber, this).show();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();

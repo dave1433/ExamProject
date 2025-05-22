@@ -9,7 +9,11 @@ import javafx.stage.Stage;
 
 public class EmailSendDialog extends Stage {
 
-    public EmailSendDialog(byte[] pdfBytes, String orderNumber) {
+    private final Stage parentStage;
+
+    public EmailSendDialog(byte[] pdfBytes, String orderNumber, Stage parentStage) {
+        this.parentStage = parentStage;
+
         setTitle("Send QC Documentation");
 
         VBox layout = new VBox(10);
@@ -38,6 +42,9 @@ public class EmailSendDialog extends Stage {
                 );
                 showAlert("Email sent to " + email);
                 close();
+                if (parentStage != null) {
+                    parentStage.close();
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
                 showAlert("Failed to send email.");
