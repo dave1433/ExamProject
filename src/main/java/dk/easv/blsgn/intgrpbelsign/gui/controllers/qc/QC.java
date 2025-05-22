@@ -3,11 +3,12 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.qc;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.be.User;
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
-import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.model.UserModel;
+import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -22,7 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class QC {
+
+    private final OrderModel orderModel;
+    private final UserModel userModel;
+    private final ImageOverlayUtil imageOverlayUtil;
+
+    public QC() {
+        // Initialize dependencies after FXML loading
+        this.orderModel = new OrderModel(new OrderManager());
+        this.imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
+        this.userModel = new UserModel(new UserManager());
+    }
 
     @FXML
     private FlowPane flowPane;
@@ -32,9 +45,6 @@ public class QC {
 
     @FXML
     private TextField searchField;
-
-    private final UserModel userModel = new UserModel(new UserManager());  // UserModel instance to get the QC's signature
-    private final OrderModel orderModel = new OrderModel(new OrderManager());
 
     private List<Order> allOrders;
     private User currentUser;
@@ -115,11 +125,18 @@ public class QC {
     private void displayOrders(List<Order> orders) {
         flowPane.getChildren().clear();
         for (Order order : orders) {
+            VBox orderBox = new VBox(10);
+            orderBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
+            orderBox.setPrefWidth(700);
+
+            Label orderLabel = new Label("Order: " + order.getOrderNumber());
+            orderLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+            VBox itemsContainer = new VBox(15);
             for (Item item : order.getItems()) {
                 VBox itemBox = new VBox(5);
                 itemBox.setAlignment(Pos.TOP_LEFT);
                 itemBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;");
-
                 itemBox.setPrefWidth(650);
 
                 Label itemNameLabel = new Label(item.getItemName());
@@ -129,8 +146,6 @@ public class QC {
 
                 FlowPane photoPane = new FlowPane(10, 10);
                 photoPane.setPrefWrapLength(600);
-                photoPane.setVisible(false);
-                photoPane.setManaged(false);
 
                 List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
 
@@ -141,17 +156,35 @@ public class QC {
                     imgView.setFitHeight(150);
                     imgView.setPreserveRatio(true);
 
+                    StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
+                            imgView,
+                            img,
+                            meta.getStatus(),
+                            meta,
+                            item,
+                            order.getID(),
+                            order.getOrderNumber(),
+                            true  // true for QC view
+                    );
+
+                    VBox imageContainer = new VBox(5);
+                    imageContainer.setAlignment(Pos.CENTER);
+
                     Label statusLabel = new Label("Status: " + meta.getStatus());
                     statusLabel.setStyle(getStatusStyle(meta.getStatus()));
 
-                    Button approveBtn = new Button("✅");
-                    Button rejectBtn = new Button("❌");
+                    imageContainer.getChildren().addAll(imageStack, statusLabel);
 
-                    approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-                    rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+                    if (!"approved".equalsIgnoreCase(meta.getStatus()) &&
+                            !"rejected".equalsIgnoreCase(meta.getStatus())) {
+                        Button approveBtn = new Button("✅");
+                        Button rejectBtn = new Button("❌");
 
-                    Tooltip.install(approveBtn, new Tooltip("Approve this image"));
-                    Tooltip.install(rejectBtn, new Tooltip("Reject this image"));
+                        approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+                        rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+
+                        HBox buttons = new HBox(10, approveBtn, rejectBtn);
+                        buttons.setAlignment(Pos.CENTER);
 
                     approveBtn.setOnAction(ev -> {
                         orderModel.updateImageStatus(meta.getId(), "approved");
@@ -171,28 +204,21 @@ public class QC {
                         displayOrd(allOrders); // refresh ListView styles
                     });
 
-                    if ("approved".equalsIgnoreCase(meta.getStatus()) || "rejected".equalsIgnoreCase(meta.getStatus())) {
-                        approveBtn.setVisible(false);
-                        rejectBtn.setVisible(false);
+                        imageContainer.getChildren().add(buttons);
                     }
 
-                    VBox imageBox = new VBox(5, imgView, statusLabel, new HBox(10, approveBtn, rejectBtn));
-                    imageBox.setAlignment(Pos.CENTER);
-                    photoPane.getChildren().add(imageBox);
+                    photoPane.getChildren().add(imageContainer);
                 }
 
-                // Toggle visibility on click
-                itemNameLabel.setOnMouseClicked(ev -> {
-                    boolean visible = photoPane.isVisible();
-                    photoPane.setVisible(!visible);
-                    photoPane.setManaged(!visible);
-                });
-
                 itemBox.getChildren().addAll(itemNameLabel, photoPane);
-                flowPane.getChildren().add(itemBox);
+                itemsContainer.getChildren().add(itemBox);
             }
+
+            orderBox.getChildren().addAll(orderLabel, itemsContainer);
+            flowPane.getChildren().add(orderBox);
         }
     }
+
 
 
     private String getStatusStyle(String status) {
@@ -224,7 +250,7 @@ public class QC {
 
             // ❗ Check: Are all images approved?
             for (Item item : selectedOrder.getItems()) {
-                List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
+                List<ImageWithMeta> imageMetas = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
 
                 boolean hasNonApproved = imageMetas.stream()
                         .anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
@@ -238,13 +264,13 @@ public class QC {
             // ✅ All approved → collect them
             List<byte[]> approvedImages = new ArrayList<>();
             for (Item item : selectedOrder.getItems()) {
-                List<ImageWithMeta> imageMetas = orderManager.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
+                List<ImageWithMeta> imageMetas = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
 
                 approvedImages.addAll(
                         imageMetas.stream()
                                 .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
                                 .map(ImageWithMeta::getImageData)
-                                .collect(Collectors.toList()));
+                                .toList());
             }
 
             if (approvedImages.isEmpty()) {

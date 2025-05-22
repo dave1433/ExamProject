@@ -136,12 +136,13 @@ public class OperatorController {
                     meta,
                     item,
                     order.getID(),
-                    order.getOrderNumber()
+                    order.getOrderNumber(),
+                    false
             );
 
-            // Add view label if it's one of the first 6 images
+            // Add the view label if it's one of the first 6 images
             if (imageCount < viewLabels.length) {
-                VBox labeledImageStack = new VBox(5); // 5px spacing between label and image
+                VBox labeledImageStack = new VBox(5); // 5 px spacing between label and image
                 Label viewLabel = new Label(viewLabels[imageCount]);
                 viewLabel.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 2 5; " +
                         "-fx-border-color: black; -fx-border-radius: 3;");
