@@ -160,11 +160,12 @@ public class QC {
                             imgView,
                             img,
                             meta.getStatus(),
+                            meta.getViewType(), // ✅ Provide the viewType here
                             meta,
                             item,
-                            order.getID(),
-                            order.getOrderNumber(),
-                            true  // true for QC view
+                            order.getID(),       // ✅ orderId from the loop variable
+                            order.getOrderNumber(), // ✅ orderNumber from the loop variable
+                            true
                     );
 
                     VBox imageContainer = new VBox(5);

@@ -16,8 +16,8 @@ public class OrderManager {
         return iOrderDAO.getAllOrders();
     }
 
-    public void saveImage(int orderId, int itemId, byte[] imageBytes) throws SQLException {
-        iOrderDAO.saveImage(orderId, itemId, imageBytes);
+    public void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws SQLException {
+        iOrderDAO.saveImage(orderId, itemId, imageBytes, viewType);
     }
 
     public List<byte[]> getImagesForItem(int orderId, int itemId) {

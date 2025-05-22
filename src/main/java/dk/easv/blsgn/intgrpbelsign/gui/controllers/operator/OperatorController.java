@@ -14,7 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
+import java.util.*;
 
 public class OperatorController {
 
@@ -106,82 +106,94 @@ public class OperatorController {
 
         VBox photoSections = createPhotoSections(item, order);
 
-        Button addPhotoButton = createAddPhotoButton(item, order);
+        //Button addPhotoButton = createAddPhotoButton(item, order);
 
-        itemBox.getChildren().addAll(itemNameLabel, photoSections, addPhotoButton);
+        itemBox.getChildren().addAll(itemNameLabel, photoSections/*,addPhotoButton*/);
         return itemBox;
     }
 
     private VBox createPhotoSections(Item item, Order order) {
         VBox photoSections = new VBox(10);
-        FlowPane rejectedPane = new FlowPane(5, 5);
-        FlowPane approvedPane = new FlowPane(5, 5);
-        FlowPane pendingPane = new FlowPane(5, 5);
+
+        String[] angles = {"Front", "Back", "Top", "Right", "Left"};
+        Map<String, VBox> angleSlotMap = new LinkedHashMap<>();
+        GridPane anglesPane = new GridPane();
+        anglesPane.setHgap(10);
+        anglesPane.setVgap(10);
+
+        for (int i = 0; i < angles.length; i++) {
+            String angle = angles[i];
+            VBox slot = createEmptySlot(item, order, angle);
+            angleSlotMap.put(angle.toLowerCase(), slot);
+            anglesPane.add(slot, i % 5, i / 5);
+        }
+
+        FlowPane extraPhotosPane = new FlowPane(10, 10);
 
         List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-        String[] viewLabels = {"Front", "Back", "Left", "Right", "Top", "Bottom"};
-        int imageCount = 0;
-
         for (ImageWithMeta meta : images) {
             Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
             ImageView imgView = new ImageView(img);
-            imgView.setFitWidth(150);
-            imgView.setFitHeight(150);
+            imgView.setFitWidth(100);
+            imgView.setFitHeight(100);
             imgView.setPreserveRatio(true);
 
-            StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
-                    imgView,
-                    img,
-                    meta.getStatus(),
-                    meta,
-                    item,
-                    order.getID(),
-                    order.getOrderNumber(),
-                    false
+            StackPane stack = imageOverlayUtil.createImageWithOverlay(
+                    imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), false
             );
 
-            // Add the view label if it's one of the first 6 images
-            if (imageCount < viewLabels.length) {
-                VBox labeledImageStack = new VBox(5); // 5 px spacing between label and image
-                Label viewLabel = new Label(viewLabels[imageCount]);
-                viewLabel.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 2 5; " +
-                        "-fx-border-color: black; -fx-border-radius: 3;");
-                labeledImageStack.setAlignment(Pos.CENTER);
-                labeledImageStack.getChildren().addAll(viewLabel, imageStack);
-                imageStack = new StackPane(labeledImageStack);
+            String angle = meta.getViewType() != null ? meta.getViewType().toLowerCase() : "";
+            VBox slot = angleSlotMap.get(angle);
+            if (slot != null) {
+                slot.getChildren().set(1, stack);
+            } else {
+                extraPhotosPane.getChildren().add(stack);
             }
-
-            switch (meta.getStatus().toLowerCase()) {
-                case "rejected" -> rejectedPane.getChildren().add(imageStack);
-                case "approved" -> approvedPane.getChildren().add(imageStack);
-                default -> pendingPane.getChildren().add(imageStack);
-            }
-
-            imageCount++;
         }
 
-        addLabeledSection(photoSections, rejectedPane, "❌ Rejected - Re-take photo", "red");
-        addLabeledSection(photoSections, pendingPane, "⌛ Pending", "orange");
-        addLabeledSection(photoSections, approvedPane, "✅ Approved", "green");
+        Label anglesLabel = new Label("Standard Views");
+        anglesLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
+        Label extraLabel = new Label("Extra Photos");
+        extraLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+
+        Button addExtraPhoto = new Button("+");
+        addExtraPhoto.setStyle("-fx-font-size: 20px; -fx-min-width: 100px; -fx-min-height: 100px;");
+        addExtraPhoto.setOnAction(e -> imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), "Extra"));
+        extraPhotosPane.getChildren().add(addExtraPhoto);
+
+        photoSections.getChildren().addAll(anglesLabel, anglesPane, extraLabel, extraPhotosPane);
         return photoSections;
     }
 
-    private void addLabeledSection(VBox container, FlowPane pane, String labelText, String color) {
-        if (!pane.getChildren().isEmpty()) {
-            Label label = new Label(labelText);
-            label.setStyle("-fx-font-weight: bold; -fx-text-fill: " + color + ";");
-            container.getChildren().addAll(label, pane);
-        }
+    private VBox createEmptySlot(Item item, Order order, String angle) {
+        VBox slot = new VBox(5);
+        slot.setAlignment(Pos.CENTER);
+
+        Label label = new Label(angle);
+        label.setStyle("-fx-font-weight: bold;");
+
+        StackPane plusSlot = new StackPane();
+        plusSlot.setPrefSize(100, 100);
+        plusSlot.setStyle("-fx-background-color: #ddd; -fx-border-color: black; -fx-alignment: center;");
+
+        Label plus = new Label("+");
+        plus.setStyle("-fx-font-size: 30px;");
+        plusSlot.getChildren().add(plus);
+
+        plusSlot.setOnMouseClicked(e -> imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), angle));
+
+        slot.getChildren().addAll(label, plusSlot);
+        return slot;
     }
 
-    private Button createAddPhotoButton(Item item, Order order) {
+    /*private Button createAddPhotoButton(Item item, Order order) {
         Button addPhotoButton = new Button("Add Photo");
         addPhotoButton.setStyle("-fx-background-color: #004b88; -fx-background-radius: 8");
         addPhotoButton.setTextFill(javafx.scene.paint.Color.WHITE);
         addPhotoButton.setOnAction(event ->
-                imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber())
+                imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), "Extra")
         );
         return addPhotoButton;
-    }
+    }*/
 }

@@ -35,7 +35,7 @@ public class ImageOverlayUtil {
     }
 
 
-    public StackPane createImageWithOverlay(ImageView imgView, Image img, String status,
+    public StackPane createImageWithOverlay(ImageView imgView, Image img, String status, String viewType,
                                             ImageWithMeta meta, Item item, int orderId,
                                             String orderNumber, boolean isQCView) {
         StackPane stack = new StackPane();
@@ -61,7 +61,7 @@ public class ImageOverlayUtil {
                     "-fx-background-color: transparent;");
             retakeBtn.setOnAction(_ -> {
                 orderManager.deleteImage(meta.getId());
-                openRetakeCamera(item, orderId, orderNumber);
+                openRetakeCamera(item, orderId, orderNumber,viewType);
             });
             buttonsBox.getChildren().add(retakeBtn);
         }
@@ -78,7 +78,7 @@ public class ImageOverlayUtil {
     }
 
 
-    public void openCameraWindow(Item item, int orderId, String orderNumber) {
+    public void openCameraWindow(Item item, int orderId, String orderNumber, String viewType) {
         Webcam webcam = Webcam.getDefault();
         if (webcam != null) {
             webcam.open();
@@ -90,14 +90,31 @@ public class ImageOverlayUtil {
             Thread stream = getStream(webcam, liveView);
             stream.start();
 
-            var captureBtn = getCaptureBtn(item, orderId, webcam);
-
+            Button captureBtn = new Button("Take Photo");
+            captureBtn.setOnAction(_ -> {
+                BufferedImage frame = webcam.getImage();
+                if (frame != null) {
+                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                        ImageIO.write(frame, "png", baos);
+                        byte[] imageBytes = baos.toByteArray();
+                        orderManager.saveImage(orderId, item.getId(), imageBytes, viewType); // <- you need to support this
+                        if (refreshCallback != null) {
+                            Platform.runLater(refreshCallback);
+                        }
+                    } catch (IOException | SQLException e) {
+                        e.printStackTrace();
+                        showError("Error", "Failed to save image: " + e.getMessage());
+                    }
+                }
+                webcam.close();
+                ((Stage) captureBtn.getScene().getWindow()).close();
+            });
 
             VBox layout = new VBox(10, liveView, captureBtn);
             layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
 
             Stage stage = new Stage();
-            stage.setTitle("Capture - " + item.getItemName());
+            stage.setTitle("Capture - " + item.getItemName() + " (" + viewType + ")");
             stage.setScene(new Scene(layout));
             stage.setOnCloseRequest(_ -> webcam.close());
             stage.show();
@@ -106,12 +123,12 @@ public class ImageOverlayUtil {
         }
     }
 
-    private Button getCaptureBtn(Item item, int orderId, Webcam webcam) {
+    private Button getCaptureBtn(Item item, int orderId, Webcam webcam, String viewType) {
         Button captureBtn = new Button("Take Photo");
         captureBtn.setOnAction(_ -> {
             BufferedImage frame = webcam.getImage();
             if (frame != null) {
-                saveImageToDatabase(orderId, item.getId(), frame, 0);
+                saveImageToDatabase(orderId, item.getId(), frame, viewType);
                 if (refreshCallback != null) {
                     Platform.runLater(refreshCallback);
                 }
@@ -122,7 +139,7 @@ public class ImageOverlayUtil {
         return captureBtn;
     }
 
-    public void openRetakeCamera(Item item, int orderId, String orderNumber) {
+    public void openRetakeCamera(Item item, int orderId, String orderNumber, String viewType) {
         Webcam webcam = Webcam.getDefault();
         if (webcam != null) {
             webcam.open();
@@ -134,7 +151,7 @@ public class ImageOverlayUtil {
             Thread stream = getStream(webcam, liveView);
             stream.start();
 
-            var captureBtn = getRetakeBtn(item, orderId, webcam);
+            var captureBtn = getRetakeBtn(item, orderId, webcam,viewType);
 
 
             VBox layout = new VBox(10, liveView, captureBtn);
@@ -150,7 +167,7 @@ public class ImageOverlayUtil {
         }
     }
 
-    private Button getRetakeBtn(Item item, int orderId, Webcam webcam) {
+    private Button getRetakeBtn(Item item, int orderId, Webcam webcam, String viewType) {
         Button retakeBtn = new Button("Retake Photo");
         retakeBtn.setOnAction(_ -> {
             BufferedImage frame = webcam.getImage();
@@ -158,7 +175,7 @@ public class ImageOverlayUtil {
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     ImageIO.write(frame, "png", baos);
                     byte[] imageBytes = baos.toByteArray();
-                    orderManager.saveImage(orderId, item.getId(), imageBytes);
+                    orderManager.saveImage(orderId, item.getId(), imageBytes, viewType); // pass viewType
                     if (refreshCallback != null) {
                         Platform.runLater(refreshCallback);
                     }
@@ -173,11 +190,11 @@ public class ImageOverlayUtil {
         return retakeBtn;
     }
 
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image, int i) {
+    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image,String viewType) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);
             byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes);
+            orderManager.saveImage(orderId, itemId, imageBytes, viewType);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
             showError("Error", "Failed to save image: " + e.getMessage());

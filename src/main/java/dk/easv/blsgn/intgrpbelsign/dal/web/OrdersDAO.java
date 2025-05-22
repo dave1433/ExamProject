@@ -61,17 +61,20 @@ public class OrdersDAO implements IOrderDAO {
     }
 
     @Override
-    public void saveImage(int orderId, int itemId, byte[] imageBytes) throws SQLException {
-        String sqlInsert = "INSERT INTO item_images (order_id, item_id, image_data, status) VALUES (?, ?, ?, 'pending')";
+    public void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws SQLException {
+        String sqlInsert = "INSERT INTO item_images (order_id, item_id, image_data, status, viewType) VALUES (?, ?, ?, 'pending', ?)";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sqlInsert)) {
             stmt.setInt(1, orderId);
             stmt.setInt(2, itemId);
             stmt.setBytes(3, imageBytes);
+            stmt.setString(4, viewType); // NEW: add viewType here
             stmt.executeUpdate();
         }
     }
+
+
 
     @Override
     public List<byte[]> getImagesForItem(int orderId, int itemId) {
@@ -113,7 +116,7 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
         List<ImageWithMeta> imageList = new ArrayList<>();
-        String sql = "SELECT id, image_data, status FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY id";
+        String sql = "SELECT id, image_data, status, viewType FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY id";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -125,9 +128,10 @@ public class OrdersDAO implements IOrderDAO {
                 int id = rs.getInt("id");
                 byte[] img = rs.getBytes("image_data");
                 String status = rs.getString("status");
+                String viewType = rs.getString("viewType");
 
                 if (img != null) {
-                    imageList.add(new ImageWithMeta(id, img, status != null ? status : "pending"));
+                    imageList.add(new ImageWithMeta(id, img, status != null ? status : "pending", viewType));
                 }
             }
         } catch (SQLException e) {

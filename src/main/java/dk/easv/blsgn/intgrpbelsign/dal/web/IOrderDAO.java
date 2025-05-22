@@ -10,7 +10,7 @@ public interface IOrderDAO {
 
         List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId);
 
-        void saveImage(int orderId, int itemId, byte[] imageBytes) throws SQLException;
+        void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws SQLException;
 
         List<byte[]> getImagesForItem(int orderId, int itemId);
 
