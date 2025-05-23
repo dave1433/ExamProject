@@ -6,6 +6,7 @@ import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ImageOverlayUtil {
+
+
     private Runnable refreshCallback;
     private final OrderManager orderManager;
 
@@ -38,44 +41,39 @@ public class ImageOverlayUtil {
     public StackPane createImageWithOverlay(ImageView imgView, Image img, String status, String viewType,
                                             ImageWithMeta meta, Item item, int orderId,
                                             String orderNumber, boolean isQCView) {
-        StackPane stack = new StackPane();
-        stack.setPrefSize(150, 150);
-        stack.getChildren().add(imgView);
 
-        VBox buttonsBox = new VBox(5);
-        buttonsBox.setAlignment(Pos.CENTER);
+        StackPane container = new StackPane();
+        container.setPrefSize(110, 110);
 
-        // View button is always present
-        Button viewBtn = new Button();
-        viewBtn.setPrefSize(50, 50);
-        viewBtn.setStyle("-fx-background-image: url('/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-eye-50.png');" +
-                "-fx-background-color: transparent;");
-        viewBtn.setOnAction(_ -> openImageViewer(img));
-        buttonsBox.getChildren().add(viewBtn);
+        // Ensure image sizing is consistent
+        imgView.setFitWidth(110);
+        imgView.setFitHeight(110);
+        imgView.setPreserveRatio(true);
+        imgView.setOnMouseClicked(_ -> openImageViewer(img));
+        container.getChildren().add(imgView);
 
-        // Retake button only for Operator view and non-approved images
+        // If image is not approved, show retake icon (unless we're in QC view)
         if (!isQCView && !"approved".equalsIgnoreCase(status)) {
-            Button retakeBtn = new Button();
-            retakeBtn.setPrefSize(50, 50);
-            retakeBtn.setStyle("-fx-background-image: url('/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-retake-50.png');" +
-                    "-fx-background-color: transparent;");
-            retakeBtn.setOnAction(_ -> {
+            ImageView retakeIcon = new ImageView(new Image("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-camera-50 (1).png"));
+            retakeIcon.setFitWidth(20);
+            retakeIcon.setFitHeight(20);
+            StackPane.setAlignment(retakeIcon, Pos.TOP_RIGHT);
+            retakeIcon.setStyle("-fx-cursor: hand;");
+            retakeIcon.setOnMouseClicked(e -> {
                 orderManager.deleteImage(meta.getId());
-                openRetakeCamera(item, orderId, orderNumber,viewType);
+                openRetakeCamera(item, orderId, orderNumber, viewType);
             });
-            buttonsBox.getChildren().add(retakeBtn);
+
+            container.getChildren().add(retakeIcon);
         }
 
-        StackPane overlay = new StackPane(buttonsBox);
-        overlay.setStyle("-fx-background-color: rgba(255, 255, 255,0.5);");
-        overlay.setOpacity(0);
-        stack.getChildren().add(overlay);
-
-        stack.setOnMouseEntered(_ -> overlay.setOpacity(1));
-        stack.setOnMouseExited(_ -> overlay.setOpacity(0));
-
-        return stack;
+        return container;
     }
+
+
+
+
+
 
 
     public void openCameraWindow(Item item, int orderId, String orderNumber, String viewType) {
@@ -123,21 +121,6 @@ public class ImageOverlayUtil {
         }
     }
 
-    private Button getCaptureBtn(Item item, int orderId, Webcam webcam, String viewType) {
-        Button captureBtn = new Button("Take Photo");
-        captureBtn.setOnAction(_ -> {
-            BufferedImage frame = webcam.getImage();
-            if (frame != null) {
-                saveImageToDatabase(orderId, item.getId(), frame, viewType);
-                if (refreshCallback != null) {
-                    Platform.runLater(refreshCallback);
-                }
-            }
-            webcam.close();
-            ((Stage) captureBtn.getScene().getWindow()).close();
-        });
-        return captureBtn;
-    }
 
     public void openRetakeCamera(Item item, int orderId, String orderNumber, String viewType) {
         Webcam webcam = Webcam.getDefault();
@@ -190,16 +173,7 @@ public class ImageOverlayUtil {
         return retakeBtn;
     }
 
-    private void saveImageToDatabase(int orderId, int itemId, BufferedImage image,String viewType) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            orderManager.saveImage(orderId, itemId, imageBytes, viewType);
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-            showError("Error", "Failed to save image: " + e.getMessage());
-        }
-    }
+
 
     private void openImageViewer(Image img) {
         Stage viewStage = new Stage();
@@ -244,4 +218,5 @@ public class ImageOverlayUtil {
             alert.showAndWait();
         });
     }
+
 }

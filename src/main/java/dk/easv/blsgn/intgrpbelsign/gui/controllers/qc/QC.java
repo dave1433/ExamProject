@@ -103,7 +103,7 @@ public class QC {
                         .orElse(null);
 
                 if (order != null && hasPendingImages(order)) {
-                    setStyle("-fx-border-color: #FF5252; -fx-border-width: 2px; -fx-border-radius: 3px;");
+                    setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
                 } else {
                     setStyle("-fx-background-insets: 0 0 3px 0;");
                 }
@@ -175,14 +175,15 @@ public class QC {
                     statusLabel.setStyle(getStatusStyle(meta.getStatus()));
 
                     imageContainer.getChildren().addAll(imageStack, statusLabel);
+                    imageContainer.setStyle("-fx-min-width: 150px; -fx-min-height: 150px; -fx-background-color: #f0f0f0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: #ccc; -fx-border-width: 1;");
 
                     if (!"approved".equalsIgnoreCase(meta.getStatus()) &&
                             !"rejected".equalsIgnoreCase(meta.getStatus())) {
                         Button approveBtn = new Button("✅");
                         Button rejectBtn = new Button("❌");
 
-                        approveBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-                        rejectBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+                        approveBtn.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white;");
+                        rejectBtn.setStyle("-fx-background-color: #fb7e77; -fx-text-fill: white;");
 
                         HBox buttons = new HBox(10, approveBtn, rejectBtn);
                         buttons.setAlignment(Pos.CENTER);
