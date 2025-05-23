@@ -172,7 +172,8 @@ public class QC {
 
                 photoContent.getChildren().addAll(anglesPane, new Label("Extra Photos:"), extraPhotos);
 
-                if (!submittedItems.contains(order.getOrderNumber() + ":" + item.getId())) {
+                if (!item.isSubmitted()) {
+                    orderModel.markItemAsSubmitted(item.getId());
                     Button submitButton = new Button("Submit");
                     submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
                     submitButton.setOnAction(e -> {

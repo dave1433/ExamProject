@@ -82,4 +82,14 @@ public class Item {
     public void setTotalWeight(int totalWeight) {
         this.totalWeight = totalWeight;
     }
+
+    private boolean isSubmitted;
+
+    public boolean isSubmitted() {
+        return isSubmitted;
+    }
+
+    public void setSubmitted(boolean submitted) {
+        isSubmitted = submitted;
+    }
 }

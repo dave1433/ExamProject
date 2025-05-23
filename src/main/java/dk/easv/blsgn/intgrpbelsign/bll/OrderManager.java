@@ -35,4 +35,8 @@ public class OrderManager {
     public void deleteImage(int imageId) {
         iOrderDAO.deleteImage(imageId);
     }
+
+    public void markItemAsSubmitted(int itemId) {
+        iOrderDAO.markItemAsSubmitted(itemId);
+    }
 }

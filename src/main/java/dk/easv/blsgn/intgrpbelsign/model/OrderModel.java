@@ -59,4 +59,8 @@ public class OrderModel {
     public void updateImageStatus(int imageId, String status) {
         orderManager.updateImageStatus(imageId, status);
     }
+
+    public void markItemAsSubmitted(int itemId) {
+        orderManager.markItemAsSubmitted(itemId);
+    }
 }

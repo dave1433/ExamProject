@@ -19,11 +19,11 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-            SELECT i.id, i.item_name, oii.order_id
-            FROM order_item_image oii
-            JOIN items i ON oii.item_id = i.id
-            WHERE oii.order_id = ?
-        """;
+        SELECT i.id, i.item_name, oii.order_id, i.isSubmitted
+        FROM order_item_image oii
+        JOIN items i ON oii.item_id = i.id
+        WHERE oii.order_id = ?
+    """;
 
         try (Connection c = conn.getConnection();
              PreparedStatement orderStmt = c.prepareStatement(orderSql);
@@ -44,6 +44,7 @@ public class OrdersDAO implements IOrderDAO {
                                     itemRs.getString("item_name"),
                                     itemRs.getInt("order_id")
                             );
+                            item.setSubmitted(itemRs.getBoolean("isSubmitted"));
                             itemList.add(item);
                         }
                     }
@@ -79,7 +80,13 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<byte[]> getImagesForItem(int orderId, int itemId) {
         List<byte[]> images = new ArrayList<>();
-        String sql = "SELECT image_data FROM item_images WHERE order_id = ? AND item_id = ? AND status = 'approved' ORDER BY id";
+        String sql = "SELECT item_images.image_data " +
+                     "FROM item_images " +
+                     "JOIN order_item_image ON item_images.fk_order_item_image_id = order_item_image.id " +
+                     "WHERE order_item_image.order_id = ? " +
+                     "AND order_item_image.item_id = ? " +
+                     "AND item_images.status = 'approved' " +
+                     "ORDER BY item_images.id";
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -116,7 +123,21 @@ public class OrdersDAO implements IOrderDAO {
     @Override
     public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
         List<ImageWithMeta> imageList = new ArrayList<>();
-        String sql = "SELECT id, image_data, status, viewType FROM item_images WHERE order_id = ? AND item_id = ? ORDER BY id";
+        String sql = "SELECT  item_images.id, item_images.image_data, item_images.status, item_images.viewType " +
+                "FROM item_images " +
+                "JOIN order_item_image on " +
+                "item_images.fk_order_item_image_id=order_item_image.id " +
+                "WHERE order_item_image.order_id = ? " +
+                "AND order_item_image.item_id = ? " +
+                "ORDER BY item_images.id ";
+       /* String sql = "SELECT item_images.id, item_images.image_data, item_images.status, item_images.viewType " +
+                "FROM item_images " +
+                "JOIN order_item_image ON item_images.fk_order_item_image_id = order_item_image.id " +
+                "WHERE order_item_image.order_id = ? " +
+                "AND order_item_image.item_id = ? " +
+                "ORDER BY item_images.id";*/
+
+
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -148,6 +169,18 @@ public class OrdersDAO implements IOrderDAO {
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
             stmt.setInt(1, imageId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void markItemAsSubmitted(int itemId) {
+        String sql = "UPDATE items SET isSubmitted = 1 WHERE id = ?";
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setInt(1, itemId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

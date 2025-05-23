@@ -19,6 +19,9 @@ public interface IOrderDAO {
         void updateImageStatus(int imageId, String status);
 
         void deleteImage(int imageId);
+
+        void markItemAsSubmitted(int itemId);
+
     }
 
 
