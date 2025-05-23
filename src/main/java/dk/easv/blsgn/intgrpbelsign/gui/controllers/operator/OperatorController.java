@@ -138,12 +138,24 @@ public class OperatorController {
         itemBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;");
         itemBox.setPrefWidth(650);
 
-        Label itemNameLabel = new Label(item.getItemName());
-        itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+        HBox titleBar = new HBox();
+        titleBar.setAlignment(Pos.CENTER_LEFT);
+        Label itemNameLabel = new Label(item.getItemName() + " ▼");
+        itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-cursor: hand;");
+        titleBar.getChildren().add(itemNameLabel);
 
         VBox photoSections = createPhotoSections(item, order);
+        photoSections.setVisible(true);
+        photoSections.setManaged(true);
 
-        itemBox.getChildren().addAll(itemNameLabel, photoSections);
+        itemNameLabel.setOnMouseClicked(event -> {
+            boolean visible = photoSections.isVisible();
+            photoSections.setVisible(!visible);
+            photoSections.setManaged(!visible);
+            itemNameLabel.setText(item.getItemName() + (visible ? " ▲" : " ▼"));
+        });
+
+        itemBox.getChildren().addAll(titleBar, photoSections);
         return itemBox;
     }
 
@@ -223,12 +235,10 @@ public class OperatorController {
         addExtraPhoto.setOnAction(e -> imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), "Extra"));
         extraPhotosPane.getChildren().add(addExtraPhoto);
 
-        Label anglesLabel = new Label();
-        anglesLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         Label extraLabel = new Label("Extra Photos");
         extraLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
-        photoSections.getChildren().addAll(anglesLabel, anglesPane, extraLabel, extraPhotosPane);
+        photoSections.getChildren().addAll(anglesPane, extraLabel, extraPhotosPane);
         return photoSections;
     }
 

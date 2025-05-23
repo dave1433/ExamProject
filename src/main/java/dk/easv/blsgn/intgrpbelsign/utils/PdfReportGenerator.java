@@ -14,17 +14,6 @@ import dk.easv.blsgn.intgrpbelsign.be.Item;
 
 public class PdfReportGenerator {
 
-    /**
-     * Generates a PDF report with a logo, approved images, and a QC signature.
-     *
-     * @param orderNumber       The order number.
-     * @param item              The item being documented.
-     * @param approvedImageList List of approved image byte arrays.
-     * @param belmanLogoBytes   Byte array for the Belman logo.
-     * @param qcSignatureBytes  Byte array for the QC (role 2) signature.
-     * @return A byte array representing the generated PDF.
-     * @throws IOException If any I/O error occurs.
-     */
     public static byte[] generatePdfWithImages(String orderNumber, List<byte[]> approvedImageList, byte[] belmanLogoBytes, byte[] qcSignatureBytes
     ) throws IOException {
 
@@ -63,7 +52,7 @@ public class PdfReportGenerator {
 
         // Add QC signature if available
         if (qcSignatureBytes != null) {
-            doc.add(new Paragraph("\nApproved by QC"));
+            doc.add(new Paragraph("\nApproved by the Quality Control Department").setBold());
             ImageData signatureData = ImageDataFactory.create(qcSignatureBytes);
             Image signature = new Image(signatureData).scaleToFit(200, 100);
             doc.add(signature);
