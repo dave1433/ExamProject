@@ -119,6 +119,7 @@ public class QC {
 
     private void displayOrders(List<Order> orders) {
         flowPane.getChildren().clear();
+
         for (Order order : orders) {
             VBox orderBox = new VBox(10);
             orderBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 1;");
@@ -172,24 +173,36 @@ public class QC {
 
                 photoContent.getChildren().addAll(anglesPane, new Label("Extra Photos:"), extraPhotos);
 
+                // Submit button
+                Button submitButton = new Button();
+                submitButton.setPrefWidth(100);
+
                 if (!item.isSubmitted()) {
-                    orderModel.markItemAsSubmitted(item.getId());
-                    Button submitButton = new Button("Submit");
+                    submitButton.setText("Submit");
                     submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
                     submitButton.setOnAction(e -> {
                         boolean hasPending = orderModel.getAllImagesWithStatus(order.getID(), item.getId())
                                 .stream()
                                 .anyMatch(meta -> "pending".equalsIgnoreCase(meta.getStatus()));
+
                         if (hasPending) {
                             showAlert("You must review all images for this item before submitting.");
                             return;
                         }
-                        submittedItems.add(order.getOrderNumber() + ":" + item.getId());
-                        displayOrders(List.of(order));
+
+                        orderModel.markItemAsSubmitted(order.getID(),item.getId());
+                        submitButton.setText("✓ Submitted");
+                        submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
+                        submitButton.setDisable(true);
+                        item.setSubmitted(true); // reflect state locally to avoid visual regression
                     });
-                    photoContent.getChildren().add(submitButton);
+                } else {
+                    submitButton.setText("✓ Submitted");
+                    submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
+                    submitButton.setDisable(true);
                 }
 
+                photoContent.getChildren().add(submitButton);
                 itemBox.getChildren().addAll(titleBar, photoContent);
                 itemsContainer.getChildren().add(itemBox);
             }

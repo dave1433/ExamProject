@@ -36,7 +36,7 @@ public class OrderManager {
         iOrderDAO.deleteImage(imageId);
     }
 
-    public void markItemAsSubmitted(int itemId) {
-        iOrderDAO.markItemAsSubmitted(itemId);
+    public void markItemAsSubmitted(int orderId, int itemId) {
+        iOrderDAO.markItemAsSubmitted(orderId, itemId);
     }
 }

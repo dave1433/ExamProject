@@ -19,7 +19,7 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-        SELECT i.id, i.item_name, oii.order_id, i.isSubmitted
+        SELECT i.id, i.item_name, oii.order_id, oii.isSubmitted
         FROM order_item_image oii
         JOIN items i ON oii.item_id = i.id
         WHERE oii.order_id = ?
@@ -63,18 +63,30 @@ public class OrdersDAO implements IOrderDAO {
 
     @Override
     public void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws SQLException {
-        String sqlInsert = "INSERT INTO item_images (order_id, item_id, image_data, status, viewType) VALUES (?, ?, ?, 'pending', ?)";
+        String getLinkIdSql = "SELECT id FROM order_item_image WHERE order_id = ? AND item_id = ?";
+        String insertSql = "INSERT INTO item_images (fk_order_item_image_id, image_data, status, viewType) VALUES (?, ?, 'pending', ?)";
 
         try (Connection c = conn.getConnection();
-             PreparedStatement stmt = c.prepareStatement(sqlInsert)) {
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, itemId);
-            stmt.setBytes(3, imageBytes);
-            stmt.setString(4, viewType); // NEW: add viewType here
-            stmt.executeUpdate();
+             PreparedStatement getLinkStmt = c.prepareStatement(getLinkIdSql)) {
+
+            getLinkStmt.setInt(1, orderId);
+            getLinkStmt.setInt(2, itemId);
+            ResultSet rs = getLinkStmt.executeQuery();
+
+            if (rs.next()) {
+                int linkId = rs.getInt("id");
+
+                try (PreparedStatement insertStmt = c.prepareStatement(insertSql)) {
+                    insertStmt.setInt(1, linkId);
+                    insertStmt.setBytes(2, imageBytes);
+                    insertStmt.setString(3, viewType);
+                    insertStmt.executeUpdate();
+                }
+            } else {
+                throw new SQLException("No order_item_image link found for order_id=" + orderId + " and item_id=" + itemId);
+            }
         }
     }
-
 
 
     @Override
@@ -130,14 +142,6 @@ public class OrdersDAO implements IOrderDAO {
                 "WHERE order_item_image.order_id = ? " +
                 "AND order_item_image.item_id = ? " +
                 "ORDER BY item_images.id ";
-       /* String sql = "SELECT item_images.id, item_images.image_data, item_images.status, item_images.viewType " +
-                "FROM item_images " +
-                "JOIN order_item_image ON item_images.fk_order_item_image_id = order_item_image.id " +
-                "WHERE order_item_image.order_id = ? " +
-                "AND order_item_image.item_id = ? " +
-                "ORDER BY item_images.id";*/
-
-
 
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -176,11 +180,12 @@ public class OrdersDAO implements IOrderDAO {
     }
 
     @Override
-    public void markItemAsSubmitted(int itemId) {
-        String sql = "UPDATE items SET isSubmitted = 1 WHERE id = ?";
+    public void markItemAsSubmitted(int orderId, int itemId) {
+        String sql = "UPDATE order_item_image SET isSubmitted = 1 WHERE order_id = ? AND item_id = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
-            stmt.setInt(1, itemId);
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, itemId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

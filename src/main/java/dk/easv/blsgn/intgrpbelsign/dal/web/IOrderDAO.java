@@ -20,8 +20,9 @@ public interface IOrderDAO {
 
         void deleteImage(int imageId);
 
-        void markItemAsSubmitted(int itemId);
+        void markItemAsSubmitted(int orderId, int itemId);
 
-    }
+
+}
 
 

@@ -60,7 +60,7 @@ public class OrderModel {
         orderManager.updateImageStatus(imageId, status);
     }
 
-    public void markItemAsSubmitted(int itemId) {
-        orderManager.markItemAsSubmitted(itemId);
+    public void markItemAsSubmitted(int orderId, int itemId) {
+        orderManager.markItemAsSubmitted(orderId, itemId);
     }
 }
