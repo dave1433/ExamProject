@@ -281,7 +281,7 @@ public class QC {
             }
 
             // Load logo
-            InputStream logoStream = getClass().getClassLoader().getResourceAsStream("dk/easv/blsgn/intgrpbelsign/Pictures/icons/1.png");
+            InputStream logoStream = getClass().getClassLoader().getResourceAsStream("dk/easv/blsgn/intgrpbelsign/Pictures/icons/logo.png");
             if (logoStream == null) {
                 showAlert("Belman logo not found.");
                 return;

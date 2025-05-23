@@ -6,7 +6,6 @@ import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -52,9 +51,9 @@ public class ImageOverlayUtil {
         imgView.setOnMouseClicked(_ -> openImageViewer(img));
         container.getChildren().add(imgView);
 
-        // If image is not approved, show retake icon (unless we're in QC view)
+        // If the image is not approved, show a retake picture icon (unless we're in QC view)
         if (!isQCView && !"approved".equalsIgnoreCase(status)) {
-            ImageView retakeIcon = new ImageView(new Image("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-camera-50 (1).png"));
+            ImageView retakeIcon = new ImageView(new Image("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-camera-50.png"));
             retakeIcon.setFitWidth(20);
             retakeIcon.setFitHeight(20);
             StackPane.setAlignment(retakeIcon, Pos.TOP_RIGHT);
@@ -70,12 +69,6 @@ public class ImageOverlayUtil {
         return container;
     }
 
-
-
-
-
-
-
     public void openCameraWindow(Item item, int orderId, String orderNumber, String viewType) {
         Webcam webcam = Webcam.getDefault();
         if (webcam != null) {
@@ -89,24 +82,7 @@ public class ImageOverlayUtil {
             stream.start();
 
             Button captureBtn = new Button("Take Photo");
-            captureBtn.setOnAction(_ -> {
-                BufferedImage frame = webcam.getImage();
-                if (frame != null) {
-                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                        ImageIO.write(frame, "png", baos);
-                        byte[] imageBytes = baos.toByteArray();
-                        orderManager.saveImage(orderId, item.getId(), imageBytes, viewType); // <- you need to support this
-                        if (refreshCallback != null) {
-                            Platform.runLater(refreshCallback);
-                        }
-                    } catch (IOException | SQLException e) {
-                        e.printStackTrace();
-                        showError("Error", "Failed to save image: " + e.getMessage());
-                    }
-                }
-                webcam.close();
-                ((Stage) captureBtn.getScene().getWindow()).close();
-            });
+            saveImage(item, orderId, viewType, webcam, captureBtn);
 
             VBox layout = new VBox(10, liveView, captureBtn);
             layout.setStyle("-fx-padding: 10; -fx-alignment: center;");
@@ -119,6 +95,27 @@ public class ImageOverlayUtil {
         } else {
             showError("Camera Error", "No webcam detected");
         }
+    }
+
+    private void saveImage(Item item, int orderId, String viewType, Webcam webcam, Button captureBtn) {
+        captureBtn.setOnAction(_ -> {
+            BufferedImage frame = webcam.getImage();
+            if (frame != null) {
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ImageIO.write(frame, "png", baos);
+                    byte[] imageBytes = baos.toByteArray();
+                    orderManager.saveImage(orderId, item.getId(), imageBytes, viewType);
+                    if (refreshCallback != null) {
+                        Platform.runLater(refreshCallback);
+                    }
+                } catch (IOException | SQLException e) {
+                    e.printStackTrace();
+                    showError("Error", "Failed to save image: " + e.getMessage());
+                }
+            }
+            webcam.close();
+            ((Stage) captureBtn.getScene().getWindow()).close();
+        });
     }
 
 
@@ -152,24 +149,7 @@ public class ImageOverlayUtil {
 
     private Button getRetakeBtn(Item item, int orderId, Webcam webcam, String viewType) {
         Button retakeBtn = new Button("Retake Photo");
-        retakeBtn.setOnAction(_ -> {
-            BufferedImage frame = webcam.getImage();
-            if (frame != null) {
-                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                    ImageIO.write(frame, "png", baos);
-                    byte[] imageBytes = baos.toByteArray();
-                    orderManager.saveImage(orderId, item.getId(), imageBytes, viewType); // pass viewType
-                    if (refreshCallback != null) {
-                        Platform.runLater(refreshCallback);
-                    }
-                } catch (IOException | SQLException e) {
-                    e.printStackTrace();
-                    showError("Error", "Failed to save image: " + e.getMessage());
-                }
-            }
-            webcam.close();
-            ((Stage) retakeBtn.getScene().getWindow()).close();
-        });
+        saveImage(item, orderId, viewType, webcam, retakeBtn);
         return retakeBtn;
     }
 
