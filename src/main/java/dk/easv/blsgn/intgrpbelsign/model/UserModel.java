@@ -87,6 +87,7 @@ public class UserModel {
         if (user == null) {
             throw new AuthenticationException("Invalid username or password");
         }
+        userManager.incrementUsageCount(user.getUser_id()); // Count User Usage for filtering the USERS(generateUserButtons)
         return user;
     }
 

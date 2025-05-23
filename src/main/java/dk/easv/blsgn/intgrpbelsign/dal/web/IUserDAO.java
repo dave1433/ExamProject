@@ -20,5 +20,6 @@ public interface IUserDAO {
     User getUserByUsername(String username);
     List<Role> getAllRoles();
     byte[] getSignatureByUserId(int userId);
+    void incrementUsageCount(int userId);
 
 }

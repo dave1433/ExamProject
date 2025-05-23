@@ -61,4 +61,8 @@ public class UserManager {
     public byte[] loadSignatureForUser(int userId) {
         return iUserDAO.getSignatureByUserId(userId);
     }
+
+    public void incrementUsageCount(int userId) {
+        iUserDAO.incrementUsageCount(userId);
+    }
 }

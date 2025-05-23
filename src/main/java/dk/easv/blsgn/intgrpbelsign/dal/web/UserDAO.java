@@ -20,10 +20,12 @@ public class UserDAO implements IUserDAO {
     @Override
     public ObservableList<User> getAllUsers() {
         ObservableList<User> users = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM [User]";
+        String sql = "SELECT * FROM [User] ORDER BY usage_count DESC";
+
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 User user = new User(
                         rs.getInt("user_id"),
@@ -35,6 +37,7 @@ public class UserDAO implements IUserDAO {
                         rs.getString("email"),
                         rs.getString("phone_number")
                 );
+                user.setUsage_count(rs.getInt("usage_count")); // ✅ Include usage count
                 users.add(user);
             }
         } catch (Exception e) {
@@ -42,6 +45,7 @@ public class UserDAO implements IUserDAO {
         }
         return users;
     }
+
     @Override
     public boolean addUser(User user) {
         String sql = "INSERT INTO [User] (user_name, password_hash, role_id, first_name, last_name, email, phone_number)" + " VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -169,5 +173,17 @@ public class UserDAO implements IUserDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void incrementUsageCount(int userId) {
+        String sql = "UPDATE [User] SET usage_count = usage_count + 1 WHERE user_id = ?";
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

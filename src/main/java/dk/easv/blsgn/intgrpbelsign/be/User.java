@@ -8,6 +8,8 @@ public class User {
     private String last_name;
     private String email;
     private String phone_number;
+    private int usage_count;
+    private byte[] signature;
 
     public User(int user_id, String user_name, String password_hash, int role_id, String first_name, String last_name, String email, String phone_number) {
         this.user_id = user_id;
@@ -91,13 +93,19 @@ public class User {
         this.phone_number = phone_number;
     }
 
-    private byte[] signature;
-
     public byte[] getSignature() {
         return signature;
     }
 
     public void setSignature(byte[] signature) {
         this.signature = signature;
+    }
+
+    public int getUsage_count() {
+        return usage_count;
+    }
+
+    public void setUsage_count(int usage_count) {
+        this.usage_count = usage_count;
     }
 }
