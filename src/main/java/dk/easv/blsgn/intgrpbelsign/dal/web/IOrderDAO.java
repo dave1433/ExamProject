@@ -22,6 +22,9 @@ public interface IOrderDAO {
 
         void markItemAsSubmitted(int orderId, int itemId);
 
+        void markItemAsUnsubmitted(int orderId, int itemId);
+
+
 
 }
 

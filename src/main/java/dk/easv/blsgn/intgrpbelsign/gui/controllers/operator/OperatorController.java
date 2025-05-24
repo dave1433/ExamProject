@@ -4,6 +4,7 @@ import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
+import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
 import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import javafx.fxml.FXML;
@@ -17,7 +18,7 @@ import javafx.scene.layout.*;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 
-public class OperatorController {
+public class OperatorController extends BaseOrderController {
 
     @FXML
     private FlowPane flowPane;
@@ -91,7 +92,7 @@ public class OperatorController {
         });
     }
 
-    private boolean hasRejectedImages(Order order) {
+    public boolean hasRejectedImages(Order order) {
         for (Item item : order.getItems()) {
             List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
             if (images.stream().anyMatch(img -> "rejected".equalsIgnoreCase(img.getStatus()))) {

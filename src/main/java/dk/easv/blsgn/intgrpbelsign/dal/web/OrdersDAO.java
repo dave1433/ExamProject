@@ -191,4 +191,20 @@ public class OrdersDAO implements IOrderDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void markItemAsUnsubmitted(int orderId, int itemId) {
+        String sql = "UPDATE order_item_image SET isSubmitted = 0 WHERE order_id = ? AND item_id = ?";
+
+        try (Connection c = conn.getConnection();
+             PreparedStatement stmt = c.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, itemId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider proper logging
+        }
+    }
 }

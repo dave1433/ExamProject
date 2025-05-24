@@ -39,4 +39,7 @@ public class OrderManager {
     public void markItemAsSubmitted(int orderId, int itemId) {
         iOrderDAO.markItemAsSubmitted(orderId, itemId);
     }
+    public void markItemAsUnsubmitted(int orderId, int itemId) {
+        iOrderDAO.markItemAsUnsubmitted(orderId, itemId);
+    }
 }

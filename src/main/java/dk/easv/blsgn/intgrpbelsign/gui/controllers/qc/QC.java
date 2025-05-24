@@ -1,11 +1,12 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers.qc;
 
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.be.User;
-import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
 import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
@@ -22,27 +23,15 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class QC {
+public class QC extends BaseOrderController {
 
-    private final OrderModel orderModel;
-    private final UserModel userModel;
-    private final ImageOverlayUtil imageOverlayUtil;
-    private final Set<String> submittedItems = new HashSet<>();
+    private final OrderModel orderModel = new OrderModel(new OrderManager());
+    private final UserModel userModel = new UserModel(new UserManager());
+    private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
 
-    public QC() {
-        this.orderModel = new OrderModel(new OrderManager());
-        this.imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
-        this.userModel = new UserModel(new UserManager());
-    }
-
-    @FXML
-    private FlowPane flowPane;
-
-    @FXML
-    private ListView<String> listView;
-
-    @FXML
-    private TextField searchField;
+    @FXML private FlowPane flowPane;
+    @FXML private ListView<String> listView;
+    @FXML private TextField searchField;
 
     private List<Order> allOrders;
     private User currentUser;
@@ -65,7 +54,6 @@ public class QC {
             List<Order> filtered = allOrders.stream()
                     .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
                     .collect(Collectors.toList());
-
             displayOrd(filtered);
             flowPane.getChildren().clear();
         });
@@ -92,11 +80,9 @@ public class QC {
                 if (empty || item == null) return;
 
                 setText(item);
-
                 Order order = allOrders.stream()
                         .filter(o -> o.getOrderNumber().equals(item))
-                        .findFirst()
-                        .orElse(null);
+                        .findFirst().orElse(null);
 
                 if (order != null && hasPendingImages(order)) {
                     setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
@@ -108,13 +94,9 @@ public class QC {
     }
 
     private boolean hasPendingImages(Order order) {
-        for (Item item : order.getItems()) {
-            List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-            if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
-                return true;
-            }
-        }
-        return false;
+        return order.getItems().stream()
+                .flatMap(item -> orderModel.getAllImagesWithStatus(order.getID(), item.getId()).stream())
+                .anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()));
     }
 
     private void displayOrders(List<Order> orders) {
@@ -135,11 +117,8 @@ public class QC {
                 itemBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10;");
                 itemBox.setPrefWidth(650);
 
-                HBox titleBar = new HBox();
-                titleBar.setAlignment(Pos.CENTER_LEFT);
                 Label itemNameLabel = new Label(item.getItemName() + " ▼");
                 itemNameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-cursor: hand;");
-                titleBar.getChildren().add(itemNameLabel);
 
                 VBox photoContent = new VBox(10);
                 photoContent.setVisible(true);
@@ -155,15 +134,16 @@ public class QC {
                 GridPane anglesPane = new GridPane();
                 anglesPane.setHgap(10);
                 anglesPane.setVgap(10);
-                Map<String, Integer> angleCols = Map.of(
-                        "front", 0, "back", 1, "top", 2, "right", 3, "left", 4
-                );
+                Map<String, Integer> angleCols = Map.of("front", 0, "back", 1, "top", 2, "right", 3, "left", 4);
+
                 FlowPane extraPhotos = new FlowPane(10, 10);
+                Button submitButton = new Button();
+                submitButton.setPrefWidth(100);
 
                 List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
                 for (ImageWithMeta meta : images) {
-                    VBox imageContainer = createImageCard(meta, item, order);
-                    String angle = meta.getViewType() != null ? meta.getViewType().toLowerCase() : "extra";
+                    VBox imageContainer = createImageCard(meta, item, order, submitButton);
+                    String angle = Optional.ofNullable(meta.getViewType()).orElse("extra").toLowerCase();
                     if (angleCols.containsKey(angle)) {
                         anglesPane.add(imageContainer, angleCols.get(angle), 0);
                     } else {
@@ -172,37 +152,26 @@ public class QC {
                 }
 
                 photoContent.getChildren().addAll(anglesPane, new Label("Extra Photos:"), extraPhotos);
+                updateSubmitButtonState(item, order, submitButton);
 
-                // Submit button
-                Button submitButton = new Button();
-                submitButton.setPrefWidth(100);
+                submitButton.setOnAction(e -> {
+                    boolean hasPending = orderModel.getAllImagesWithStatus(order.getID(), item.getId())
+                            .stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()));
 
-                if (!item.isSubmitted()) {
-                    submitButton.setText("Submit");
-                    submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
-                    submitButton.setOnAction(e -> {
-                        boolean hasPending = orderModel.getAllImagesWithStatus(order.getID(), item.getId())
-                                .stream()
-                                .anyMatch(meta -> "pending".equalsIgnoreCase(meta.getStatus()));
+                    if (hasPending) {
+                        showAlert("You must review all images before submitting.");
+                        return;
+                    }
 
-                        if (hasPending) {
-                            showAlert("You must review all images for this item before submitting.");
-                            return;
-                        }
-
-                        orderModel.markItemAsSubmitted(order.getID(),item.getId());
-                        submitButton.setText("✓ Submitted");
-                        submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
-                        submitButton.setDisable(true);
-                        item.setSubmitted(true); // reflect state locally to avoid visual regression
-                    });
-                } else {
-                    submitButton.setText("✓ Submitted");
-                    submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
-                    submitButton.setDisable(true);
-                }
+                    orderModel.markItemAsSubmitted(order.getID(), item.getId());
+                    item.setSubmitted(true);
+                    updateSubmitButtonState(item, order, submitButton);
+                });
 
                 photoContent.getChildren().add(submitButton);
+
+                HBox titleBar = new HBox(itemNameLabel);
+                titleBar.setAlignment(Pos.CENTER_LEFT);
                 itemBox.getChildren().addAll(titleBar, photoContent);
                 itemsContainer.getChildren().add(itemBox);
             }
@@ -212,7 +181,7 @@ public class QC {
         }
     }
 
-    private VBox createImageCard(ImageWithMeta meta, Item item, Order order) {
+    private VBox createImageCard(ImageWithMeta meta, Item item, Order order, Button submitButton) {
         VBox imageContainer = new VBox(5);
         imageContainer.setAlignment(Pos.CENTER);
         imageContainer.setStyle("-fx-background-color: #f0f0f0; -fx-padding: 10;");
@@ -235,48 +204,61 @@ public class QC {
 
         imageContainer.getChildren().addAll(angleLabel, imageStack, statusLabel);
 
-        String itemKey = order.getOrderNumber() + ":" + item.getId();
-        if (!submittedItems.contains(itemKey)) {
-            Button approve = new Button("\u2705");
-            Button reject = new Button("\u274C");
-            approve.setStyle("-fx-background-color: #8ad38c;");
-            reject.setStyle("-fx-background-color: #fb7e77;");
+        Button approve = new Button("\u2705");
+        Button reject = new Button("\u274C");
 
-            approve.setOnAction(e -> {
-                orderModel.updateImageStatus(meta.getId(), "approved");
-                statusLabel.setText("Status: approved");
-                statusLabel.setStyle(getStatusStyle("approved"));
-                displayOrd(allOrders);
-            });
+        approve.setStyle("-fx-background-color: #8ad38c;");
+        reject.setStyle("-fx-background-color: #fb7e77;");
 
-            reject.setOnAction(e -> {
-                orderModel.updateImageStatus(meta.getId(), "rejected");
-                statusLabel.setText("Status: rejected");
-                statusLabel.setStyle(getStatusStyle("rejected"));
-                displayOrd(allOrders);
-            });
+        approve.setOnAction(e -> {
+            orderModel.updateImageStatus(meta.getId(), "approved");
+            statusLabel.setText("Status: approved");
+            statusLabel.setStyle(getStatusStyle("approved"));
+            updateSubmitButtonState(item, order, submitButton);
+            displayOrd(allOrders);
+        });
 
-            HBox buttonsBox = new HBox(10, approve, reject);
-            buttonsBox.setAlignment(Pos.CENTER);
-            imageContainer.getChildren().add(buttonsBox);
-        }
+        reject.setOnAction(e -> {
+            orderModel.updateImageStatus(meta.getId(), "rejected");
+            statusLabel.setText("Status: rejected");
+            statusLabel.setStyle(getStatusStyle("rejected"));
+            updateSubmitButtonState(item, order, submitButton);
+            displayOrd(allOrders);
+        });
+
+        HBox buttonsBox = new HBox(10, approve, reject);
+        buttonsBox.setAlignment(Pos.CENTER);
+        imageContainer.getChildren().add(buttonsBox);
 
         return imageContainer;
     }
 
-    private String getStatusStyle(String status) {
-        return switch (status.toLowerCase()) {
-            case "approved" -> "-fx-text-fill: green; -fx-font-size: 15px";
-            case "rejected" -> "-fx-text-fill: red; -fx-font-size: 15px";
-            default -> "-fx-text-fill: orange; -fx-font-size: 15px";
-        };
-    }
+    private void updateSubmitButtonState(Item item, Order order, Button submitButton) {
+        List<ImageWithMeta> allImages = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
 
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        boolean hasPending = allImages.stream()
+                .anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()));
+
+        if (hasPending) {
+            // Block submission only if there's pending
+            submitButton.setDisable(true);
+            submitButton.setText("Submit");
+            submitButton.setStyle("-fx-background-color: grey; -fx-text-fill: white;");
+            item.setSubmitted(false);
+            orderModel.markItemAsUnsubmitted(order.getID(), item.getId());
+            return;
+        }
+
+        // No pending images, allow submission
+        if (!item.isSubmitted()) {
+            submitButton.setDisable(false);
+            submitButton.setText("Submit");
+            submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
+        } else {
+            submitButton.setDisable(true);
+            submitButton.setText("✓ Submitted");
+            submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
+        }
     }
 
     @FXML
@@ -290,8 +272,7 @@ public class QC {
 
             Order selectedOrder = allOrders.stream()
                     .filter(o -> o.getOrderNumber().equals(selectedOrderNumber))
-                    .findFirst()
-                    .orElse(null);
+                    .findFirst().orElse(null);
 
             if (selectedOrder == null || selectedOrder.getItems().isEmpty()) {
                 showAlert("No items found for selected order.");
@@ -299,10 +280,8 @@ public class QC {
             }
 
             for (Item item : selectedOrder.getItems()) {
-                List<ImageWithMeta> imageMetas = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
-
-                boolean hasNonApproved = imageMetas.stream()
-                        .anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
+                boolean hasNonApproved = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId())
+                        .stream().anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
 
                 if (hasNonApproved) {
                     showAlert("You can only preview the report when all images are approved.");
@@ -310,15 +289,11 @@ public class QC {
                 }
             }
 
-            List<byte[]> approvedImages = new ArrayList<>();
-            for (Item item : selectedOrder.getItems()) {
-                List<ImageWithMeta> imageMetas = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId());
-                approvedImages.addAll(
-                        imageMetas.stream()
-                                .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
-                                .map(ImageWithMeta::getImageData)
-                                .toList());
-            }
+            List<byte[]> approvedImages = selectedOrder.getItems().stream()
+                    .flatMap(item -> orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId()).stream())
+                    .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
+                    .map(ImageWithMeta::getImageData)
+                    .toList();
 
             if (approvedImages.isEmpty()) {
                 showAlert("No approved images for this order.");
@@ -330,19 +305,17 @@ public class QC {
                 showAlert("Belman logo not found.");
                 return;
             }
-            byte[] logoBytes = logoStream.readAllBytes();
 
+            byte[] logoBytes = logoStream.readAllBytes();
             byte[] qcSignature = userModel.getSignatureForUser(currentUser.getUser_id());
+
             if (qcSignature == null) {
                 showAlert("QC signature not found.");
                 return;
             }
 
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
-                    selectedOrder.getOrderNumber(),
-                    approvedImages,
-                    logoBytes,
-                    qcSignature
+                    selectedOrder.getOrderNumber(), approvedImages, logoBytes, qcSignature
             );
 
             new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber()).showAndWait();
@@ -351,5 +324,20 @@ public class QC {
             e.printStackTrace();
             showAlert("Failed to generate or preview PDF.");
         }
+    }
+
+    public String getStatusStyle(String status) {
+        return switch (status.toLowerCase()) {
+            case "approved" -> "-fx-text-fill: green; -fx-font-size: 15px";
+            case "rejected" -> "-fx-text-fill: red; -fx-font-size: 15px";
+            default -> "-fx-text-fill: orange; -fx-font-size: 15px";
+        };
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

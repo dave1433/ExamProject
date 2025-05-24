@@ -63,4 +63,7 @@ public class OrderModel {
     public void markItemAsSubmitted(int orderId, int itemId) {
         orderManager.markItemAsSubmitted(orderId, itemId);
     }
+    public void markItemAsUnsubmitted(int orderId, int itemId) {
+        orderManager.markItemAsUnsubmitted(orderId, itemId);
+    }
 }
