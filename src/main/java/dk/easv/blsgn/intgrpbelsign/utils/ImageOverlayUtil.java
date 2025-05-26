@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -41,32 +42,44 @@ public class ImageOverlayUtil {
                                             ImageWithMeta meta, Item item, int orderId,
                                             String orderNumber, boolean isQCView) {
 
-        StackPane container = new StackPane();
-        container.setPrefSize(110, 110);
+        VBox container = new VBox(5); // 5px spacing between image and controls
+        container.setPrefWidth(110);
+        container.setAlignment(Pos.TOP_CENTER);
 
-        // Ensure image sizing is consistent
+        // Set up the image view
         imgView.setFitWidth(110);
         imgView.setFitHeight(110);
         imgView.setPreserveRatio(true);
         imgView.setOnMouseClicked(_ -> openImageViewer(img));
+
         container.getChildren().add(imgView);
 
-        // If the image is not approved, show a retake picture icon (unless we're in QC view)
+        // Add controls below only if not in QC view and image is not approved
         if (!isQCView && !"approved".equalsIgnoreCase(status)) {
+            // Retake photo button
+            Button retakeButton = new Button("Retake");
+            retakeButton.setStyle("-fx-font-size: 11px; -fx-background-color: #1970ba; -fx-background-radius: 12; -fx-text-fill: white; -fx-cursor: hand;");
+            retakeButton.setOnAction(e -> {
+                orderManager.deleteImage(meta.getId());
+                openRetakeCamera(item, orderId, orderNumber, viewType);
+            });
+
+            // Retake camera icon
             ImageView retakeIcon = new ImageView(new Image("/dk/easv/blsgn/intgrpbelsign/Pictures/icons/icons8-camera-50.png"));
             retakeIcon.setFitWidth(20);
             retakeIcon.setFitHeight(20);
-            StackPane.setAlignment(retakeIcon, Pos.TOP_RIGHT);
             retakeIcon.setStyle("-fx-cursor: hand;");
             retakeIcon.setOnMouseClicked(e -> {
                 orderManager.deleteImage(meta.getId());
                 openRetakeCamera(item, orderId, orderNumber, viewType);
             });
 
-            container.getChildren().add(retakeIcon);
+            HBox controlRow = new HBox(10, retakeButton, retakeIcon); // button + icon in a row
+            controlRow.setAlignment(Pos.CENTER);
+            container.getChildren().add(controlRow);
         }
 
-        return container;
+        return new StackPane(container); // Wrap VBox in StackPane if needed for consistency
     }
 
     public void openCameraWindow(Item item, int orderId, String orderNumber, String viewType) {
