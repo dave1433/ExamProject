@@ -36,6 +36,8 @@ public class QC extends BaseOrderController {
     private List<Order> allOrders;
     private User currentUser;
 
+    private final Map<Integer, String> tempStatuses = new HashMap<>();
+
     public void setCurrentUser(User user) {
         this.currentUser = user;
     }
@@ -153,19 +155,24 @@ public class QC extends BaseOrderController {
 
                 photoContent.getChildren().addAll(anglesPane, new Label("Extra Photos:"), extraPhotos);
                 updateSubmitButtonState(item, order, submitButton);
-
                 submitButton.setOnAction(e -> {
-                    boolean hasPending = orderModel.getAllImagesWithStatus(order.getID(), item.getId())
-                            .stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()));
+                    List<ImageWithMeta> imgs = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
 
-                    if (hasPending) {
+                    boolean allReviewed = imgs.stream().allMatch(img -> tempStatuses.containsKey(img.getId()));
+                    if (!allReviewed) {
                         showAlert("You must review all images before submitting.");
                         return;
+                    }
+
+                    for (ImageWithMeta img : imgs) {
+                        String newStatus = tempStatuses.get(img.getId());
+                        orderModel.updateImageStatus(img.getId(), newStatus);
                     }
 
                     orderModel.markItemAsSubmitted(order.getID(), item.getId());
                     item.setSubmitted(true);
                     updateSubmitButtonState(item, order, submitButton);
+                    displayOrders(List.of(order)); // Refresh to hide buttons
                 });
 
                 photoContent.getChildren().add(submitButton);
@@ -199,48 +206,47 @@ public class QC extends BaseOrderController {
                 imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), true
         );
 
-        Label statusLabel = new Label("Status: " + meta.getStatus());
-        statusLabel.setStyle(getStatusStyle(meta.getStatus()));
-
-        imageContainer.getChildren().addAll(angleLabel, imageStack, statusLabel);
+        String shownStatus = tempStatuses.getOrDefault(meta.getId(), meta.getStatus());
+        Label statusLabel = new Label("Status: " + shownStatus);
+        statusLabel.setStyle(getStatusStyle(shownStatus));
 
         Button approve = new Button("\u2705");
         Button reject = new Button("\u274C");
-
         approve.setStyle("-fx-background-color: #8ad38c;");
         reject.setStyle("-fx-background-color: #fb7e77;");
 
         approve.setOnAction(e -> {
-            orderModel.updateImageStatus(meta.getId(), "approved");
+            tempStatuses.put(meta.getId(), "approved");
             statusLabel.setText("Status: approved");
             statusLabel.setStyle(getStatusStyle("approved"));
             updateSubmitButtonState(item, order, submitButton);
-            displayOrd(allOrders);
         });
 
         reject.setOnAction(e -> {
-            orderModel.updateImageStatus(meta.getId(), "rejected");
+            tempStatuses.put(meta.getId(), "rejected");
             statusLabel.setText("Status: rejected");
             statusLabel.setStyle(getStatusStyle("rejected"));
             updateSubmitButtonState(item, order, submitButton);
-            displayOrd(allOrders);
         });
 
         HBox buttonsBox = new HBox(10, approve, reject);
         buttonsBox.setAlignment(Pos.CENTER);
-        imageContainer.getChildren().add(buttonsBox);
 
+        if (item.isSubmitted()) {
+            buttonsBox.setVisible(false);
+            buttonsBox.setManaged(false);
+        }
+
+        imageContainer.getChildren().addAll(angleLabel, imageStack, statusLabel, buttonsBox);
         return imageContainer;
     }
 
     private void updateSubmitButtonState(Item item, Order order, Button submitButton) {
         List<ImageWithMeta> allImages = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
 
-        boolean hasPending = allImages.stream()
-                .anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()));
+        boolean allReviewed = allImages.stream().allMatch(img -> tempStatuses.containsKey(img.getId()));
 
-        if (hasPending) {
-            // Block submission only if there's pending
+        if (!allReviewed) {
             submitButton.setDisable(true);
             submitButton.setText("Submit");
             submitButton.setStyle("-fx-background-color: grey; -fx-text-fill: white;");
@@ -249,7 +255,6 @@ public class QC extends BaseOrderController {
             return;
         }
 
-        // No pending images, allow submission
         if (!item.isSubmitted()) {
             submitButton.setDisable(false);
             submitButton.setText("Submit");
@@ -282,7 +287,6 @@ public class QC extends BaseOrderController {
             for (Item item : selectedOrder.getItems()) {
                 boolean hasNonApproved = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId())
                         .stream().anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
-
                 if (hasNonApproved) {
                     showAlert("You can only preview the report when all images are approved.");
                     return;
