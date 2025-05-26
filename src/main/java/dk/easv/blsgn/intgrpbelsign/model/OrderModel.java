@@ -7,7 +7,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderModel {
@@ -65,5 +67,26 @@ public class OrderModel {
     }
     public void markItemAsUnsubmitted(int orderId, int itemId) {
         orderManager.markItemAsUnsubmitted(orderId, itemId);
+    }
+
+    private final Map<Integer, String> tempStatuses = new HashMap<>();
+
+    public void setTempStatus(int imageId, String status) {
+        tempStatuses.put(imageId, status);
+    }
+
+    public String getTempStatus(int imageId) {
+        return tempStatuses.getOrDefault(imageId, null);
+    }
+
+    public boolean hasTempStatus(int imageId) {
+        return tempStatuses.containsKey(imageId);
+    }
+
+    public void clearTempStatusesForItem(int orderId, int itemId) {
+        List<ImageWithMeta> images = getAllImagesWithStatus(orderId, itemId);
+        for (ImageWithMeta img : images) {
+            tempStatuses.remove(img.getId());
+        }
     }
 }
