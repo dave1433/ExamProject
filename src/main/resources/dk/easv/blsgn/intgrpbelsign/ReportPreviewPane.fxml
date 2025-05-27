@@ -9,9 +9,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <ScrollPane fitToWidth="true" prefHeight="600">
-        <VBox fx:id="imageContainer" spacing="10" />
-    </ScrollPane>
+    <VBox fx:id="imageContainer" spacing="10" />
 
     <Label text="Customer Email:" />
     <TextField fx:id="emailField" promptText="email@example.com" />
