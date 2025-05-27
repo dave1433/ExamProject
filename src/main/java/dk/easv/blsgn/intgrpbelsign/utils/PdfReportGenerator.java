@@ -6,18 +6,25 @@ import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
 
+import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
+import dk.easv.blsgn.intgrpbelsign.be.Item;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import dk.easv.blsgn.intgrpbelsign.be.Item;
+import java.util.Map;
 
 public class PdfReportGenerator {
 
-    public static byte[] generatePdfWithImages(String orderNumber, List<byte[]> approvedImageList, byte[] belmanLogoBytes, byte[] qcSignatureBytes
+    public static byte[] generatePdfWithImages(
+            String orderNumber,
+            Map<Item, List<ImageWithMeta>> itemImages,
+            byte[] belmanLogoBytes,
+            byte[] qcSignatureBytes,
+            String qcUserName
     ) throws IOException {
 
-        if (approvedImageList == null || approvedImageList.isEmpty()) {
+        if (itemImages == null || itemImages.isEmpty()) {
             throw new IllegalArgumentException("PDF cannot be generated: No approved images.");
         }
 
@@ -33,26 +40,38 @@ public class PdfReportGenerator {
             doc.add(logo);
         }
 
-        // Basic report info
+        // Header
         doc.add(new Paragraph("Order Report").setBold().setFontSize(18));
         doc.add(new Paragraph("Order Number: " + orderNumber));
         doc.add(new Paragraph("Date: " + java.time.LocalDate.now()));
         doc.add(new Paragraph("\n"));
 
-        // Add approved images
-        for (int i = 0; i < approvedImageList.size(); i++) {
-            byte[] imgBytes = approvedImageList.get(i);
-            if (imgBytes != null) {
-                ImageData imageData = ImageDataFactory.create(imgBytes);
-                Image image = new Image(imageData).scaleToFit(400, 300);
-                doc.add(new Paragraph("Image " + (i + 1)));
-                doc.add(image);
+        // Grouped by item
+        for (Map.Entry<Item, List<ImageWithMeta>> entry : itemImages.entrySet()) {
+            Item item = entry.getKey();
+            List<ImageWithMeta> images = entry.getValue();
+
+            doc.add(new Paragraph("Item: " + item.getItemName()).setBold().setFontSize(14));
+            doc.add(new Paragraph("\n"));
+
+            for (ImageWithMeta img : images) {
+                String angle = img.getViewType() != null ? img.getViewType() : "Unknown View";
+
+                byte[] imgBytes = img.getImageData();
+                if (imgBytes != null) {
+                    ImageData imageData = ImageDataFactory.create(imgBytes);
+                    Image image = new Image(imageData).scaleToFit(400, 300);
+                    doc.add(new Paragraph(angle));
+                    doc.add(image);
+                }
             }
+
+            doc.add(new Paragraph("\n"));
         }
 
-        // Add QC signature if available
-        if (qcSignatureBytes != null) {
-            doc.add(new Paragraph("\nApproved by the Quality Control Department").setBold());
+        // QC approval
+        if (qcUserName != null && qcSignatureBytes != null) {
+            doc.add(new Paragraph("Approved by: " + qcUserName).setBold());
             ImageData signatureData = ImageDataFactory.create(qcSignatureBytes);
             Image signature = new Image(signatureData).scaleToFit(200, 100);
             doc.add(signature);
@@ -60,8 +79,5 @@ public class PdfReportGenerator {
 
         doc.close();
         return baos.toByteArray();
-
     }
 }
-
-

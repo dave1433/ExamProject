@@ -12,7 +12,9 @@ import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -284,6 +286,7 @@ public class QC extends BaseOrderController {
                 return;
             }
 
+            // Ensure all images are approved
             for (Item item : selectedOrder.getItems()) {
                 boolean hasNonApproved = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId())
                         .stream().anyMatch(img -> !"approved".equalsIgnoreCase(img.getStatus()));
@@ -293,13 +296,20 @@ public class QC extends BaseOrderController {
                 }
             }
 
-            List<byte[]> approvedImages = selectedOrder.getItems().stream()
-                    .flatMap(item -> orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId()).stream())
-                    .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
-                    .map(ImageWithMeta::getImageData)
-                    .toList();
+            // Build the item → approved images map
+            Map<Item, List<ImageWithMeta>> itemImages = new HashMap<>();
+            for (Item item : selectedOrder.getItems()) {
+                List<ImageWithMeta> approved = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId())
+                        .stream()
+                        .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
+                        .toList();
 
-            if (approvedImages.isEmpty()) {
+                if (!approved.isEmpty()) {
+                    itemImages.put(item, approved);
+                }
+            }
+
+            if (itemImages.isEmpty()) {
                 showAlert("No approved images for this order.");
                 return;
             }
@@ -309,20 +319,29 @@ public class QC extends BaseOrderController {
                 showAlert("Belman logo not found.");
                 return;
             }
-
             byte[] logoBytes = logoStream.readAllBytes();
-            byte[] qcSignature = userModel.getSignatureForUser(currentUser.getUser_id());
 
+            byte[] qcSignature = userModel.getSignatureForUser(currentUser.getUser_id());
             if (qcSignature == null) {
                 showAlert("QC signature not found.");
                 return;
             }
 
             byte[] pdf = PdfReportGenerator.generatePdfWithImages(
-                    selectedOrder.getOrderNumber(), approvedImages, logoBytes, qcSignature
+                    selectedOrder.getOrderNumber(),
+                    itemImages,
+                    logoBytes,
+                    qcSignature,
+                    currentUser.getFirst_name() + " " + currentUser.getLast_name()
             );
 
-            new PdfPreviewDialog(pdf, selectedOrder.getOrderNumber()).showAndWait();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/blsgn/intgrpbelsign/ReportPreviewPane.fxml"));
+            Parent previewPane = loader.load();
+
+            PdfPreviewDialog controller = loader.getController();
+            controller.initData(pdf, selectedOrder.getOrderNumber());
+
+            flowPane.getChildren().setAll(previewPane);
 
         } catch (Exception e) {
             e.printStackTrace();
