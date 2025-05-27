@@ -18,4 +18,7 @@
             text="Download &amp; Send PDF"
             onAction="#handleDownloadAndSend"
             style="-fx-background-color: #004b88; -fx-text-fill: white; -fx-padding: 8; -fx-background-radius: 5;" />
+
+    <Button text="Back to Orders" onAction="#handleBackToOrders"
+            style="-fx-background-color: #004b88; -fx-text-fill: white;" />
 </VBox>

@@ -34,10 +34,12 @@ public class PdfPreviewDialog  {
 
     private byte[] pdfBytes;
     private String orderNumber;
+    private QC qcController;
 
-    public void initData(byte[] pdfBytes, String orderNumber) throws IOException {
+    public void initData(byte[] pdfBytes, String orderNumber, QC controller) throws IOException {
         this.pdfBytes = pdfBytes;
         this.orderNumber = orderNumber;
+        this.qcController = controller;
         loadPdfImages();
     }
 
@@ -94,5 +96,12 @@ public class PdfPreviewDialog  {
     private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, msg);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleBackToOrders() {
+        if (qcController != null) {
+            qcController.returnFromPreview();
+        }
     }
 }

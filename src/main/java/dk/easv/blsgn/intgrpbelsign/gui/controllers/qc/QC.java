@@ -37,6 +37,8 @@ public class QC extends BaseOrderController {
     private ListView<String> listView;
     @FXML
     private TextField searchField;
+    @FXML
+    private Button reportPreviewButton;
 
     private List<Order> allOrders;
     private User currentUser;
@@ -296,14 +298,11 @@ public class QC extends BaseOrderController {
                 }
             }
 
-            // Build the item → approved images map
+            // Build item → approved image list map
             Map<Item, List<ImageWithMeta>> itemImages = new HashMap<>();
             for (Item item : selectedOrder.getItems()) {
                 List<ImageWithMeta> approved = orderModel.getAllImagesWithStatus(selectedOrder.getID(), item.getId())
-                        .stream()
-                        .filter(img -> "approved".equalsIgnoreCase(img.getStatus()))
-                        .toList();
-
+                        .stream().filter(img -> "approved".equalsIgnoreCase(img.getStatus())).toList();
                 if (!approved.isEmpty()) {
                     itemImages.put(item, approved);
                 }
@@ -339,13 +338,31 @@ public class QC extends BaseOrderController {
             Parent previewPane = loader.load();
 
             PdfPreviewDialog controller = loader.getController();
-            controller.initData(pdf, selectedOrder.getOrderNumber());
+            controller.initData(pdf, selectedOrder.getOrderNumber(), this); // pass QC controller
 
             flowPane.getChildren().setAll(previewPane);
+
+            // ✅ Hide the preview button
+            reportPreviewButton.setVisible(false);
+            reportPreviewButton.setDisable(true);
 
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Failed to generate or preview PDF.");
+        }
+    }
+
+    public void returnFromPreview() {
+        reportPreviewButton.setVisible(true);
+        reportPreviewButton.setDisable(false);
+
+        // Show the currently selected order again
+        String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
+        if (selectedOrderNumber != null) {
+            List<Order> selected = allOrders.stream()
+                    .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
+                    .toList();
+            displayOrders(selected);
         }
     }
 
