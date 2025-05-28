@@ -204,6 +204,7 @@ public class QC extends BaseOrderController {
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
 
+
         StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
                 imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), true
         );
