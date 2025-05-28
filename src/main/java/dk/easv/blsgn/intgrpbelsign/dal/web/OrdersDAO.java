@@ -1,6 +1,7 @@
 package dk.easv.blsgn.intgrpbelsign.dal.web;
 
 import dk.easv.blsgn.intgrpbelsign.be.Item;
+import dk.easv.blsgn.intgrpbelsign.dal.execeptions.OrdersException;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.dal.connection.DatabaseConnection;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
@@ -14,7 +15,7 @@ public class OrdersDAO implements IOrderDAO {
     DatabaseConnection conn = new DatabaseConnection();
 
     @Override
-    public List<Order> getAllOrders() {
+    public List<Order> getAllOrders() throws OrdersException {
         List<Order> orders = new ArrayList<>();
 
         String orderSql = "SELECT id, order_number FROM orders";
@@ -55,14 +56,14 @@ public class OrdersDAO implements IOrderDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Orders could not be found" + e.getMessage());
         }
 
         return orders;
     }
 
     @Override
-    public void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws SQLException {
+    public void saveImage(int orderId, int itemId, byte[] imageBytes, String viewType) throws OrdersException {
         String getLinkIdSql = "SELECT id FROM order_item_image WHERE order_id = ? AND item_id = ?";
         String insertSql = "INSERT INTO item_images (fk_order_item_image_id, image_data, status, viewType) VALUES (?, ?, 'pending', ?)";
 
@@ -83,14 +84,17 @@ public class OrdersDAO implements IOrderDAO {
                     insertStmt.executeUpdate();
                 }
             } else {
-                throw new SQLException("No order_item_image link found for order_id=" + orderId + " and item_id=" + itemId);
+                throw new OrdersException("No order");
             }
+        }
+        catch (SQLException e) {
+            throw new OrdersException("Could not save image for order " + orderId + " and item " + itemId + " " + e.getMessage());
         }
     }
 
 
     @Override
-    public List<byte[]> getImagesForItem(int orderId, int itemId) {
+    public List<byte[]> getImagesForItem(int orderId, int itemId) throws OrdersException {
         List<byte[]> images = new ArrayList<>();
         String sql = "SELECT item_images.image_data " +
                      "FROM item_images " +
@@ -113,14 +117,14 @@ public class OrdersDAO implements IOrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Could not get images for order " + orderId + " and item " + itemId + " " + e.getMessage());
         }
 
         return images;
     }
 
     @Override
-    public void updateImageStatus(int imageId, String status) {
+    public void updateImageStatus(int imageId, String status) throws OrdersException {
         String sql = "UPDATE item_images SET status = ? WHERE id = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -128,12 +132,12 @@ public class OrdersDAO implements IOrderDAO {
             stmt.setInt(2, imageId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Could not update image status for image =" + imageId + " " + e.getMessage());
         }
     }
 
     @Override
-    public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) {
+    public List<ImageWithMeta> getAllImagesWithStatus(int orderId, int itemId) throws OrdersException {
         List<ImageWithMeta> imageList = new ArrayList<>();
         String sql = "SELECT  item_images.id, item_images.image_data, item_images.status, item_images.viewType " +
                 "FROM item_images " +
@@ -160,14 +164,14 @@ public class OrdersDAO implements IOrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Images could not be found for order " + orderId + " and item=" + itemId + " " + e.getMessage());
         }
 
         return imageList;
     }
 
     @Override
-    public void deleteImage(int imageId) {
+    public void deleteImage(int imageId) throws OrdersException {
         String sql = "DELETE FROM item_images WHERE id = ?";
 
         try (Connection c = conn.getConnection();
@@ -175,12 +179,12 @@ public class OrdersDAO implements IOrderDAO {
             stmt.setInt(1, imageId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Could not delete image with id=" + imageId + " " + e.getMessage());
         }
     }
 
     @Override
-    public void markItemAsSubmitted(int orderId, int itemId) {
+    public void markItemAsSubmitted(int orderId, int itemId) throws OrdersException {
         String sql = "UPDATE order_item_image SET isSubmitted = 1 WHERE order_id = ? AND item_id = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -188,12 +192,12 @@ public class OrdersDAO implements IOrderDAO {
             stmt.setInt(2, itemId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new OrdersException("Could not mark item as submitted " + e.getMessage());
         }
     }
 
     @Override
-    public void markItemAsUnsubmitted(int orderId, int itemId) {
+    public void markItemAsUnsubmitted(int orderId, int itemId) throws OrdersException {
         String sql = "UPDATE order_item_image SET isSubmitted = 0 WHERE order_id = ? AND item_id = ?";
 
         try (Connection c = conn.getConnection();
@@ -204,7 +208,7 @@ public class OrdersDAO implements IOrderDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Consider proper logging
+            throw new OrdersException(e);
         }
     }
 }

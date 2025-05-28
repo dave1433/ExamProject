@@ -3,6 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.admin;
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.model.UserModel;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,12 +30,12 @@ public class AddEditUser {
     @FXML
     private Button saveButton;
 
-    private final UserManager userManager = new UserManager();
+    private final UserModel userModel = new UserModel(new UserManager());
     private User user;
     private String dialogType;
 
     public void initialize() {
-        List<Role> roles = userManager.getAllRoles();
+        List<Role> roles = userModel.getAllRoles();
         roleComboBox.getItems().setAll(roles);
     }
 
@@ -83,7 +84,7 @@ public class AddEditUser {
         }
 
         // Username existence check for new users
-        if ("add".equals(dialogType) && userManager.doesUserNameExist(username)) {
+        if ("add".equals(dialogType) && userModel.doesUserNameExist(username)) {
             showErrorDialog("Validation Error", "Username already exists");
             return;
         }
@@ -102,11 +103,11 @@ public class AddEditUser {
 
                 if ("add".equals(dialogType)) {
                     System.out.println("Adding user");
-                    success = userManager.addUser(user, password);
+                    success = userModel.addUser(user, password);
                 } else if ("edit".equals(dialogType)) {
                     System.out.println("Editing user");
                     // Only pass the password if it was changed
-                    success = userManager.editUser(user, isPasswordChanged ? password : null);
+                    success = userModel.editUser(user, isPasswordChanged ? password : null);
                 }
 
                 System.out.println((dialogType.equals("add") ? "addUser" : "editUser") + " result: " + success);
