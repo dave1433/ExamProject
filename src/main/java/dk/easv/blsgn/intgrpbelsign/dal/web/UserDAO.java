@@ -1,9 +1,9 @@
 package dk.easv.blsgn.intgrpbelsign.dal.web;
 
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.dal.connection.DatabaseConnection;
+import dk.easv.blsgn.intgrpbelsign.dal.execeptions.UsersException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -18,7 +18,7 @@ public class UserDAO implements IUserDAO {
 
     DatabaseConnection conn = new DatabaseConnection();
     @Override
-    public ObservableList<User> getAllUsers() {
+    public ObservableList<User> getAllUsers() throws UsersException {
         ObservableList<User> users = FXCollections.observableArrayList();
         String sql = "SELECT * FROM [User] ORDER BY usage_count DESC";
 
@@ -41,13 +41,13 @@ public class UserDAO implements IUserDAO {
                 users.add(user);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new UsersException("Users could not be found. " + e.getMessage());
         }
         return users;
     }
 
     @Override
-    public boolean addUser(User user) {
+    public boolean addUser(User user) throws UsersException {
         String sql = "INSERT INTO [User] (user_name, password_hash, role_id, first_name, last_name, email, phone_number)" + " VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = conn.getConnection()) {
             PreparedStatement stmt = c.prepareStatement(sql);
@@ -64,11 +64,11 @@ public class UserDAO implements IUserDAO {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException("User could not be added. " + e.getMessage());
         }
         return false;
     }
-    @Override    public boolean editUser(User user) {
+    @Override    public boolean editUser(User user) throws UsersException {
         String sql = "UPDATE [User] SET user_name = ?, password_hash = ?, role_id = ?, first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE user_id = ?";
         try (Connection c = conn.getConnection()) {
             PreparedStatement stmt = c.prepareStatement(sql);
@@ -86,11 +86,11 @@ public class UserDAO implements IUserDAO {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException("User could not be edited. " + e.getMessage());
         }
         return false;
     }
-    @Override    public boolean doesUserNameExist(String username) {
+    @Override    public boolean doesUserNameExist(String username) throws UsersException {
         String sql = "SELECT COUNT(*) FROM [User] WHERE user_name = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -104,13 +104,11 @@ public class UserDAO implements IUserDAO {
             return false;
 
 
-        } catch (SQLServerException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new UsersException(e);
         }
     }
-    @Override    public User getUserByUsername(String username) {
+    @Override    public User getUserByUsername(String username) throws UsersException {
         String sql = "SELECT * FROM [User] WHERE user_name = ?";
 
         try (Connection c = conn.getConnection();
@@ -133,12 +131,12 @@ public class UserDAO implements IUserDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException(e);
         }
         return null;
     }
     @Override
-    public List<Role> getAllRoles() {
+    public List<Role> getAllRoles() throws UsersException {
         List<Role> roles = new ArrayList<>();
         String sql = "SELECT role_id, role_name FROM Role";
 
@@ -152,14 +150,14 @@ public class UserDAO implements IUserDAO {
                 roles.add(new Role(id, name));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException("Roles could not be found. " + e.getMessage());
         }
 
         return roles;
     }
 
     @Override
-    public byte[] getSignatureByUserId(int userId) {
+    public byte[] getSignatureByUserId(int userId) throws UsersException {
         String sql = "SELECT signature FROM [User] WHERE user_id = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
@@ -170,20 +168,20 @@ public class UserDAO implements IUserDAO {
                 return rs.getBytes("signature");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException("Signature could not be found. " + e.getMessage());
         }
         return null;
     }
 
     @Override
-    public void incrementUsageCount(int userId) {
+    public void incrementUsageCount(int userId) throws UsersException {
         String sql = "UPDATE [User] SET usage_count = usage_count + 1 WHERE user_id = ?";
         try (Connection c = conn.getConnection();
              PreparedStatement stmt = c.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new UsersException("Usage count could not be incremented. " + e.getMessage());
         }
     }
 }
