@@ -1,5 +1,6 @@
 package dk.easv.blsgn.intgrpbelsign.model;
 
+import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import javafx.collections.FXCollections;
@@ -93,6 +94,22 @@ public class UserModel {
 
     public byte[] getSignatureForUser(int userId) {
         return userManager.loadSignatureForUser(userId);
+    }
+
+    public List<Role> getAllRoles() {
+        return userManager.getAllRoles();
+    }
+
+    public boolean doesUserNameExist(String username) {
+        return userManager.doesUserNameExist(username);
+    }
+
+    public boolean addUser(User user, String password) {
+       return  userManager.addUser(user, password);
+    }
+
+    public boolean editUser(User user, String s) {
+       return  userManager.editUser(user, s);
     }
 
 }
