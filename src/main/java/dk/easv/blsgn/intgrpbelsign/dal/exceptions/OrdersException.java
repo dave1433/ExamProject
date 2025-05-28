@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.dal.execeptions;
+package dk.easv.blsgn.intgrpbelsign.dal.exceptions;
 
 public class OrdersException extends RuntimeException {
     public OrdersException(String message) {

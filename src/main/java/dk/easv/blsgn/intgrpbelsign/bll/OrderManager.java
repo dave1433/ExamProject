@@ -20,9 +20,6 @@ public class OrderManager {
         iOrderDAO.saveImage(orderId, itemId, imageBytes, viewType);
     }
 
-    public List<byte[]> getImagesForItem(int orderId, int itemId) {
-        return iOrderDAO.getImagesForItem(orderId, itemId);
-    }
 
     public void updateImageStatus(int imageId, String status) {
         iOrderDAO.updateImageStatus(imageId, status);

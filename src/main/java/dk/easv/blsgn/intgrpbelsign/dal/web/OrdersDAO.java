@@ -1,7 +1,7 @@
 package dk.easv.blsgn.intgrpbelsign.dal.web;
 
 import dk.easv.blsgn.intgrpbelsign.be.Item;
-import dk.easv.blsgn.intgrpbelsign.dal.execeptions.OrdersException;
+import dk.easv.blsgn.intgrpbelsign.dal.exceptions.OrdersException;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.dal.connection.DatabaseConnection;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
@@ -20,10 +20,10 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-        SELECT i.id, i.item_name, oii.order_id, oii.isSubmitted
-        FROM order_item_image oii
-        JOIN items i ON oii.item_id = i.id
-        WHERE oii.order_id = ?
+        SELECT items.id, items.item_name, order_item_image.order_id, order_item_image.isSubmitted
+        FROM order_item_image
+        JOIN items ON order_item_image.item_id = items.id
+        WHERE order_item_image.order_id = ?
     """;
 
         try (Connection c = conn.getConnection();
@@ -92,36 +92,6 @@ public class OrdersDAO implements IOrderDAO {
         }
     }
 
-
-    @Override
-    public List<byte[]> getImagesForItem(int orderId, int itemId) throws OrdersException {
-        List<byte[]> images = new ArrayList<>();
-        String sql = "SELECT item_images.image_data " +
-                     "FROM item_images " +
-                     "JOIN order_item_image ON item_images.fk_order_item_image_id = order_item_image.id " +
-                     "WHERE order_item_image.order_id = ? " +
-                     "AND order_item_image.item_id = ? " +
-                     "AND item_images.status = 'approved' " +
-                     "ORDER BY item_images.id";
-
-        try (Connection c = conn.getConnection();
-             PreparedStatement stmt = c.prepareStatement(sql)) {
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, itemId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                byte[] img = rs.getBytes("image_data");
-                if (img != null) {
-                    images.add(img);
-                }
-            }
-        } catch (SQLException e) {
-            throw new OrdersException("Could not get images for order " + orderId + " and item " + itemId + " " + e.getMessage());
-        }
-
-        return images;
-    }
 
     @Override
     public void updateImageStatus(int imageId, String status) throws OrdersException {

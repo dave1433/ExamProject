@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.dal.web;
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.dal.connection.DatabaseConnection;
-import dk.easv.blsgn.intgrpbelsign.dal.execeptions.UsersException;
+import dk.easv.blsgn.intgrpbelsign.dal.exceptions.UsersException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

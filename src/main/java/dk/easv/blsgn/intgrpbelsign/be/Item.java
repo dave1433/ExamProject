@@ -6,23 +6,13 @@ public class Item {
     private String itemName;
     private int orderId;
 
-    private String materialsUsed;
-    private String approxQuantity;
-    private int totalWeight; // in grams
+
 
     // Full constructor
-    public Item(int id, String itemName, int orderId, String materialsUsed, String approxQuantity, int totalWeight) {
+    public Item(int id, String itemName, int orderId) {
         this.id = id;
         this.itemName = itemName;
         this.orderId = orderId;
-        this.materialsUsed = materialsUsed;
-        this.approxQuantity = approxQuantity;
-        this.totalWeight = totalWeight;
-    }
-
-    // Constructor without materials (used if material info is not fetched yet)
-    public Item(int id, String itemName, int orderId) {
-        this(id, itemName, orderId, "N/A", "N/A", 0);
     }
 
     // Getters
@@ -42,17 +32,6 @@ public class Item {
         return orderId;
     }
 
-    public String getMaterialsUsed() {
-        return materialsUsed;
-    }
-
-    public String getApproxQuantity() {
-        return approxQuantity;
-    }
-
-    public int getTotalWeight() {
-        return totalWeight;
-    }
 
     // Setters
     public void setId(int id) {
@@ -69,18 +48,6 @@ public class Item {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
-    }
-
-    public void setMaterialsUsed(String materialsUsed) {
-        this.materialsUsed = materialsUsed;
-    }
-
-    public void setApproxQuantity(String approxQuantity) {
-        this.approxQuantity = approxQuantity;
-    }
-
-    public void setTotalWeight(int totalWeight) {
-        this.totalWeight = totalWeight;
     }
 
     private boolean isSubmitted;
