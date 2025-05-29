@@ -18,10 +18,6 @@ public interface IOrderDAO {
 
         void deleteImage(int imageId) throws OrdersException;
 
-        void markItemAsSubmitted(int orderId, int itemId) throws OrdersException;
-
-        void markItemAsUnsubmitted(int orderId, int itemId) throws OrdersException;
-
 }
 
 

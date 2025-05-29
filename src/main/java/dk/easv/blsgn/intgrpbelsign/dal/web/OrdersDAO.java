@@ -20,7 +20,7 @@ public class OrdersDAO implements IOrderDAO {
 
         String orderSql = "SELECT id, order_number FROM orders";
         String itemSql = """
-        SELECT items.id, items.item_name, order_item_image.order_id, order_item_image.isSubmitted
+        SELECT items.id, items.item_name, order_item_image.order_id
         FROM order_item_image
         JOIN items ON order_item_image.item_id = items.id
         WHERE order_item_image.order_id = ?
@@ -45,7 +45,7 @@ public class OrdersDAO implements IOrderDAO {
                                     itemRs.getString("item_name"),
                                     itemRs.getInt("order_id")
                             );
-                            item.setSubmitted(itemRs.getBoolean("isSubmitted"));
+
                             itemList.add(item);
                         }
                     }
@@ -150,35 +150,6 @@ public class OrdersDAO implements IOrderDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new OrdersException("Could not delete image with id=" + imageId + " " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void markItemAsSubmitted(int orderId, int itemId) throws OrdersException {
-        String sql = "UPDATE order_item_image SET isSubmitted = 1 WHERE order_id = ? AND item_id = ?";
-        try (Connection c = conn.getConnection();
-             PreparedStatement stmt = c.prepareStatement(sql)) {
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, itemId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OrdersException("Could not mark item as submitted " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void markItemAsUnsubmitted(int orderId, int itemId) throws OrdersException {
-        String sql = "UPDATE order_item_image SET isSubmitted = 0 WHERE order_id = ? AND item_id = ?";
-
-        try (Connection c = conn.getConnection();
-             PreparedStatement stmt = c.prepareStatement(sql)) {
-
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, itemId);
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new OrdersException(e);
         }
     }
 }

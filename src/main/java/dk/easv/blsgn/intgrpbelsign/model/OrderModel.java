@@ -62,12 +62,6 @@ public class OrderModel {
         orderManager.updateImageStatus(imageId, status);
     }
 
-    public void markItemAsSubmitted(int orderId, int itemId) {
-        orderManager.markItemAsSubmitted(orderId, itemId);
-    }
-    public void markItemAsUnsubmitted(int orderId, int itemId) {
-        orderManager.markItemAsUnsubmitted(orderId, itemId);
-    }
 
     private final Map<Integer, String> tempStatuses = new HashMap<>();
 

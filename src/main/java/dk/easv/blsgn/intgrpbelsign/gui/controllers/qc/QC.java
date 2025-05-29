@@ -112,22 +112,31 @@ public class QC extends BaseOrderController {
                 }
 
                 photoContent.getChildren().addAll(anglesPane, new Label("Extra Photos:"), extraPhotos);
-                updateSubmitButtonState(item, order, submitButton);
+                updateSubmitButtonState(item, order, submitButton); // ✅ FIXED HERE
 
                 submitButton.setOnAction(e -> {
                     List<ImageWithMeta> imgs = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-                    boolean allReviewed = imgs.stream().allMatch(img -> orderModel.hasTempStatus(img.getId()));
-                    if (!allReviewed) {
-                        showAlert("You must review all images before submitting.");
+
+                    boolean hasPending = imgs.stream().anyMatch(img -> {
+                        String temp = orderModel.getTempStatus(img.getId());
+                        return temp == null && img.getStatus() == null;
+                    });
+
+                    if (hasPending) {
+                        showAlert("You must review all images (approve or reject) before submitting.");
                         return;
                     }
+
                     for (ImageWithMeta img : imgs) {
-                        String newStatus = orderModel.getTempStatus(img.getId());
-                        orderModel.updateImageStatus(img.getId(), newStatus);
+                        String temp = orderModel.getTempStatus(img.getId());
+                        if (temp != null) {
+                            orderModel.updateImageStatus(img.getId(), temp);
+                        }
                     }
+
                     orderModel.clearTempStatusesForItem(order.getID(), item.getId());
-                    orderModel.markItemAsSubmitted(order.getID(), item.getId());
                     item.setSubmitted(true);
+
                     updateSubmitButtonState(item, order, submitButton);
                     displayOrders(List.of(order));
                 });
@@ -159,7 +168,6 @@ public class QC extends BaseOrderController {
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
 
-
         StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
                 imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), true
         );
@@ -178,50 +186,26 @@ public class QC extends BaseOrderController {
             orderModel.setTempStatus(meta.getId(), "approved");
             statusLabel.setText("Status: approved");
             statusLabel.setStyle(getStatusStyle("approved"));
-            updateSubmitButtonState(item, order, submitButton);
         });
 
         reject.setOnAction(e -> {
             orderModel.setTempStatus(meta.getId(), "rejected");
             statusLabel.setText("Status: rejected");
             statusLabel.setStyle(getStatusStyle("rejected"));
-            updateSubmitButtonState(item, order, submitButton);
         });
 
         HBox buttonsBox = new HBox(10, approve, reject);
         buttonsBox.setAlignment(Pos.CENTER);
-
-        if (item.isSubmitted()) {
-            buttonsBox.setVisible(false);
-            buttonsBox.setManaged(false);
-        }
 
         imageContainer.getChildren().addAll(angleLabel, imageStack, statusLabel, buttonsBox);
         return imageContainer;
     }
 
     private void updateSubmitButtonState(Item item, Order order, Button submitButton) {
-        List<ImageWithMeta> allImages = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-        boolean allReviewed = allImages.stream().allMatch(img -> orderModel.hasTempStatus(img.getId()));
-
-        if (!allReviewed) {
-            submitButton.setDisable(true);
-            submitButton.setText("Submit");
-            submitButton.setStyle("-fx-background-color: grey; -fx-text-fill: white;");
-            item.setSubmitted(false);
-            orderModel.markItemAsUnsubmitted(order.getID(), item.getId());
-            return;
-        }
-
-        if (!item.isSubmitted()) {
-            submitButton.setDisable(false);
-            submitButton.setText("Submit");
-            submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
-        } else {
-            submitButton.setDisable(true);
-            submitButton.setText("\u2713 Submitted");
-            submitButton.setStyle("-fx-background-color: #8ad38c; -fx-text-fill: white; -fx-font-weight: bold;");
-        }
+        // Always blue by default
+        submitButton.setDisable(false);
+        submitButton.setText("Submit");
+        submitButton.setStyle("-fx-background-color: #3a86ff; -fx-text-fill: white;");
     }
 
     @FXML
