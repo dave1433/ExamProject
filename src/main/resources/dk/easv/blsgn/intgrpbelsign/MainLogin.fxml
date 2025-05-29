@@ -18,31 +18,32 @@
          <children>
             <AnchorPane prefHeight="68.0" prefWidth="900.0" style="-fx-background-color: #004b88;">
                <children>
-                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="33.0" prefHeight="27.0" prefWidth="1112.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome" textFill="WHITE">
+                  <Label fx:id="roleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="33.0" prefHeight="27.0" prefWidth="1263.0" styleClass="LoginLabel" stylesheets="@CSS.css" text="Welcome" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Button layoutX="134.0" layoutY="18.0" mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="45.0" prefWidth="51.0" stylesheets="@CSS.css">
-                     <graphic>
-                        <ImageView fitHeight="37.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@Pictures/icons/back.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                  <Label fx:id="mainName" alignment="BASELINE_RIGHT" layoutX="920.0" layoutY="31.0" prefHeight="18.0" prefWidth="139.0" textFill="#fff7f7" AnchorPane.rightAnchor="52.00000000000006" />
+                  <Label fx:id="mainName" alignment="BASELINE_RIGHT" layoutX="994.0" layoutY="32.0" prefHeight="18.0" prefWidth="139.0" textFill="#fff7f7" AnchorPane.rightAnchor="130.0" />
                   <ImageView fitHeight="86.0" fitWidth="114.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@Pictures/icons/Logo-inverted-colours.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="41.0" fitWidth="58.0" layoutX="850.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0">
+                  <ImageView fitHeight="41.0" fitWidth="58.0" layoutX="1142.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="80.20000000000005">
                      <image>
                         <Image url="@Pictures/icons/3.png" />
                      </image>
                   </ImageView>
                   <Label layoutX="813.0" layoutY="34.0" textFill="WHITE" />
+                  <Button layoutX="1197.0" layoutY="13.0" mnemonicParsing="false" onAction="#btnBackOnAction" prefHeight="61.0" prefWidth="62.0" style="-fx-background-color: #004b88;" stylesheets="@CSS.css">
+                     <graphic>
+                        <ImageView fitHeight="55.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@Pictures/icons/LogOut.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                </children>
             </AnchorPane>
          </children>

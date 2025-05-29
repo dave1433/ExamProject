@@ -1,60 +1,99 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC;
 
-import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
-import dk.easv.blsgn.intgrpbelsign.be.Item;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
-import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
+import javafx.collections.FXCollections;
+import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class BaseOrderController {
-    /*protected final OrderModel orderModel = new OrderModel(new OrderManager());
-    protected List<Order> allOrders;
 
-    protected boolean hasPendingImages(Order order) {
-        for (Item item : order.getItems()) {
-            List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-            if (images.stream().anyMatch(img -> "pending".equalsIgnoreCase(img.getStatus()))) {
-                return true;
+    protected List<Order> allOrders; // Shared orders list accessible by subclasses
+
+    /**
+     * Sets up order list and interaction logic
+     */
+    protected void initializeOrderList(
+            TextField searchField,
+            ListView<String> listView,
+            FlowPane flowPane,
+            OrderModel orderModel,
+            Predicate<Order> highlightCondition,
+            Function<String, List<Order>> filterFunction,
+            Consumer<List<Order>> onOrderSelected
+    ) {
+        // ✅ Important: set before accessing
+        this.allOrders = orderModel.getAllOrders();
+
+        System.out.println("initializeOrderList: " + allOrders.size() + " orders loaded.");
+
+        // Load all orders initially
+        listView.setItems(FXCollections.observableArrayList(
+                allOrders.stream().map(Order::getOrderNumber).toList()
+        ));
+
+        // Handle text search
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            List<Order> filtered = filterFunction.apply(newVal);
+            listView.setItems(FXCollections.observableArrayList(
+                    filtered.stream().map(Order::getOrderNumber).toList()
+            ));
+            if (flowPane != null) flowPane.getChildren().clear();
+        });
+
+        // Handle order selection
+        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
+            if (selectedOrderNumber != null) {
+                List<Order> selected = allOrders.stream()
+                        .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
+                        .toList();
+                onOrderSelected.accept(selected);
             }
+        });
+
+        // Apply styling logic to list cells
+        applyOrderListStyling(listView, allOrders, highlightCondition);
+
+        // Optional: clear content on startup
+        if (flowPane != null) {
+            flowPane.getChildren().clear();
         }
-        return false;
     }
 
-    protected boolean hasRejectedImages(Order order) {
-        for (Item item : order.getItems()) {
-            List<ImageWithMeta> images = orderModel.getAllImagesWithStatus(order.getID(), item.getId());
-            if (images.stream().anyMatch(img -> "rejected".equalsIgnoreCase(img.getStatus()))) {
-                return true;
+    /**
+     * Highlights orders with a custom rule (e.g. rejected/pending images)
+     */
+    protected void applyOrderListStyling(
+            ListView<String> listView,
+            List<Order> allOrders,
+            Predicate<Order> highlightCondition
+    ) {
+        listView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(null);
+                setStyle("");
+
+                if (empty || item == null) return;
+
+                setText(item);
+
+                Order order = allOrders.stream()
+                        .filter(o -> o.getOrderNumber().equals(item))
+                        .findFirst().orElse(null);
+
+                if (order != null && highlightCondition.test(order)) {
+                    setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
+                } else {
+                    setStyle("-fx-background-insets: 0 0 3px 0;");
+                }
             }
-        }
-        return false;
+        });
     }
-
-    protected String getStatusStyle(String status) {
-        return switch (status.toLowerCase()) {
-            case "approved" -> "-fx-text-fill: green; -fx-font-size: 15px";
-            case "rejected" -> "-fx-text-fill: red; -fx-font-size: 15px";
-            default -> "-fx-text-fill: orange; -fx-font-size: 15px";
-        };
-    }
-
-    protected void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    protected void styleOrderLabel(Labeled labeled, boolean highlight) {
-        if (highlight) {
-            labeled.setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
-        } else {
-            labeled.setStyle("-fx-background-insets: 0 0 3px 0;");
-        }
-    }*/
 }

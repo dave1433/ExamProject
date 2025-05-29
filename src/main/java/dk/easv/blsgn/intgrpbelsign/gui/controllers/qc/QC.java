@@ -26,21 +26,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class QC extends BaseOrderController {
-
     private final OrderModel orderModel = new OrderModel(new OrderManager());
     private final UserModel userModel = new UserModel(new UserManager());
     private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
 
-    @FXML
-    private FlowPane flowPane;
-    @FXML
-    private ListView<String> listView;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private Button reportPreviewButton;
+    @FXML private FlowPane flowPane;
+    @FXML private ListView<String> listView;
+    @FXML private TextField searchField;
+    @FXML private Button reportPreviewButton;
 
-    private List<Order> allOrders;
     private User currentUser;
 
     public void setCurrentUser(User user) {
@@ -49,55 +43,14 @@ public class QC extends BaseOrderController {
 
     @FXML
     public void initialize() {
-        setupSearchAndSelection();
-    }
-
-    private void setupSearchAndSelection() {
-        allOrders = orderModel.getAllOrders();
-        displayOrd(allOrders);
-        flowPane.getChildren().clear();
-
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            List<Order> filtered = allOrders.stream()
-                    .filter(order -> order.getOrderNumber().toLowerCase().contains(newVal.toLowerCase()))
-                    .collect(Collectors.toList());
-            displayOrd(filtered);
-            flowPane.getChildren().clear();
-        });
-
-        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
-            if (selectedOrderNumber != null) {
-                List<Order> selected = allOrders.stream()
-                        .filter(order -> order.getOrderNumber().equals(selectedOrderNumber))
-                        .collect(Collectors.toList());
-                displayOrders(selected);
-            }
-        });
-    }
-
-    private void displayOrd(List<Order> orders) {
-        listView.setItems(orderModel.getOrderNumbers(orders));
-        listView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(null);
-                setStyle("");
-
-                if (empty || item == null) return;
-
-                setText(item);
-                Order order = allOrders.stream()
-                        .filter(o -> o.getOrderNumber().equals(item))
-                        .findFirst().orElse(null);
-
-                if (order != null && hasPendingImages(order)) {
-                    setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
-                } else {
-                    setStyle("-fx-background-insets: 0 0 3px 0;");
-                }
-            }
-        });
+        initializeOrderList(
+                searchField, listView, flowPane, orderModel,
+                this::hasPendingImages,
+                filter -> orderModel.getAllOrders().stream()
+                        .filter(order -> order.getOrderNumber().toLowerCase().contains(filter.toLowerCase()))
+                        .toList(),
+                this::displayOrders
+        );
     }
 
     private boolean hasPendingImages(Order order) {

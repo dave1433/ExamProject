@@ -19,77 +19,25 @@ import java.io.ByteArrayInputStream;
 import java.util.*;
 
 public class OperatorController extends BaseOrderController {
-
-    @FXML
-    private FlowPane flowPane;
-
-    @FXML
-    private ListView<String> listView;
-
-    @FXML
-    private TextField searchField;
+    @FXML private FlowPane flowPane;
+    @FXML private ListView<String> listView;
+    @FXML private TextField searchField;
 
     private final OrderModel orderModel = new OrderModel(new OrderManager());
     private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
-
-    private List<Order> allOrders;
 
     public OperatorController() {
         imageOverlayUtil.setRefreshCallback(this::refreshView);
     }
 
-    private void refreshView() {
-        String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
-        if (selectedOrderNumber != null) {
-            List<Order> selected = orderModel.findOrdersByNumber(selectedOrderNumber);
-            displayOrders(selected);
-        }
-    }
-
     @FXML
     public void initialize() {
-        onSearchFilter();
-    }
-
-    @FXML
-    private void onSearchFilter() {
-        allOrders = orderModel.getAllOrders();
-        displayOrd(allOrders);
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            List<Order> filtered = orderModel.filterOrders(newVal);
-            displayOrd(filtered);
-        });
-
-        listView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(null);
-                setStyle("");
-
-                if (empty || item == null) return;
-
-                setText(item);
-
-                Order order = allOrders.stream()
-                        .filter(o -> o.getOrderNumber().equals(item))
-                        .findFirst()
-                        .orElse(null);
-
-                if (order != null && hasRejectedImages(order)) {
-                    setStyle("-fx-border-color: #f19352; -fx-border-width: 2px; -fx-border-radius: 3px;");
-                } else {
-                    setStyle("-fx-background-insets: 0 0 3px 0;");
-                }
-            }
-        });
-
-        listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selectedOrderNumber) -> {
-            if (selectedOrderNumber != null) {
-                List<Order> selected = orderModel.findOrdersByNumber(selectedOrderNumber);
-                displayOrders(selected);
-            }
-        });
+        initializeOrderList(
+                searchField, listView, flowPane, orderModel,
+                this::hasRejectedImages,
+                orderModel::filterOrders,
+                this::displayOrders
+        );
     }
 
     public boolean hasRejectedImages(Order order) {
@@ -102,8 +50,12 @@ public class OperatorController extends BaseOrderController {
         return false;
     }
 
-    private void displayOrd(List<Order> orders) {
-        listView.setItems(orderModel.getOrderNumbers(orders));
+    private void refreshView() {
+        String selectedOrderNumber = listView.getSelectionModel().getSelectedItem();
+        if (selectedOrderNumber != null) {
+            List<Order> selected = orderModel.findOrdersByNumber(selectedOrderNumber);
+            displayOrders(selected);
+        }
     }
 
     private void displayOrders(List<Order> orders) {
