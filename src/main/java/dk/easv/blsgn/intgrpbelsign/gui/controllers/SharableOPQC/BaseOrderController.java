@@ -2,7 +2,6 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC;
 
 import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
-import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 
@@ -33,16 +32,12 @@ public abstract class BaseOrderController {
         System.out.println("initializeOrderList: " + allOrders.size() + " orders loaded.");
 
         // Load all orders initially
-        listView.setItems(FXCollections.observableArrayList(
-                allOrders.stream().map(Order::getOrderNumber).toList()
-        ));
+        listView.setItems(orderModel.getOrderNumbers(allOrders));
 
         // Handle text search
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             List<Order> filtered = filterFunction.apply(newVal);
-            listView.setItems(FXCollections.observableArrayList(
-                    filtered.stream().map(Order::getOrderNumber).toList()
-            ));
+            listView.setItems(orderModel.getOrderNumbers(allOrders));
             if (flowPane != null) flowPane.getChildren().clear();
         });
 
