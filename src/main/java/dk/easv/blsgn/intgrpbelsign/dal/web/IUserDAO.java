@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.util.List;
 
 public interface IUserDAO {
-    ObservableList<User> getAllUsers() throws UsersException;
+    List<User> getAllUsers() throws UsersException;
 
     boolean addUser(User user) throws UsersException;
 

@@ -4,8 +4,7 @@ import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.dal.connection.DatabaseConnection;
 import dk.easv.blsgn.intgrpbelsign.dal.exceptions.UsersException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,8 +17,8 @@ public class UserDAO implements IUserDAO {
 
     DatabaseConnection conn = new DatabaseConnection();
     @Override
-    public ObservableList<User> getAllUsers() throws UsersException {
-        ObservableList<User> users = FXCollections.observableArrayList();
+    public List<User> getAllUsers() throws UsersException {
+        List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM [User] ORDER BY usage_count DESC";
 
         try (Connection c = conn.getConnection();
@@ -37,7 +36,7 @@ public class UserDAO implements IUserDAO {
                         rs.getString("email"),
                         rs.getString("phone_number")
                 );
-                user.setUsage_count(rs.getInt("usage_count")); // ✅ Include usage count
+                user.setUsage_count(rs.getInt("usage_count"));
                 users.add(user);
             }
         } catch (Exception e) {

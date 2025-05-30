@@ -4,7 +4,6 @@ import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,7 +25,7 @@ public abstract class BaseOrderController {
             Function<String, List<Order>> filterFunction,
             Consumer<List<Order>> onOrderSelected
     ) {
-        // ✅ Important: set before accessing
+
         this.allOrders = orderModel.getAllOrders();
 
         System.out.println("initializeOrderList: " + allOrders.size() + " orders loaded.");

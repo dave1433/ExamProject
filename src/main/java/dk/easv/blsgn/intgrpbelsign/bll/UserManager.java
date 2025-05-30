@@ -5,7 +5,6 @@ import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.dal.web.IUserDAO;
 import dk.easv.blsgn.intgrpbelsign.dal.web.UserDAO;
 import dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils;
-import javafx.collections.ObservableList;
 
 import javax.security.sasl.AuthenticationException;
 import java.util.List;
@@ -14,7 +13,7 @@ import static dk.easv.blsgn.intgrpbelsign.utils.PasswordUtils.hashPassword;
 
 public class UserManager {
     private final IUserDAO iUserDAO = new UserDAO();
-    public ObservableList<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return iUserDAO.getAllUsers();
     }
     /**
