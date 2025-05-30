@@ -5,7 +5,7 @@ import dk.easv.blsgn.intgrpbelsign.be.Order;
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
-import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;

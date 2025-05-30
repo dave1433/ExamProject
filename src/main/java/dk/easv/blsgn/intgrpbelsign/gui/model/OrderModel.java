@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.model;
+package dk.easv.blsgn.intgrpbelsign.gui.model;
 
 import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.be.Order;
@@ -6,7 +6,7 @@ import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.SQLException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

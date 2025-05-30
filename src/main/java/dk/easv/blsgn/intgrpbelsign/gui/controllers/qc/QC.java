@@ -7,8 +7,8 @@ import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
-import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
-import dk.easv.blsgn.intgrpbelsign.model.UserModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
 import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.fxml.FXML;
@@ -23,7 +23,7 @@ import javafx.scene.layout.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class QC extends BaseOrderController {
     private final OrderModel orderModel = new OrderModel(new OrderManager());

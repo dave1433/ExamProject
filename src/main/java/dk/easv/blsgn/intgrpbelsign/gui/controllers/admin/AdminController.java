@@ -2,6 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.admin;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
+import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,7 +29,7 @@ public class AdminController {
     @FXML
     private GridPane userGrid;
 
-    private final UserManager userManager = new UserManager();
+    private final UserModel userModel = new UserModel(new UserManager());
     private User selectedUser;
 
     @FXML
@@ -37,7 +38,7 @@ public class AdminController {
     }
 
     private void populateUsersGrid() {
-        List<User> users = userManager.getAllUsers();
+        List<User> users = userModel.getAllUsers();
 
         // Clear the grid and its constraints
         userGrid.getChildren().clear();

@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.admin;
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
-import dk.easv.blsgn.intgrpbelsign.model.UserModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

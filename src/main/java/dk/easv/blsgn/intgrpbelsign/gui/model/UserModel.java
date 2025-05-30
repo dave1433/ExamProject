@@ -1,4 +1,4 @@
-package dk.easv.blsgn.intgrpbelsign.model;
+package dk.easv.blsgn.intgrpbelsign.gui.model;
 
 import dk.easv.blsgn.intgrpbelsign.be.Role;
 import dk.easv.blsgn.intgrpbelsign.be.User;

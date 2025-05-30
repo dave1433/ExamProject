@@ -1,7 +1,7 @@
 package dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC;
 
 import dk.easv.blsgn.intgrpbelsign.be.Order;
-import dk.easv.blsgn.intgrpbelsign.model.OrderModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;

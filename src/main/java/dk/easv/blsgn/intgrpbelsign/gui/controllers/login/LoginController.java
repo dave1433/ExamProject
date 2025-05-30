@@ -2,7 +2,7 @@ package dk.easv.blsgn.intgrpbelsign.gui.controllers.login;
 
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
-import dk.easv.blsgn.intgrpbelsign.model.UserModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
