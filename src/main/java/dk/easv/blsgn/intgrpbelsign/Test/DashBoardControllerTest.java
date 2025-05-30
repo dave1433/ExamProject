@@ -3,7 +3,7 @@ package dk.easv.blsgn.intgrpbelsign.Test;
 import dk.easv.blsgn.intgrpbelsign.be.User;
 import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.login.DashBoardController;
-import dk.easv.blsgn.intgrpbelsign.model.UserModel;
+import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
