@@ -23,13 +23,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class ImageOverlayUtil {
+public class ImageHandlerUtil {
 
 
     private Runnable refreshCallback;
     private final OrderManager orderManager;
 
-    public ImageOverlayUtil(OrderManager orderManager) {
+    public ImageHandlerUtil(OrderManager orderManager) {
         this.orderManager = orderManager;
     }
 
