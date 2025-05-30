@@ -6,7 +6,7 @@ import dk.easv.blsgn.intgrpbelsign.be.ImageWithMeta;
 import dk.easv.blsgn.intgrpbelsign.bll.OrderManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
 import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
-import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
+import dk.easv.blsgn.intgrpbelsign.utils.ImageHandlerUtil;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,10 +24,10 @@ public class OperatorController extends BaseOrderController {
     @FXML private TextField searchField;
 
     private final OrderModel orderModel = new OrderModel(new OrderManager());
-    private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
+    private final ImageHandlerUtil imageHandlerUtil = new ImageHandlerUtil(new OrderManager());
 
     public OperatorController() {
-        imageOverlayUtil.setRefreshCallback(this::refreshView);
+        imageHandlerUtil.setRefreshCallback(this::refreshView);
     }
 
     @FXML
@@ -145,7 +145,7 @@ public class OperatorController extends BaseOrderController {
                 Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
                 ImageView imgView = new ImageView(img);
 
-                StackPane imageWithOverlay = imageOverlayUtil.createImageWithOverlay(
+                StackPane imageWithOverlay = imageHandlerUtil.createImageWithOverlay(
                         imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), false
                 );
 
@@ -171,7 +171,7 @@ public class OperatorController extends BaseOrderController {
             if (!angleToColumn.containsKey(viewType)) {
                 Image img = new Image(new ByteArrayInputStream(meta.getImageData()));
                 ImageView imgView = new ImageView(img);
-                StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
+                StackPane imageStack = imageHandlerUtil.createImageWithOverlay(
                         imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), false
                 );
 
@@ -185,7 +185,7 @@ public class OperatorController extends BaseOrderController {
 
         Button addExtraPhoto = new Button("+");
         addExtraPhoto.setStyle("-fx-font-size: 20px; -fx-min-width: 100px; -fx-min-height: 100px; -fx-background-color: #f0f0f0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: #ccc; -fx-border-width: 1;");
-        addExtraPhoto.setOnAction(e -> imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), "Extra"));
+        addExtraPhoto.setOnAction(e -> imageHandlerUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), "Extra"));
         extraPhotosPane.getChildren().add(addExtraPhoto);
 
         Label extraLabel = new Label("Extra Photos");
@@ -200,7 +200,7 @@ public class OperatorController extends BaseOrderController {
         plusButton.setPrefSize(100, 100);
         plusButton.setStyle("-fx-font-size: 20px; -fx-border-width: 1; -fx-cursor: hand; -fx-background-color: #f0f0f0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: #ccc;");
 
-        plusButton.setOnAction(e -> imageOverlayUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), angle));
+        plusButton.setOnAction(e -> imageHandlerUtil.openCameraWindow(item, order.getID(), order.getOrderNumber(), angle));
         return plusButton;
     }
 }

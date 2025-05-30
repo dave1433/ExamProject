@@ -9,7 +9,7 @@ import dk.easv.blsgn.intgrpbelsign.bll.UserManager;
 import dk.easv.blsgn.intgrpbelsign.gui.controllers.SharableOPQC.BaseOrderController;
 import dk.easv.blsgn.intgrpbelsign.gui.model.OrderModel;
 import dk.easv.blsgn.intgrpbelsign.gui.model.UserModel;
-import dk.easv.blsgn.intgrpbelsign.utils.ImageOverlayUtil;
+import dk.easv.blsgn.intgrpbelsign.utils.ImageHandlerUtil;
 import dk.easv.blsgn.intgrpbelsign.utils.PdfReportGenerator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +28,7 @@ import java.util.*;
 public class QC extends BaseOrderController {
     private final OrderModel orderModel = new OrderModel(new OrderManager());
     private final UserModel userModel = new UserModel(new UserManager());
-    private final ImageOverlayUtil imageOverlayUtil = new ImageOverlayUtil(new OrderManager());
+    private final ImageHandlerUtil imageHandlerUtil = new ImageHandlerUtil(new OrderManager());
 
     @FXML private FlowPane flowPane;
     @FXML private ListView<String> listView;
@@ -168,7 +168,7 @@ public class QC extends BaseOrderController {
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
 
-        StackPane imageStack = imageOverlayUtil.createImageWithOverlay(
+        StackPane imageStack = imageHandlerUtil.createImageWithOverlay(
                 imgView, img, meta.getStatus(), meta.getViewType(), meta, item, order.getID(), order.getOrderNumber(), true
         );
 
