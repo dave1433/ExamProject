@@ -1,0 +1,41 @@
+# *BelSign App*
+
+## How to use:
+
+### The application can be run directly from IntelliJ IDE with the following libraries if they are not already imported.
+
+## Libraries:
+
+### com.microsoft.sqlserver:mssql-jdbc (version: 12.10.0.jre11)
+### com.sun.mail:jakarta.mail (version: 2.0.1)
+### junit:junit (version: 4.13.2)
+### org.mockito:mockito-core (version: 5.12.0)
+### com.sendgrid:sendgrid-java (version: 4.10.1)
+### org.apache.pdfbox:pdfbox (version: 2.0.27)
+### org.slf4j:slf4j-simple (version: 2.0.9)
+### com.itextpdf:itext7-core (version: 8.0.2)
+### org.openjfx:javafx-controls (version: 17.0.6)
+### org.openjfx:javafx-fxml (version: 17.0.6)
+### com.github.sarxos:webcam-capture (version: 0.3.12)
+
+# Log in Credentials
+## *User Operator:*
+
+#### Username:
+##### *Mandy, Mark, Erica, Thien*
+#### Password: 
+##### *1111*
+
+## *Admin:*
+
+#### Username: 
+##### *Alex, Dereck, David*
+#### Password:
+##### *1111*
+
+## *Quality Controller:*
+
+#### Username: 
+##### *Luis, Emre, Pedro*
+#### Password:
+##### *1111*
